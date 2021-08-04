@@ -1,10 +1,11 @@
 {
-    "name": "@thanpolas/discord-bot-template",
+    "name": "frontrunner",
+    "private": true,
     "version": "1.0.0",
     "main": "./app/",
-    "description": "Discord bot for calling out predictions",
-    "homepage": "https://github.com/thanpolas/discord-bot-template",
-    "bugs": "https://github.com/thanpolas/discord-bot-template/issues",
+    "description": "Study of an SNX frontrunning bot.",
+    "homepage": "https://github.com/thanpolas/frontrunner",
+    "bugs": "https://github.com/thanpolas/frontrunner/issues",
     "author": {
         "name": "Thanos Polychronakis",
         "email": "thanpolas@gmail.com"
@@ -12,9 +13,9 @@
     "contributors": [],
     "repository": {
         "type": "git",
-        "url": "https://github.com/thanpolas/discord-bot-template"
+        "url": "https://github.com/thanpolas/frontrunner"
     },
-    "license": "ISC",
+    "license": "UNLICENSED",
     "engines": {
         "node": "14.15.5"
     },

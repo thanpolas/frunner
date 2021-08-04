@@ -1,6 +1,6 @@
-# Discord Bot Template
+# Frontrunner
 
-> Describe what your bot does
+> Study of an SNX frontrunning bot.
 
 # How To Install
 
@@ -20,7 +20,7 @@
 
 ## Prepare Docker
 
-We use Docker and docker-compose, so you will need to install
+We use Docker and docker-compose for postgres, so you will need to install
 the [Docker Desktop][docker-desktop] package
 on your local machine.
 
@@ -39,7 +39,6 @@ All targets require the following environment variables:
 -   `DATABASE_URL` A url with credentials pointing to the data store.
 -   `DISCORD_GUILD_ID` The guild id of your server.
 -   `DISCORD_BOT_TOKEN` The Discord token of the bot.
--   `BOT_OPTIONS_TIMEZONE` Timezone to be used. Values from [moment TZ][tz].
 
 This project also supports a [`.env` file][dotenv] which is on `.gitignore`
 for your convenience when developing on your local.
@@ -94,7 +93,7 @@ TBD
 
 ## License
 
-Copyright © [Thanos Polychronakis][thanpolas] and Authors, Licensed under ISC.
+Copyright © [Thanos Polychronakis][thanpolas], All Rights Reserved.
 
 [docker-compose]: https://docs.docker.com/compose/reference/overview/
 [docker-desktop]: https://www.docker.com/products/docker-desktop
