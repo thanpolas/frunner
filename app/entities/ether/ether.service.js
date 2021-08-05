@@ -5,7 +5,7 @@ const { ethers } = require('ethers');
 
 const { networkConsts } = require('./constants/networks.const');
 
-const { mainnet, polygon } = networkConsts;
+const { mainnet, polygon, kovan } = networkConsts;
 
 const service = (module.exports = {});
 
@@ -13,7 +13,8 @@ const service = (module.exports = {});
 service._providerMainnet = null;
 /** @type {Object?} Stores the instantiated ether.js Polygon provider */
 service._providerPolygon = null;
-
+/** @type {Object?} Stores the instantiated ether.js Kovan provider */
+service._providerKovan = null;
 /**
  * Inialize the ether service, create the provider.
  *
@@ -27,6 +28,8 @@ service.init = async () => {
   service._providerPolygon = new ethers.providers.JsonRpcProvider(
     polygon.jsonRpc,
   );
+
+  service._providerKovan = new ethers.providers.JsonRpcProvider(kovan.jsonRpc);
 };
 
 /**
@@ -45,5 +48,9 @@ service.getProvider = (network) => {
 
   if (network.name === 'polygon') {
     return service._providerPolygon;
+  }
+
+  if (network.name === 'kovan') {
+    return service._providerKovan;
   }
 };
