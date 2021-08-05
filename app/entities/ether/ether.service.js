@@ -15,6 +15,7 @@ service._providerMainnet = null;
 service._providerPolygon = null;
 /** @type {Object?} Stores the instantiated ether.js Kovan provider */
 service._providerKovan = null;
+
 /**
  * Inialize the ether service, create the provider.
  *
