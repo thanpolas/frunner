@@ -4,7 +4,9 @@
         "connection_string_reset": "postgres://postgres:postgres@127.0.0.1:5432/postgres",
         "pool_min": 2,
         "pool_max": 10,
-        "migrations": { "directory": "./migrations/migrations/" },
+        "migrations": {
+            "directory": "./migrations/migrations/"
+        },
         "seed_directory": "./migrations/seeds"
     },
     "discord": {
@@ -14,5 +16,10 @@
     },
     "options": {
         "timezone": "DO NOT SET - USE ENV VAR: BOT_OPTIONS_TIMEZONE"
+    },
+    "ether": {
+        "rpc_provider_mainnet": "DO NOT SET - USE ENV VAR: RPC_PROVIDER_MAINNET",
+        "rpc_provider_polygon": "DO NOT SET - USE ENV VAR: RPC_PROVIDER_POLYGON",
+        "rpc_provider_kovan": "DO NOT SET - USE ENV VAR: RPC_PROVIDER_KOVAN"
     }
 }
