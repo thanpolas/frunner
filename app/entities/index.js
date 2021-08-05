@@ -5,6 +5,7 @@
 const discordEnt = require('./discord');
 const messageRouter = require('./message-router');
 const { init: initEther } = require('./ether');
+const { init: initPriceFeeds } = require('./price-feeds');
 
 const bootstrap = (module.exports = {});
 
@@ -15,4 +16,5 @@ bootstrap.init = async () => {
   messageRouter.init();
   await discordEnt.init();
   await initEther();
+  await initPriceFeeds();
 };
