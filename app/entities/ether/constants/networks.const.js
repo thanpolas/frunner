@@ -39,7 +39,7 @@ consts.networkConsts = {
     chainId: 69,
     networkId: 10,
     type: 'Test',
-    jsonRpc: 'https://kovan.optimism.io',
+    jsonRpc: config.ether.rpc_provider_kovan,
     explorer: 'https://kovan-explorer.optimism.io/',
   },
   ropsten: {
