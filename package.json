@@ -44,8 +44,8 @@
         "testTimeout": 10000
     },
     "dependencies": {
+        "axios": "^0.21.1",
         "bluebird": "3.7.2",
-        "coinbase": "^2.0.8",
         "config": "3.3.6",
         "connection-string": "4.3.4",
         "date-fns": "2.21.3",
