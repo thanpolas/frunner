@@ -4,6 +4,16 @@
 
 # How To Install
 
+## Clone and Build
+
+```
+git clone git@github.com:thanpolas/frontrunner.git
+
+cd frontrunner
+
+npm i
+```
+
 ## Create The Bot
 
 1. Go to the developer portal: https://discord.com/developers/applications
