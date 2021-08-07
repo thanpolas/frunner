@@ -69,7 +69,8 @@ entity.getAllPricesCoinbase = async () => {
  * @private
  */
 entity._parseResults = (allRes) => {
-  const prices = allRes.map((res) => {
+  const prices = {};
+  allRes.forEach((res) => {
     const response = res?.data?.data;
 
     // check for errors
@@ -79,10 +80,8 @@ entity._parseResults = (allRes) => {
 
     const pair = response.base + response.currency;
 
-    return {
-      pair: entity.COINBASE_NORMALIZE_PAIRS[pair],
-      price: response.amount,
-    };
+    const pairNormalized = entity.COINBASE_NORMALIZE_PAIRS[pair];
+    prices[pairNormalized] = response.amount;
   });
   return prices;
 };
