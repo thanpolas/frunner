@@ -3,7 +3,7 @@
  */
 
 const { getAllPricesCoinbase } = require('./logic/coinbase-price.ent');
-const { getPriceBitfinex } = require('./logic/bitfinex-price.ent');
+const { getAllPriceBitfinex } = require('./logic/bitfinex-price.ent');
 const { getAllPricesKraken } = require('./logic/kraken-price.ent');
 
 const log = require('../../services/log.service').get();
@@ -11,7 +11,7 @@ const log = require('../../services/log.service').get();
 const entity = (module.exports = {});
 
 entity.getAllPricesCoinbase = getAllPricesCoinbase;
-entity.getPriceBitfinex = getPriceBitfinex;
+entity.getAllPriceBitfinex = getAllPriceBitfinex;
 entity.getAllPricesKraken = getAllPricesKraken;
 
 /**

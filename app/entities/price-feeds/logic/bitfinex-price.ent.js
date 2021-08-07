@@ -60,7 +60,7 @@ entity.API_BITFINEX_TICKER = 'https://api-pub.bitfinex.com/v2/tickers?symbols=';
  *
  * @return {Promise<Array<string>>} A Promise array.
  */
-entity.getPriceBitfinex = async () => {
+entity.getAllPriceBitfinex = async () => {
   const url = `${entity.API_BITFINEX_TICKER}${entity.BITFINEX_TOKEN_PAIRS_STR}`;
 
   const res = await axios.get(url);
