@@ -89,12 +89,6 @@ entity._parseResults = (res) => {
 
   const prices = pairKeys.map((pairKey) => {
     const normalizedPair = entity.KRAKEN_NORMALIZE_PAIRS[pairKey];
-    console.log('pairKey:', pairKey);
-    console.log('normalizedPair:', normalizedPair);
-    console.log(
-      'entity.KRAKEN_NORMALIZE_PAIRS:',
-      entity.KRAKEN_NORMALIZE_PAIRS,
-    );
 
     return {
       pair: normalizedPair,
