@@ -3,6 +3,8 @@
  */
 
 const faker = require('faker');
+require('dotenv').config();
+
 const logger = require('../../app/services/log.service');
 
 // Initialize logger early.
