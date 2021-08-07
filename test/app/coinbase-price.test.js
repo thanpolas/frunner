@@ -5,6 +5,7 @@
 const config = require('config');
 
 const testLib = require('../lib/test.lib');
+const { assert: pricesAssert } = require('../assert/prices.assert');
 
 const { getAllPricesCoinbase } = require('../../app/entities/price-feeds');
 
@@ -17,7 +18,7 @@ describe('Coinbase Price', () => {
     });
     test('Will successfully fetch all expected prices', async () => {
       const prices = await getAllPricesCoinbase();
-      console.log('prices', prices);
+      pricesAssert(prices);
     });
   });
 });
