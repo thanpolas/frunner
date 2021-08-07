@@ -20,18 +20,13 @@ require('./utils/jsdoc-type-definitions');
 const globals = require('./utils/globals');
 const logService = require('./services/log.service');
 
-const APPLICATION_NAME = 'ProjectName';
+const APPLICATION_NAME = 'frontrunner';
 
 //
 // WARNING
 // do not include any more libraries before the log service is initialized.
 //
 //
-
-/**
- * @fileoverview Master bootsrap module.
- *
- */
 
 /**
  * The master boot.
