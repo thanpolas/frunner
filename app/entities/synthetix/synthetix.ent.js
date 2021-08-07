@@ -5,9 +5,11 @@
 const log = require('../../services/log.service').get();
 
 const { init: initService } = require('./synthetix.service');
-const { snxPrice } = require('./logic/snx-price.ent');
+const { init: initPrices, snxPrices } = require('./logic/snx-price.ent');
 
 const entity = (module.exports = {});
+
+entity.snxPrices = snxPrices;
 
 /**
  * Initialize synthetix service.
@@ -17,6 +19,5 @@ const entity = (module.exports = {});
 entity.init = async () => {
   await log.info('Initializing synthetix...');
   await initService();
-
-  await snxPrice();
+  initPrices();
 };
