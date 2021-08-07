@@ -4,7 +4,17 @@
 
 const consts = (module.exports = {});
 
-consts.synthCryptos = [
+consts.SYNTHS_OP_KOVAN = [
+  'sUSD',
+  'sETH',
+  'sBTC',
+  'sLINK',
+  'sUNI',
+  'sAAVE',
+  'AAVEUSD',
+];
+
+consts.SYNTHS_MAINNET_CRYPTOS = [
   's1INCH',
   'sAAVE',
   'sADA',
@@ -26,7 +36,7 @@ consts.synthCryptos = [
   'sYFI',
 ];
 
-consts.all = [
+consts.SYNTHS_ALL = [
   'iAAVE',
   'iADA',
   'iBNB',
