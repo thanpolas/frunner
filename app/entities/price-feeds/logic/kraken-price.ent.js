@@ -78,6 +78,8 @@ entity.getAllPricesKraken = async () => {
  */
 entity._parseResults = (res) => {
   const { data } = res;
+  const prices = {};
+
   // check for errors
   if (data.error.length) {
     return;
@@ -87,13 +89,11 @@ entity._parseResults = (res) => {
 
   const pairKeys = Object.keys(result);
 
-  const prices = pairKeys.map((pairKey) => {
+  pairKeys.forEach((pairKey) => {
     const normalizedPair = entity.KRAKEN_NORMALIZE_PAIRS[pairKey];
 
-    return {
-      pair: normalizedPair,
-      price: result[pairKey].c[0],
-    };
+    // eslint-disable-next-line prefer-destructuring
+    prices[normalizedPair] = result[pairKey].c[0];
   });
 
   return prices;
