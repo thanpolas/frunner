@@ -8,7 +8,7 @@ const invariant = require('invariant');
 
 const { networkConsts } = require('./constants/networks.const');
 
-const { mainnet, polygon, kovan, optimism_kovan } = networkConsts;
+const { mainnet, polygon, kovan, optimistic_kovan } = networkConsts;
 
 const service = (module.exports = {});
 
@@ -39,7 +39,7 @@ service.init = async () => {
   );
 
   service._providerOKovan = new ethers.providers.JsonRpcProvider(
-    optimism_kovan.jsonRpc,
+    optimistic_kovan.jsonRpc,
   );
 
   service._providerKovan = new ethers.providers.JsonRpcProvider(kovan.jsonRpc);
