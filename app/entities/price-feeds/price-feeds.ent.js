@@ -15,9 +15,8 @@ entity.getPriceBitfinex = getPriceBitfinex;
 /**
  * Initialize the entity and service.
  *
- * @return {Promise}
+ * @return {Promise<void>}
  */
 entity.init = async () => {
   await log.info('Initializing price-feeds entity...');
-
 };
