@@ -11,6 +11,7 @@ const entity = (module.exports = {});
 entity.network = networkConsts;
 
 entity.getProvider = etherService.getProvider;
+entity.getSigner = etherService.getSigner;
 
 /**
  * Initialize the ether entity and service.
