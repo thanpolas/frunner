@@ -1,5 +1,5 @@
 /**
- * @fileoverview Fetches price of coibase.
+ * @fileoverview Fetches price of coinbase.
  */
 
 const axios = require('axios');
