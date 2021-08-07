@@ -1,5 +1,5 @@
 /**
- * @fileoverview Test coinbase price fetching.
+ * @fileoverview Test getAllPrices from all dexes or cexes available.
  */
 
 const config = require('config');
@@ -7,18 +7,43 @@ const config = require('config');
 const testLib = require('../lib/test.lib');
 const { assert: pricesAssert } = require('../assert/prices.assert');
 
-const { getAllPricesCoinbase } = require('../../app/entities/price-feeds');
+const {
+  getAllPricesCoinbase,
+  getAllPriceBitfinex,
+  getAllPricesKraken,
+} = require('../../app/entities/price-feeds');
 
-describe('Coinbase Price', () => {
+describe('Fetch Prices from DEXes and CEXes', () => {
   testLib.init();
-  describe('Happy Path', () => {
-    beforeEach(() => {
-      // give an adequate timeout
-      config.app.fetch_price_timeout = 3000;
+
+  const allFetchPricesMethods = [
+    ['getAllPricesCoinbase', getAllPricesCoinbase],
+    ['getAllPriceBitfinex', getAllPriceBitfinex],
+    ['getAllPricesKraken', getAllPricesKraken],
+  ];
+
+  allFetchPricesMethods.forEach(([fnName, allPrices]) => {
+    describe(`Happy Path for ${fnName}`, () => {
+      beforeEach(() => {
+        // give an adequate timeout
+        config.app.fetch_price_timeout = 3000;
+      });
+      test('Will successfully fetch all expected prices', async () => {
+        const prices = await allPrices();
+        pricesAssert(prices);
+      });
     });
-    test('Will successfully fetch all expected prices', async () => {
-      const prices = await getAllPricesCoinbase();
-      pricesAssert(prices);
+    describe(`Error Cases for ${fnName}`, () => {
+      beforeEach(() => {
+        // give an adequate timeout
+        config.app.fetch_price_timeout = 3000;
+      });
+      test('Will handle timeout gracefully', async () => {
+        // set timeout to 1ms so the request times out.
+        config.app.fetch_price_timeout = 1;
+        const prices = await allPrices();
+        expect(prices).toBeUndefined();
+      });
     });
   });
 });
