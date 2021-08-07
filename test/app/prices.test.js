@@ -2,9 +2,11 @@
  * @fileoverview Test getAllPrices from all dexes or cexes available.
  */
 
+const testLib = require('../lib/test.lib');
+
+// eslint-disable-next-line import/order
 const config = require('config');
 
-const testLib = require('../lib/test.lib');
 const { assert: pricesAssert } = require('../assert/prices.assert');
 
 const {
