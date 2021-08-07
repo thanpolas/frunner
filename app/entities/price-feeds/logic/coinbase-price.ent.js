@@ -5,9 +5,9 @@
 
 const config = require('config');
 const axios = require('axios');
-const log = require('../../../services/log.service').get();
 
 const { PAIRS } = require('../constants/pairs.const');
+const log = require('../../../services/log.service').get();
 
 const entity = (module.exports = {});
 
