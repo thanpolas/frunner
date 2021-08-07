@@ -18,12 +18,14 @@ const bootstrap = (module.exports = {});
  * @return {Promise} a promise.
  */
 bootstrap.init = async (bootOpts) => {
+  await initEther();
+  await initSnx();
+
   if (bootOpts.testing) {
     return;
   }
+
   messageRouter.init();
   await discordEnt.init();
-  await initEther();
   await initPriceFeeds();
-  await initSnx();
 };
