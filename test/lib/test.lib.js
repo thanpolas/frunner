@@ -2,11 +2,12 @@
  * @fileoverview Core testing library, must be included by all tests.
  */
 
+const faker = require('faker');
 const logger = require('../../app/services/log.service');
 
 // Initialize logger early.
 logger.init({
-  appName: 'skgbot-test',
+  appName: 'frontrunner-test',
   suppressLogging: false,
 });
 
@@ -26,6 +27,17 @@ process.on('unhandledRejection', (error) => {
 const testLib = (module.exports = {});
 
 const app = require('../..');
+
+// Mock discord client
+const discordService = require('../../app/services/discord.service');
+
+testLib.discordOn = jest.fn();
+discordService._client = {
+  on: testLib.discordOn,
+  user: {
+    id: faker.datatype.number(999999999999999999),
+  },
+};
 
 /**
  * Core testing library, must be included by all tests.

@@ -1,11 +1,14 @@
 /**
  * @fileoverview Ether Provider Service.
  */
+
+const config = require('config');
 const { ethers } = require('ethers');
+const invariant = require('invariant');
 
 const { networkConsts } = require('./constants/networks.const');
 
-const { mainnet, polygon, kovan } = networkConsts;
+const { mainnet, polygon, kovan, optimistic_kovan } = networkConsts;
 
 const service = (module.exports = {});
 
@@ -15,6 +18,11 @@ service._providerMainnet = null;
 service._providerPolygon = null;
 /** @type {Object?} Stores the instantiated ether.js Kovan provider */
 service._providerKovan = null;
+/** @type {Object?} Stores the instantiated ether.js Optimism Kovan provider */
+service._providerOKovan = null;
+
+/** @type {Object?} Stores the instantiated ether.js wallet */
+service._wallet = null;
 
 /**
  * Inialize the ether service, create the provider.
@@ -30,7 +38,16 @@ service.init = async () => {
     polygon.jsonRpc,
   );
 
+  service._providerOKovan = new ethers.providers.JsonRpcProvider(
+    optimistic_kovan.jsonRpc,
+  );
+
   service._providerKovan = new ethers.providers.JsonRpcProvider(kovan.jsonRpc);
+
+  service._wallet = new ethers.Wallet(
+    config.ether.signer_private_key,
+    service._providerOKovan,
+  );
 };
 
 /**
@@ -40,9 +57,11 @@ service.init = async () => {
  * @return {Object} Appropriate ether.js provider.
  */
 service.getProvider = (network) => {
-  if (typeof network === 'string') {
-    throw new Error('Wrong network type on getProvider() - Use object const');
-  }
+  invariant(
+    typeof network?.name === 'string',
+    'Wrong network type on getProvider() - Use object const',
+  );
+
   if (network.name === 'mainnet') {
     return service._providerMainnet;
   }
@@ -54,4 +73,25 @@ service.getProvider = (network) => {
   if (network.name === 'kovan') {
     return service._providerKovan;
   }
+
+  throw new Error('getProvider() :: Network does not exist');
+};
+
+/**
+ * Will return the appropriate ether.js signer.
+ *
+ * @param {Object} network The network to be used.
+ * @return {Object} Appropriate ether.js signer.
+ */
+service.getSigner = (network) => {
+  invariant(
+    typeof network?.name === 'string',
+    'Wrong network type on getSigner() - Use object const',
+  );
+
+  if (network.name === 'optimistic_kovan') {
+    return service._wallet;
+  }
+
+  throw new Error('getSigner() :: Network does not exist');
 };

@@ -20,6 +20,10 @@
     "ether": {
         "rpc_provider_mainnet": "DO NOT SET - USE ENV VAR: RPC_PROVIDER_MAINNET",
         "rpc_provider_polygon": "DO NOT SET - USE ENV VAR: RPC_PROVIDER_POLYGON",
-        "rpc_provider_kovan": "DO NOT SET - USE ENV VAR: RPC_PROVIDER_KOVAN"
+        "rpc_provider_kovan": "DO NOT SET - USE ENV VAR: RPC_PROVIDER_KOVAN",
+        "signer_private_key": "DO NOT SET - USE ENV VAR: SIGNER_PRIVATE_KEY"
+    },
+    "app": {
+        "fetch_price_timeout": 500
     }
 }

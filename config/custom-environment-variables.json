@@ -12,6 +12,7 @@
     "ether": {
         "rpc_provider_mainnet": "RPC_PROVIDER_MAINNET",
         "rpc_provider_polygon": "RPC_PROVIDER_POLYGON",
-        "rpc_provider_kovan": "RPC_PROVIDER_KOVAN"
+        "rpc_provider_kovan": "RPC_PROVIDER_KOVAN",
+        "signer_private_key": "SIGNER_PRIVATE_KEY"
     }
 }

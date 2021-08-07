@@ -42,6 +42,16 @@ consts.networkConsts = {
     jsonRpc: config.ether.rpc_provider_kovan,
     explorer: 'https://kovan-explorer.optimism.io/',
   },
+  optimistic_kovan: {
+    name: 'optimistic_kovan',
+    chain: 'optimism',
+    chainId: 69,
+    networkId: 10,
+    type: 'Test',
+    jsonRpc: 'https://kovan.optimism.io',
+    explorer: 'https://kovan-optimistic.etherscan.io',
+  },
+
   ropsten: {
     name: 'ropsten',
     chain: 'ETH',
