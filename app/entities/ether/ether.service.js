@@ -58,7 +58,7 @@ service.init = async () => {
  */
 service.getProvider = (network) => {
   invariant(
-    typeof network === 'string',
+    typeof network?.name === 'string',
     'Wrong network type on getProvider() - Use object const',
   );
 
@@ -74,5 +74,24 @@ service.getProvider = (network) => {
     return service._providerKovan;
   }
 
-  throw new Error('getPrivider() :: Network does not exist');
+  throw new Error('getProvider() :: Network does not exist');
+};
+
+/**
+ * Will return the appropriate ether.js signer.
+ *
+ * @param {Object} network The network to be used.
+ * @return {Object} Appropriate ether.js signer.
+ */
+service.getSigner = (network) => {
+  invariant(
+    typeof network?.name === 'string',
+    'Wrong network type on getSigner() - Use object const',
+  );
+
+  if (network.name === 'optimistic_kovan') {
+    return service._wallet;
+  }
+
+  throw new Error('getSigner() :: Network does not exist');
 };
