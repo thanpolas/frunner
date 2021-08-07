@@ -12,8 +12,15 @@ const bootstrap = (module.exports = {});
 
 /**
  * Bootstrap for Entities.
+ *
+ * @param {Object} bootOpts Application boot options.
+ * @param {boolean} bootOpts.testing When true go into testing mode.
+ * @return {Promise} a promise.
  */
-bootstrap.init = async () => {
+bootstrap.init = async (bootOpts) => {
+  if (bootOpts.testing) {
+    return;
+  }
   messageRouter.init();
   await discordEnt.init();
   await initEther();
