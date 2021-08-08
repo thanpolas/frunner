@@ -4,3 +4,16 @@
  */
 
 const entity = (module.exports = {});
+
+/**
+ * Initialize the heartbeat functionality.
+ *
+ * @return {Promise<void>}
+ */
+entity.init = async () => {};
+
+/**
+ * Dispose of all the open handlers.
+ *
+ */
+entity.dispose = () => {};

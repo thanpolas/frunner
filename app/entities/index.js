@@ -7,6 +7,10 @@ const messageRouter = require('./message-router');
 const { init: initEther } = require('./ether');
 const { init: initPriceFeeds } = require('./price-feeds');
 const { init: initSnx } = require('./synthetix');
+const {
+  init: initFrontrunner,
+  dispose: disposeFrontrunner,
+} = require('./frontrunner');
 
 const bootstrap = (module.exports = {});
 
@@ -20,7 +24,7 @@ const bootstrap = (module.exports = {});
 bootstrap.init = async (bootOpts) => {
   await initEther();
   await initSnx();
-
+  await initFrontrunner();
   if (bootOpts.testing) {
     return;
   }
@@ -28,4 +32,12 @@ bootstrap.init = async (bootOpts) => {
   messageRouter.init();
   await discordEnt.init();
   await initPriceFeeds();
+};
+
+/**
+ * Graceful shutdown functionality.
+ *
+ */
+bootstrap.dispose = () => {
+  disposeFrontrunner();
 };
