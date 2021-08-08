@@ -7,7 +7,7 @@ const EventEmitter = require('events');
 
 const config = require('config');
 
-const { fetchPriceFeeds } = require('./price-feeds.ent');
+const { fetchPriceFeeds, processPriceFeeds } = require('./price-feeds.ent');
 const { eventTypes } = require('../constants/event-types.const');
 
 const log = require('../../../services/log.service').get();
@@ -69,6 +69,13 @@ entity.dispose = () => {
 };
 
 /**
+ * Get the event emitter object.
+ *
+ * @return {Object} The events object.
+ */
+entity.getEvents = () => entity.events;
+
+/**
  * Handles each heartbeat by fetching prices from feeds and propagating them
  * through events.
  *
@@ -82,7 +89,14 @@ entity._onHeartbeat = async () => {
       return;
     }
 
+    const processedPrices = processPriceFeeds(prices);
+
     entity.events.emit(eventTypes.PRICE_FEED, prices, entity._heartbeat);
+    entity.events.emit(
+      eventTypes.PRICE_FEED_PROCESSED,
+      processedPrices,
+      entity._heartbeat,
+    );
   } catch (ex) {
     await log.error('_onHeartbeat() :: Failed', {
       error: ex,
