@@ -30,7 +30,9 @@ const testLib = (module.exports = {});
 
 const app = require('../..');
 
+//
 // Mock discord client
+//
 const discordService = require('../../app/services/discord.service');
 
 testLib.discordOn = jest.fn();
@@ -39,6 +41,17 @@ discordService._client = {
   user: {
     id: faker.datatype.number(999999999999999999),
   },
+  destroy: () => {},
+};
+
+//
+// Mock heartbeat event handler
+//
+const heartbeat = require('../../app/entities/frontrunner/logic/heartbeat.ent');
+
+testLib.heartbeatOn = jest.fn();
+heartbeat.events = {
+  on: testLib.heartbeatOn,
 };
 
 /**

@@ -5,7 +5,7 @@
 const config = require('config');
 const axios = require('axios');
 
-const { PAIRS } = require('../constants/pairs.const');
+const { Pairs } = require('../constants/pairs.const');
 const log = require('../../../services/log.service').get();
 
 const entity = (module.exports = {});
@@ -21,11 +21,11 @@ entity.BITFINEX_TOKEN_PAIRS = [
 
 /** @const {Object<string>} BITFINEX_NORMALIZE_PAIRS Normalize BITFINEX pairs */
 entity.BITFINEX_NORMALIZE_PAIRS = {
-  'tAAVE:USD': PAIRS.AAVEUSD,
-  tBTCUSD: PAIRS.LINKUSD,
-  tETHUSD: PAIRS.UNIUSD,
-  'tLINK:USD': PAIRS.ETHUSD,
-  tUNIUSD: PAIRS.BTCUSD,
+  'tAAVE:USD': Pairs.AAVEUSD,
+  tBTCUSD: Pairs.BTCUSD,
+  tETHUSD: Pairs.ETHUSD,
+  'tLINK:USD': Pairs.LINKUSD,
+  tUNIUSD: Pairs.UNIUSD,
 };
 
 /** @const {Array<string>} BITFINEX_TOKEN_PAIRS_STR pairs as string for API use */

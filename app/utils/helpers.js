@@ -14,10 +14,11 @@ const helpers = (module.exports = {});
  *
  * @param {Array<*>} items Items.
  * @param {function(*): Promise<*>} fn Function to be applied on the array items.
+ * @param {number=} concurrency The concurrency, default 5.
  * @return {Promise<*>}
  */
-helpers.asyncMapCap = (items, fn) =>
-  Bluebird.map(items, fn, { concurrency: 5 });
+helpers.asyncMapCap = (items, fn, concurrency = 5) =>
+  Bluebird.map(items, fn, { concurrency });
 
 /**
  * An async delay, to time sending messages.
@@ -59,4 +60,47 @@ helpers.splitString = (str, numChars = 1800) => {
  */
 helpers.getRandomInt = (max) => {
   return Math.floor(Math.random() * Math.floor(max));
+};
+
+/**
+ * Converts an array of strings into numbers.
+ *
+ * @param {Array<string>} arr The array.
+ * @return {Array<number>}
+ */
+helpers.arrToNumbers = (arr) => arr.map((item) => Number(item));
+
+/**
+ * Calculates the mean value.
+ *
+ * @param {Array<number>} arr The array to get the mean of.
+ * @return {number} The mean value.
+ */
+helpers.meanOfArr = (arr) => {
+  const total = arr.reduce((aggregate, val) => {
+    return aggregate + val;
+  }, 0);
+
+  return total / arr.length;
+};
+
+/**
+ * Calculates the median of an array.
+ *
+ * @param {Array<number>} arr The numbers to get the median from.
+ * @return {number}
+ */
+helpers.medianOfArr = (arr) => {
+  const arrSorted = arr.sort((a, b) => {
+    return a - b;
+  });
+
+  const { length } = arrSorted;
+
+  if (length % 2 === 1) {
+    // If length is odd
+    return arrSorted[length / 2 - 0.5];
+  }
+
+  return (arrSorted[length / 2] + arrSorted[length / 2 - 1]) / 2;
 };
