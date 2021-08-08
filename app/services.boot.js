@@ -39,6 +39,7 @@ appServices.boot = async (bootOpts) => {
   }
 
   // Boot all entities
+  await log.notice('Booting entities...');
   await entities.init(bootOpts);
 
   await log.notice('Service Boot Finished', {
@@ -53,9 +54,9 @@ appServices.boot = async (bootOpts) => {
  * @return {Promise<void>}
  */
 appServices.dispose = async () => {
-  // await postgresService.dispose();
   await discordService.dispose();
   entities.dispose();
+  // await postgresService.dispose();
   // if (globals.isProd) {
   //   await cronService.dispose();
   // }

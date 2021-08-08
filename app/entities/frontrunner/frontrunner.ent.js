@@ -11,6 +11,7 @@ const {
   fetchPriceFeeds,
   processPriceFeeds,
 } = require('./logic/price-feeds.ent');
+const log = require('../../services/log.service').get();
 
 const entity = (module.exports = {});
 
@@ -23,6 +24,7 @@ entity.processPriceFeeds = processPriceFeeds;
  * @return {Promise<void>}
  */
 entity.init = async () => {
+  await log.info('Initializing Frontrunner...');
   await initHeartbeat();
 };
 
