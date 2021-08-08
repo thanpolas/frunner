@@ -7,7 +7,15 @@ const {
   dispose: disposeHeartbeat,
 } = require('./logic/heartbeat.ent');
 
+const {
+  fetchPriceFeeds,
+  processPriceFeeds,
+} = require('./logic/price-feeds.ent');
+
 const entity = (module.exports = {});
+
+entity.fetchPriceFeeds = fetchPriceFeeds;
+entity.processPriceFeeds = processPriceFeeds;
 
 /**
  * Initialize frontrunner core functionality.
