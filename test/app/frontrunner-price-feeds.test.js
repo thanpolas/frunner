@@ -21,7 +21,7 @@ describe('Frontrunner price-feeds', () => {
       // give an adequate timeout
       config.app.fetch_price_timeout = 3000;
     });
-    test('Will successfully fetch all synth prices', () => {
+    test('Will process the fetched feeds and produce mean values', () => {
       const prices = processPriceFeeds(allPriceFeedRes);
 
       expect(prices).toBeObject();
