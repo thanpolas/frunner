@@ -19,7 +19,7 @@ service._providerPolygon = null;
 /** @type {Object?} Stores the instantiated ether.js Kovan provider */
 service._providerKovan = null;
 /** @type {Object?} Stores the instantiated ether.js Optimism Kovan provider */
-service._providerOKovan = null;
+service._providerOPKovan = null;
 
 /** @type {Object?} Stores the instantiated ether.js wallet */
 service._wallet = null;
@@ -38,7 +38,7 @@ service.init = async () => {
     polygon.jsonRpc,
   );
 
-  service._providerOKovan = new ethers.providers.JsonRpcProvider(
+  service._providerOPKovan = new ethers.providers.JsonRpcProvider(
     optimistic_kovan.jsonRpc,
   );
 
@@ -46,7 +46,7 @@ service.init = async () => {
 
   service._wallet = new ethers.Wallet(
     config.ether.signer_private_key,
-    service._providerOKovan,
+    service._providerOPKovan,
   );
 };
 
@@ -72,6 +72,9 @@ service.getProvider = (network) => {
 
   if (network.name === 'kovan') {
     return service._providerKovan;
+  }
+  if (network.name === 'optimistic_kovan') {
+    return service._providerOPKovan;
   }
 
   throw new Error('getProvider() :: Network does not exist');
