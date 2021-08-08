@@ -39,6 +39,7 @@ discordService._client = {
   user: {
     id: faker.datatype.number(999999999999999999),
   },
+  destroy: () => {},
 };
 
 /**
