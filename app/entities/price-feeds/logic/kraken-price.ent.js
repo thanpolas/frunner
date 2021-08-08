@@ -10,7 +10,7 @@ const config = require('config');
 const axios = require('axios');
 const log = require('../../../services/log.service').get();
 
-const { PAIRS } = require('../constants/pairs.const');
+const { Pairs } = require('../constants/pairs.const');
 
 const entity = (module.exports = {});
 
@@ -25,11 +25,11 @@ entity.KRAKEN_TOKEN_PAIRS = [
 
 /** @const {Object<string>} KRAKEN_NORMALIZE_PAIRS Normalize kraken pairs */
 entity.KRAKEN_NORMALIZE_PAIRS = {
-  AAVEUSD: PAIRS.AAVEUSD,
-  LINKUSD: PAIRS.LINKUSD,
-  UNIUSD: PAIRS.UNIUSD,
-  XETHZUSD: PAIRS.ETHUSD,
-  XXBTZUSD: PAIRS.BTCUSD,
+  AAVEUSD: Pairs.AAVEUSD,
+  LINKUSD: Pairs.LINKUSD,
+  UNIUSD: Pairs.UNIUSD,
+  XETHZUSD: Pairs.ETHUSD,
+  XXBTZUSD: Pairs.BTCUSD,
 };
 
 /**

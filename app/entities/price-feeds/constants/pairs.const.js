@@ -4,8 +4,8 @@
 
 const consts = (module.exports = {});
 
-/** @const {Object<string>} PAIRS Internal normalized pairs. */
-consts.PAIRS = {
+/** @enum {string} Internal normalized pairs. */
+consts.Pairs = {
   BTCUSD: 'BTCUSD',
   ETHUSD: 'ETHUSD',
   LINKUSD: 'LINKUSD',

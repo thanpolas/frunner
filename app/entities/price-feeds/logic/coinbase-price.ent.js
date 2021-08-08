@@ -6,7 +6,7 @@
 const config = require('config');
 const axios = require('axios');
 
-const { PAIRS } = require('../constants/pairs.const');
+const { Pairs } = require('../constants/pairs.const');
 const log = require('../../../services/log.service').get();
 
 const entity = (module.exports = {});
@@ -22,11 +22,11 @@ entity.COINBASE_TOKEN_PAIRS = [
 
 /** @const {Object<string>} COINBASE_NORMALIZE_PAIRS Normalize coinbase pairs */
 entity.COINBASE_NORMALIZE_PAIRS = {
-  AAVEUSD: PAIRS.AAVEUSD,
-  LINKUSD: PAIRS.LINKUSD,
-  UNIUSD: PAIRS.UNIUSD,
-  ETHUSD: PAIRS.ETHUSD,
-  BTCUSD: PAIRS.BTCUSD,
+  AAVEUSD: Pairs.AAVEUSD,
+  LINKUSD: Pairs.LINKUSD,
+  UNIUSD: Pairs.UNIUSD,
+  ETHUSD: Pairs.ETHUSD,
+  BTCUSD: Pairs.BTCUSD,
 };
 
 entity.API_COINBASE_BASE = 'https://api.coinbase.com/v2/prices/';

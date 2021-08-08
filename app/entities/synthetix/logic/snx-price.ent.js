@@ -3,7 +3,7 @@
  */
 
 const { getClient } = require('../synthetix.service');
-const { PAIRS } = require('../../price-feeds');
+const { Pairs } = require('../../price-feeds');
 
 const entity = (module.exports = {});
 
@@ -12,11 +12,11 @@ entity.SNX_TOKENS = ['sBTC', 'sETH', 'sLINK', 'sUNI', 'sAAVE'];
 
 /** @const {Object<string>} NORMALIZED_PAIRS Normalized pairs */
 entity.NORMALIZED_PAIRS = {
-  sBTC: PAIRS.BTCUSD,
-  sETH: PAIRS.ETHUSD,
-  sLINK: PAIRS.LINKUSD,
-  sUNI: PAIRS.UNIUSD,
-  sAAVE: PAIRS.AAVEUSD,
+  sBTC: Pairs.BTCUSD,
+  sETH: Pairs.ETHUSD,
+  sLINK: Pairs.LINKUSD,
+  sUNI: Pairs.UNIUSD,
+  sAAVE: Pairs.AAVEUSD,
 };
 
 /** @type {Array<Object>} Prepopulate all pairs as byte32 type on initialization */
