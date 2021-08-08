@@ -38,7 +38,7 @@ discordService.getClient = () => {
  * @return {boolean}
  */
 discordService.isConnected = () => {
-  return !!discordService._client;
+  return !!discordService?._client;
 };
 
 /**
