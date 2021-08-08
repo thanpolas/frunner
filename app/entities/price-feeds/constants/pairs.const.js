@@ -12,3 +12,6 @@ consts.Pairs = {
   UNIUSD: 'UNIUSD',
   AAVEUSD: 'AAVEUSD',
 };
+
+/** @const {Array<string>} PAIRS_AR Normalized pairs as an array */
+consts.PAIRS_AR = Object.keys(consts.Pairs).map((pair) => consts.Pairs[pair]);
