@@ -7,6 +7,8 @@ const {
   dispose: disposeHeartbeat,
 } = require('./logic/heartbeat.ent');
 
+const { init: initFrontrunnerCore } = require('./logic/frontrunner-core.ent');
+
 const {
   fetchPriceFeeds,
   processPriceFeeds,
@@ -28,6 +30,7 @@ entity.processPriceFeeds = processPriceFeeds;
 entity.init = async (bootOpts) => {
   await log.info('Initializing Frontrunner...');
   await initHeartbeat(bootOpts);
+  await initFrontrunnerCore(bootOpts);
 };
 
 /**
