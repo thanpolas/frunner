@@ -21,11 +21,13 @@ entity.processPriceFeeds = processPriceFeeds;
 /**
  * Initialize frontrunner core functionality.
  *
+ * @param {Object} bootOpts Application boot options.
+ * @param {boolean} bootOpts.testing When true go into testing mode.
  * @return {Promise<void>}
  */
-entity.init = async () => {
+entity.init = async (bootOpts) => {
   await log.info('Initializing Frontrunner...');
-  await initHeartbeat();
+  await initHeartbeat(bootOpts);
 };
 
 /**
