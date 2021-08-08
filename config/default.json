@@ -24,6 +24,7 @@
         "signer_private_key": "DO NOT SET - USE ENV VAR: SIGNER_PRIVATE_KEY"
     },
     "app": {
-        "fetch_price_timeout": 500
+        "fetch_price_timeout": 500,
+        "heartbeat": 1000
     }
 }
