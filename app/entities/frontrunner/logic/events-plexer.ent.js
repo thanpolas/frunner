@@ -4,9 +4,12 @@
 
 const { PRICE_FEED_PROCESSED, NEW_BLOCK } =
   require('../constants/event-types.const').eventTypes;
-const { getEvents } = require('./heartbeat.ent');
 
-const log = require('../../../services/log.service').get();
+const { PAIRS_AR } = require('../../price-feeds');
+
+const { getEvents } = require('./heartbeat.ent');
+const { determineAction } = require('./decision-maker.ent');
+const { getDivergence } = require('../../../utils/helpers');
 
 const entity = (module.exports = {});
 
@@ -44,6 +47,8 @@ entity.init = async () => {
 entity._onPriceFeedProcessed = async (prices, heartbeat) => {
   entity.localState.feedPrices = prices;
   entity.localState.heartbeat = heartbeat;
+
+  await entity._processAndDecide();
 };
 
 /**
@@ -57,13 +62,36 @@ entity._onNewBlock = async (data) => {
   entity.localState.blockNumber = blockNumber;
   entity.localState.oraclePrices = oraclePrices.oracleByPair;
   entity.localState.synthPrices = synthPrices;
+
+  await entity._processAndDecide();
 };
 
-entity._determineAction = async () => {
-  // await log.info('Received processed prices.', {
-  //   custom: {
-  //     prices,
-  //     heartbeat,
-  //   },
-  // });
+/**
+ * Will process the prices and call the decision functions.
+ *
+ * @return {Promise<void>} An empty promise.
+ * @private
+ */
+entity._processAndDecide = async () => {
+  const { localState: state } = entity;
+
+  if (state.heartbeat === 0 || state.blockNumber === 0) {
+    return;
+  }
+
+  const divergences = {
+    state,
+    oracleToFeed: {},
+  };
+
+  // Note: Oracle prices and synth prices are 100% the same, so only the
+  //    oracle to feed divergence is calculated.
+  PAIRS_AR.forEach((pair) => {
+    divergences.oracleToFeed[pair] = getDivergence(
+      state.oraclePrices[pair],
+      state.feedPrices[pair],
+    );
+  });
+
+  return determineAction(divergences);
 };
