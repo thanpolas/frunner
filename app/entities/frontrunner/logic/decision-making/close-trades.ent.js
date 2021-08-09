@@ -6,6 +6,7 @@ const config = require('config');
 
 const { db } = require('../../../../services/postgres.service');
 const decisionState = require('./decision-state.ent');
+const { LogEvents } = require('../../../events');
 const {
   update: tradeUpdate,
   getById: tradeGetById,
@@ -21,6 +22,7 @@ const {
 const log = require('../../../../services/log.service').get();
 
 const { activeTrades } = decisionState;
+const { STAYING_COURSE, CUTTING_LOSSES } = LogEvents;
 
 const entity = (module.exports = {});
 
@@ -93,7 +95,7 @@ entity._checkStillOnTrack = async (divergences, pair) => {
     log.info('Staying the course on open trade', {
       divergences,
       pair,
-      relay: true,
+      relay: STAYING_COURSE,
     });
     return;
   }
@@ -102,7 +104,7 @@ entity._checkStillOnTrack = async (divergences, pair) => {
   log.info('_checkStillOnTrack() :: Negative divergence, cutting losses...', {
     divergences,
     pair,
-    relay: true,
+    relay: CUTTING_LOSSES,
   });
 
   // Pair flipped to negative divergence, cut losses.

@@ -5,8 +5,11 @@
 const { opportunities } = require('./decision-making/opportunities.ent');
 const { closeTrades } = require('./decision-making/close-trades.ent');
 const state = require('./decision-making/decision-state.ent');
+const { LogEvents } = require('../../events');
 
 const log = require('../../../services/log.service').get();
+
+const { DECISION_ENDED } = LogEvents;
 
 const entity = (module.exports = {});
 
@@ -68,7 +71,7 @@ entity.logResults = async (divergences, result) => {
     openedTrades,
     closedTrades,
     divergences,
-    relay: true,
+    relay: DECISION_ENDED,
   });
 };
 
