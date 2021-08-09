@@ -44,6 +44,8 @@ entity.determineAction = async (divergences) => {
 
   entity._decisionRunning = false;
 
+  await entity.logResults(divergences, result);
+
   return result;
 };
 
@@ -51,17 +53,22 @@ entity.determineAction = async (divergences) => {
  * Will log the divergences in a human readable format.
  *
  * @param {Object} divergences The calculated divergences.
+ * @param {Object} result The decision making result.
  * @return {Promise<void>}
  * @private
  */
-entity._logHumanReadable = async (divergences) => {
-  const { oracleToFeed } = divergences;
+entity.logResults = async (divergences, result) => {
+  const { openedTrades, closedTrades } = result;
 
-  const oracleToFeedHR = entity._convertToHumarReadable(oracleToFeed);
-  await log.info('Received processed prices.', {
-    custom: {
-      oracleToFeedHR,
-    },
+  if (openedTrades.length === 0 && closedTrades.length === 0) {
+    return;
+  }
+
+  await log.info('Decision Making Ended', {
+    openedTrades,
+    closedTrades,
+    divergences,
+    relay: true,
   });
 };
 

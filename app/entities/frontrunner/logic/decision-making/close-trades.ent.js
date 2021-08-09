@@ -48,7 +48,7 @@ entity.closeTrades = async (divergences) => {
 };
 
 /**
- * Checks if open trade must be closed.
+ * Checks if an open trade must be closed.
  *
  * @param {Object} divergences The calculated divergences.
  * @param {string} pair The open trading pair.
@@ -76,7 +76,7 @@ entity._checkCloseTrade = async (divergences, pair) => {
 };
 
 /**
- * As oracle price has not moved yet, checks if opportunity still is valid.
+ * Oracle price has not moved yet, check if opportunity still is valid.
  *
  * @param {Object} divergences The calculated divergences.
  * @param {string} pair The open trading pair.
@@ -89,6 +89,12 @@ entity._checkStillOnTrack = async (divergences, pair) => {
 
   // Strategy is to stay the course as long as divergence is positive
   if (divergence > 0) {
+    // Don't await for speed.
+    log.info('Staying the course on open trade', {
+      divergences,
+      pair,
+      relay: true,
+    });
     return;
   }
 
