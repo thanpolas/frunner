@@ -10,13 +10,17 @@ exports.up = async function (knex) {
   await knex.schema.createTable('trades', function (table) {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.string('pair');
-    table.float('feed_price').notNullable();
-    table.float('oracle_price').notNullable();
+    table.float('opportunity_feed_price').notNullable();
+    table.float('opportunity_oracle_price').notNullable();
+    table.integer('opportunity_block_number').notNullable();
     table.string('network', 20).notNullable();
-    table.boolean('executed').defaultTo(false).notNullable();
-    table.string('execution_tx');
-    table.float('execution_tokens_total');
-    table.string('execution_token_symbol', 5);
+    table.boolean('traded').defaultTo(false).notNullable();
+    table.float('traded_feed_price');
+    table.float('traded_oracle_price');
+    table.integer('traded_block_number');
+    table.string('traded_tx');
+    table.float('traded_tokens_total');
+    table.string('traded_token_symbol', 5);
     table.boolean('closed_trade').defaultTo(false).notNullable();
     table.timestamp('closed_at');
     table.string('closed_tx');
