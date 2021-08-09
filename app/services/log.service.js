@@ -72,4 +72,24 @@ logger._addMiddleware = () => {
 
   // relay flagged messages to discord
   logger.logality.use(loggerToAdmin);
+
+  // remove raw keys
+  logger.logality.use(logger._removeRawKeys);
+};
+
+/**
+ * Removes "raw" keys from context values.
+ *
+ * @param {Object} logContext Logality log context object.
+ */
+logger._removeRawKeys = (logContext) => {
+  if (logContext.context?.closedTrades?.raw) {
+    delete logContext.context.closedTrades.raw;
+  }
+  if (logContext.context?.openedTrades?.raw) {
+    delete logContext.context.openedTrades.raw;
+  }
+  if (logContext.context?.divergencies?.raw) {
+    delete logContext.context.divergencies.raw;
+  }
 };

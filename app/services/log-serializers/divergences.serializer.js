@@ -5,7 +5,18 @@
  * @return {function} Serializer for logality.
  */
 module.exports = (usePath = 'context.divergencies') => {
-  return (value) => {
+  return (val) => {
+    const value = {
+      raw: val,
+    };
+
+    const { oracleToFeed } = val;
+    const pairs = Object.keys(oracleToFeed);
+
+    pairs.forEach((pair) => {
+      value[pair] = oracleToFeed[pair];
+    });
+
     return {
       path: usePath,
       value,
