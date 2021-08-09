@@ -12,7 +12,12 @@
     "discord": {
         "server_name": "server-name",
         "guild_id": "DO NOT SET - USE ENV VAR: DISCORD_GUILD_ID",
-        "token": "DO NOT SET - USE ENV VAR: DISCORD_BOT_TOKEN"
+        "token": "DO NOT SET - USE ENV VAR: DISCORD_BOT_TOKEN",
+        "bot_log_channel_id": "DO NOT SET - USE ENV VAR: DISCORD_BOT_LOG_CHANNEL_ID",
+        "embed_color_open": "0x#37ff00",
+        "embed_color_close": "0x#1f00ba",
+        "embed_color_staying": "0x#2ae5fa",
+        "embed_color_loss": "0x#f50018"
     },
     "options": {
         "timezone": "DO NOT SET - USE ENV VAR: BOT_OPTIONS_TIMEZONE"
