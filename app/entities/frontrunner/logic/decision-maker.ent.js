@@ -37,13 +37,13 @@ entity.activeTrades = {
  * @private
  */
 entity.determineAction = async (divergences) => {
-  const lastBlock = entity.lastDivergences?.state?.blockNumber;
+  // const lastBlock = entity.lastDivergences?.state?.blockNumber;
 
   entity.lastDivergences = divergences;
 
   await Promise.all([
     entity._newOpportunities(divergences),
-    entity._checkCloseTrades(lastBlock, divergences),
+    // entity._checkCloseTrades(lastBlock, divergences),
   ]);
 
   const opportunities = entity._findOpportunities(divergences);
@@ -96,7 +96,7 @@ entity._convertToHumarReadable = (singleSetDivergence) => {
  * Discover and execute new trading opportunities.
  *
  * @param {Object} divergences The calculated divergences.
- * @return {Promise<void>} An empty promise.
+ * @return {Promise<Array<Object>>} A promise with the new trade records if any.
  * @private
  */
 entity._newOpportunities = async (divergences) => {
@@ -111,6 +111,8 @@ entity._newOpportunities = async (divergences) => {
     newOpportunities,
     entity._executeOpportunity,
   );
+
+  return tradeRecords;
 };
 
 /**
@@ -203,4 +205,6 @@ entity._executeOpportunity = async (opportunity) => {
   return tradeRecord;
 };
 
-entity._checkCloseTrades = async (lastBlock, divergences) => {};
+// entity._checkCloseTrades = async (lastBlock, divergences) => {
+
+// };
