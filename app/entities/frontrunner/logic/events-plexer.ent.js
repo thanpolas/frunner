@@ -2,6 +2,8 @@
  * @fileoverview Frontrunner core functionality.
  */
 
+const { assignIn } = require('lodash');
+
 const { events, eventTypes } = require('../../events');
 const { PAIRS_AR } = require('../../price-feeds');
 
@@ -78,7 +80,7 @@ entity._processAndDecide = async () => {
   }
 
   const divergences = {
-    state,
+    state: assignIn(state), // deep copy state
     oracleToFeed: {},
   };
 
