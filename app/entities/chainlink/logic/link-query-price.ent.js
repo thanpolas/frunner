@@ -24,11 +24,12 @@ entity.getAllPricesChainlink = async () => {
   const provider = getProvider(network.optimistic_kovan);
 
   const rawResults = await asyncMapCap(ETH_ORACLES_AR, async (oracle) => {
-    const result = await entity.queryPrice(oracle.address, provider);
+    const resultRaw = await entity.queryPrice(oracle.address, provider);
     return {
-      result,
+      resultRaw,
       decimals: oracle.decimals,
-      name: oracle.name,
+      pair: oracle.pair,
+      deviation: oracle.deviation,
     };
   });
 
@@ -69,14 +70,22 @@ entity.queryPrice = async (oracleAddress, provider) => {
  * Process and normalize the results.
  *
  * @param {Array<Object>} rawResults Raw results from the oracle contract.
- * @return {Object<string>} Normalized object with pairs as keys and prices as
- *   values.
+ * @return {Object<Object>} Normalized object "oracleByPair" that has pairs as
+ * keys and prices as values and "oracleData" with the extended oracle results.
  */
 entity._processResults = (rawResults) => {
+  const oracleByPair = {};
   const res = rawResults.map((rawRes) => {
-    const priceRaw = Number(rawRes.result.answer);
+    const priceRaw = Number(rawRes.resultRaw.answer);
     rawRes.price = priceRaw / EXP_DECIMALS;
+
+    oracleByPair[rawRes.pair] = rawRes.price;
     return rawRes;
   });
-  return res;
+
+  const oracleResult = {
+    oracleData: res,
+    oracleByPair,
+  };
+  return oracleResult;
 };
