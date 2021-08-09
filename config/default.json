@@ -25,6 +25,8 @@
     },
     "app": {
         "fetch_price_timeout": 1000,
-        "heartbeat": 2000
+        "heartbeat": 2000,
+        "network": "optimistic_kovan",
+        "testing": true
     }
 }
