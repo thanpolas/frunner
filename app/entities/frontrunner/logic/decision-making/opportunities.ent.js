@@ -105,10 +105,12 @@ entity._executeOpportunity = async (opportunity) => {
   let tradeRecord = await tradeGetById(tradeId);
   activeTrades[opportunity.pair] = tradeRecord;
 
+  let traded_tx = '0x';
   if (config.app.testing) {
     // On testing, emulate trade TX, as if it takes 2s.
     await wait(2000);
   } else {
+    traded_tx = await entity._performTrade();
     // Actually execute the trade.
   }
 
@@ -121,19 +123,15 @@ entity._executeOpportunity = async (opportunity) => {
     traded_feed_price,
     traded_oracle_price,
     traded_block_number: currentState.blockNumber,
-    traded_tx: '0x',
+    traded_tx,
     traded_tokens_total: 1000,
     traded_token_symbol: 'sUSD',
   };
 
-  await tradeUpdate(tradeUpdateData);
+  await tradeUpdate(tradeId, tradeUpdateData);
 
   tradeRecord = await tradeGetById(tradeId);
   activeTrades[opportunity.pair] = tradeRecord;
 
   return tradeRecord;
 };
-
-// entity._checkCloseTrades = async (lastBlock, divergences) => {
-
-// };
