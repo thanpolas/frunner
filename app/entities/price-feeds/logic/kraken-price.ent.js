@@ -93,7 +93,7 @@ entity._parseResults = (res) => {
     const normalizedPair = entity.KRAKEN_NORMALIZE_PAIRS[pairKey];
 
     // eslint-disable-next-line prefer-destructuring
-    prices[normalizedPair] = result[pairKey].c[0];
+    prices[normalizedPair] = Number(result[pairKey].c[0]);
   });
 
   return prices;
