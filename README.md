@@ -97,6 +97,22 @@ When a new node version is available you need to updated it in the following:
 -   `/.circleci/config.yml`
 -   `/Dockerfile`
 
+## Create ETH Keys
+
+Generate a new ethereum wallet
+
+```
+ethkey generate
+```
+
+This will store details on the file `keyfile.json`, which is on .gitignore.
+
+### Get the Private Key
+
+```
+ethkey inspect ./keyfile.json --private
+```
+
 # Deployment
 
 TBD

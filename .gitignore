@@ -11,3 +11,4 @@ db_data
 junit.xml
 .env
 cache
+keyfile.json

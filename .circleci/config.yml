@@ -97,10 +97,10 @@ workflows:
             branches:
               only: /.*/
 
-      - deploy_prod:
-          requires:
-            - test_app
-            - eslint
-          filters:
-            branches:
-              only: /master/
+      # - deploy_prod:
+      #     requires:
+      #       - test_app
+      #       - eslint
+      #     filters:
+      #       branches:
+      #         only: /master/

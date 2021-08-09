@@ -4,7 +4,7 @@
 const invariant = require('invariant');
 const { synthetix } = require('@synthetixio/contracts-interface');
 
-const { getSigner, network } = require('../ether');
+const { getProvider, network } = require('../ether');
 
 const service = (module.exports = {});
 
@@ -12,9 +12,9 @@ const service = (module.exports = {});
 service._snxjs = null;
 
 service.init = async () => {
-  const signer = getSigner(network.optimistic_kovan);
-  const signerNetwork = await signer.provider.getNetwork();
-  service._snxjs = synthetix({ signer, networkId: signerNetwork.chainId });
+  const provider = getProvider(network.optimistic_kovan);
+  const signerNetwork = await provider.getNetwork();
+  service._snxjs = synthetix({ provider, networkId: signerNetwork.chainId });
 };
 
 /**

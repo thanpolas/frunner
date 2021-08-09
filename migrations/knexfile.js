@@ -4,7 +4,7 @@ module.exports = {
   development: {
     client: 'postgresql',
     connection: {
-      database: 'dbname',
+      database: 'frontrunner-dev',
       user: 'postgres',
       password: 'postgres',
     },

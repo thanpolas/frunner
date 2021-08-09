@@ -115,3 +115,13 @@ helpers.medianOfArr = (arr) => {
 helpers.getDivergence = (a, b) => {
   return a / b - 1;
 };
+
+/**
+ * Emulate a wait time.
+ *
+ * @param {number} msWait Wait time expressed in ms.
+ * @return {Promise<void>} An empty promise.
+ */
+helpers.wait = (msWait = 1000) => {
+  return new Promise((resolve) => setTimeout(resolve, msWait));
+};
