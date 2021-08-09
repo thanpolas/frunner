@@ -4,7 +4,7 @@
 
 const { snxPrices } = require('../../synthetix');
 const { getAllPricesChainlink } = require('../../chainlink');
-const { NEW_BLOCK } = require('../constants/event-types.const').eventTypes;
+const { NEW_BLOCK } = require('../../events').eventTypes;
 
 const log = require('../../../services/log.service').get();
 

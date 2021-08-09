@@ -2,14 +2,13 @@
  * @fileoverview Frontrunner core functionality.
  */
 
-const { PRICE_FEED_PROCESSED, NEW_BLOCK } =
-  require('../constants/event-types.const').eventTypes;
-
+const { events, eventTypes } = require('../../events');
 const { PAIRS_AR } = require('../../price-feeds');
 
-const { getEvents } = require('./heartbeat.ent');
 const { determineAction } = require('./decision-maker.ent');
 const { getDivergence } = require('../../../utils/helpers');
+
+const { PRICE_FEED_PROCESSED, NEW_BLOCK } = eventTypes;
 
 const entity = (module.exports = {});
 
@@ -32,7 +31,6 @@ entity.localState = {
  * @return {Promise<void>}
  */
 entity.init = async () => {
-  const events = getEvents();
   events.on(PRICE_FEED_PROCESSED, entity._onPriceFeedProcessed);
   events.on(NEW_BLOCK, entity._onNewBlock);
 };
