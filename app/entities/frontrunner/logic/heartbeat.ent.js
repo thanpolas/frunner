@@ -130,5 +130,5 @@ entity._createFeedHeartbeat = () => {
 entity._createNewBlockWatch = () => {
   const provider = getProvider(network.optimistic_kovan);
 
-  provider.on('block', handleNewBlock);
+  provider.on('block', handleNewBlock.bind(null, entity.events));
 };
