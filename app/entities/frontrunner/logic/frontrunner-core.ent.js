@@ -11,6 +11,17 @@ const log = require('../../../services/log.service').get();
 const entity = (module.exports = {});
 
 /**
+ * Stores necessary local state.
+ *
+ * @type {Object}
+ */
+entity.localState = {
+  feedPrices: {},
+  oraclePrices: {},
+  synthPrices: {},
+};
+
+/**
  * Initialize the heartbeat functionality.
  *
  * @return {Promise<void>}
