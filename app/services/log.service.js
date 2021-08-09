@@ -15,9 +15,11 @@ const Logality = require('logality');
  */
 
 // Serializers
-// const localMemberSerializer = require('./log-serializers/member.serializer');
-// const relaySerializer = require('./log-serializers/relay.serializer');
-// const emojiSerializer = require('./log-serializers/emoji.serializer');
+const relaySerializer = require('./log-serializers/relay.serializer');
+const openedTradesSerializer = require('./log-serializers/opened-trades.serializer');
+const closedTradesSerializer = require('./log-serializers/closed-trades.serializer');
+const divergencesSerializer = require('./log-serializers/divergences.serializer');
+const pairSerializer = require('./log-serializers/pair.serializer');
 
 const logger = (module.exports = {});
 
@@ -39,9 +41,11 @@ logger.init = function (bootOpts = {}) {
   const appName = bootOpts.appName || 'skgbot';
 
   const serializers = {
-    // localMember: localMemberSerializer(),
-    // relay: relaySerializer(),
-    // emoji: emojiSerializer(),
+    relay: relaySerializer(),
+    openedTrades: openedTradesSerializer(),
+    closedTrades: closedTradesSerializer(),
+    divergences: divergencesSerializer(),
+    pair: pairSerializer(),
   };
 
   logger.logality = new Logality({
@@ -66,6 +70,6 @@ logger.init = function (bootOpts = {}) {
 logger._addMiddleware = () => {
   const { loggerToAdmin } = require('../entities/discord');
 
-  // Auditlog related middleware
+  // relay flagged messages to discord
   logger.logality.use(loggerToAdmin);
 };
