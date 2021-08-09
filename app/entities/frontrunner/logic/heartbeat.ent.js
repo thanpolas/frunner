@@ -3,14 +3,12 @@
  *    to events and re-distributing them normalized.
  */
 
-const EventEmitter = require('events');
-
 const config = require('config');
 
 const { fetchPriceFeeds, processPriceFeeds } = require('./price-feeds.ent');
 const { handleNewBlock } = require('./handle-new-block.ent');
-const { eventTypes } = require('../constants/event-types.const');
 const { getProvider, network } = require('../../ether');
+const { events, eventTypes } = require('../../events');
 
 const log = require('../../../services/log.service').get();
 
@@ -18,9 +16,6 @@ const entity = (module.exports = {});
 
 /** @type {number} counts how many heartbeats have happened  */
 entity._heartbeat = 0;
-
-/** @type {events?} Eventemitter instance. */
-entity.events = null;
 
 /** @type {events?} setInterval reference. */
 entity._heartbeatInterval = null;
@@ -53,13 +48,6 @@ entity.dispose = () => {
 };
 
 /**
- * Get the event emitter object.
- *
- * @return {Object} The events object.
- */
-entity.getEvents = () => entity.events;
-
-/**
  * Handles each heartbeat by fetching prices from feeds and propagating them
  * through events.
  *
@@ -75,8 +63,8 @@ entity._onHeartbeat = async () => {
 
     const processedPrices = processPriceFeeds(prices);
 
-    entity.events.emit(eventTypes.PRICE_FEED, prices, entity._heartbeat);
-    entity.events.emit(
+    events.emit(eventTypes.PRICE_FEED, prices, entity._heartbeat);
+    events.emit(
       eventTypes.PRICE_FEED_PROCESSED,
       processedPrices,
       entity._heartbeat,
@@ -103,10 +91,7 @@ entity._createFeedHeartbeat = () => {
     config.app.heartbeat,
   );
 
-  // Setup events
-  entity.events = new EventEmitter({ captureRejections: true });
-
-  entity.events.on('error', async (error) => {
+  events.on('error', async (error) => {
     await log.error('heartbeat EventEmitter Error', {
       error,
       relay: true,
@@ -114,7 +99,7 @@ entity._createFeedHeartbeat = () => {
   });
 
   // Handle promise rejection errors of event listeners
-  entity.events[Symbol.for('nodejs.rejection')] = async (error) => {
+  events[Symbol.for('nodejs.rejection')] = async (error) => {
     await log.error('heartbeat EventEmitter Promise Rejection', {
       error,
       relay: true,
@@ -130,5 +115,5 @@ entity._createFeedHeartbeat = () => {
 entity._createNewBlockWatch = () => {
   const provider = getProvider(network.optimistic_kovan);
 
-  provider.on('block', handleNewBlock.bind(null, entity.events));
+  provider.on('block', handleNewBlock.bind(null, events));
 };

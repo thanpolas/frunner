@@ -2,6 +2,9 @@
  * @fileoverview Bootsrap for Entities.
  */
 
+// Require Events first so it initializes.
+require('./events');
+
 const discordEnt = require('./discord');
 const messageRouter = require('./message-router');
 const { init: initEther } = require('./ether');
