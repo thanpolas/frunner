@@ -43,11 +43,11 @@ assert.assertProperties = (testObj) => {
  * @throws {Error} if assertions failed.
  */
 assert.assertTypes = (testObj) => {
-  expect(testObj.BTCUSD).toBeString();
-  expect(testObj.ETHUSD).toBeString();
-  expect(testObj.LINKUSD).toBeString();
-  expect(testObj.UNIUSD).toBeString();
-  expect(testObj.AAVEUSD).toBeString();
+  expect(testObj.BTCUSD).toBeNumber();
+  expect(testObj.ETHUSD).toBeNumber();
+  expect(testObj.LINKUSD).toBeNumber();
+  expect(testObj.UNIUSD).toBeNumber();
+  expect(testObj.AAVEUSD).toBeNumber();
 };
 
 /**

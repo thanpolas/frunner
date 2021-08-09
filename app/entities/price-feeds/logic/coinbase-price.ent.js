@@ -81,7 +81,7 @@ entity._parseResults = (allRes) => {
     const pair = response.base + response.currency;
 
     const pairNormalized = entity.COINBASE_NORMALIZE_PAIRS[pair];
-    prices[pairNormalized] = response.amount;
+    prices[pairNormalized] = Number(response.amount);
   });
   return prices;
 };

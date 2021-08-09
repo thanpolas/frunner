@@ -77,7 +77,7 @@ entity._parseResults = (allRes, snxjs) => {
     const snxToken = entity.SNX_TOKENS[index];
     const normalizedPair = entity.NORMALIZED_PAIRS[snxToken];
     const snxPrice = formatEther(unformattedSnxPrice);
-    prices[normalizedPair] = snxPrice;
+    prices[normalizedPair] = Number(snxPrice);
   });
   return prices;
 };

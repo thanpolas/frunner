@@ -13,6 +13,7 @@ const {
   getAllPricesCoinbase,
   getAllPriceBitfinex,
   getAllPricesKraken,
+  allPriceFeeds,
 } = require('../../app/entities/price-feeds');
 
 describe('Fetch Prices from DEXes and CEXes', () => {
@@ -23,6 +24,25 @@ describe('Fetch Prices from DEXes and CEXes', () => {
     ['getAllPriceBitfinex', getAllPriceBitfinex],
     ['getAllPricesKraken', getAllPricesKraken],
   ];
+
+  describe('Happy Path for allPriceFeeds()', () => {
+    beforeEach(() => {
+      // give an adequate timeout
+      config.app.fetch_price_timeout = 3000;
+    });
+    it('Should produce expected results', async () => {
+      const allPairs = [];
+      const promises = allPriceFeeds.map((priceFeed) => {
+        allPairs.push(priceFeed.source);
+        return priceFeed.fn();
+      });
+
+      const results = await Promise.all(promises);
+
+      expect(allPairs).toContainAllValues(['coinbase', 'kraken', 'bitfinex']);
+      results.forEach(pricesAssert);
+    });
+  });
 
   allFetchPricesMethods.forEach(([fnName, allPrices]) => {
     describe(`Happy Path for ${fnName}`, () => {

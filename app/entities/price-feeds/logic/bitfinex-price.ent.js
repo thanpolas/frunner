@@ -95,7 +95,7 @@ entity._parseResults = (res) => {
 
     const pairNormalized = entity.BITFINEX_NORMALIZE_PAIRS[bitfinexPair];
 
-    prices[pairNormalized] = String(bitfinexValue);
+    prices[pairNormalized] = Number(bitfinexValue);
   });
 
   return prices;
