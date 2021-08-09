@@ -136,3 +136,13 @@ helpers.wait = (msWait = 1000) => {
 helpers.flatFilter = (ar) => {
   return _.flattenDeep(ar).filter((v) => !!v);
 };
+
+/**
+ * Convert divergence value to human readable format.
+ *
+ * @param {number} divergence A divergence float.
+ * @return {string} Human readable percentage.
+ */
+helpers.divergenceHr = (divergence) => {
+  return `${(divergence * 100).toFixed(2)}%`;
+};
