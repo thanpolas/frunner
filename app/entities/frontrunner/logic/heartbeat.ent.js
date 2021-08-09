@@ -8,7 +8,9 @@ const EventEmitter = require('events');
 const config = require('config');
 
 const { fetchPriceFeeds, processPriceFeeds } = require('./price-feeds.ent');
+const { handleNewBlock } = require('./handle-new-block.ent');
 const { eventTypes } = require('../constants/event-types.const');
+const { getProvider, network } = require('../../ether');
 
 const log = require('../../../services/log.service').get();
 
@@ -35,29 +37,8 @@ entity.init = async (bootOpts) => {
     return;
   }
 
-  // Create heartbeat
-  entity._heartbeatInterval = setInterval(
-    entity._onHeartbeat,
-    config.app.heartbeat,
-  );
-
-  // Setup events
-  entity.events = new EventEmitter({ captureRejections: true });
-
-  entity.events.on('error', async (error) => {
-    await log.error('heartbeat EventEmitter Error', {
-      error,
-      relay: true,
-    });
-  });
-
-  // Handle promise rejection errors of event listeners
-  entity.events[Symbol.for('nodejs.rejection')] = async (error) => {
-    await log.error('heartbeat EventEmitter Promise Rejection', {
-      error,
-      relay: true,
-    });
-  };
+  entity._createFeedHeartbeat();
+  entity._createNewBlockWatch();
 };
 
 /**
@@ -66,6 +47,9 @@ entity.init = async (bootOpts) => {
  */
 entity.dispose = () => {
   clearInterval(entity._heartbeatInterval);
+
+  const provider = getProvider(network.optimistic_kovan);
+  provider.removeAllListeners();
 };
 
 /**
@@ -103,4 +87,48 @@ entity._onHeartbeat = async () => {
       relay: true,
     });
   }
+};
+
+/**
+ * Creates the heartbeat (setInterval) to fetch prices from external feeds
+ * and process them.
+ *
+ * @return {void}
+ * @private
+ */
+entity._createFeedHeartbeat = () => {
+  // Create heartbeat
+  entity._heartbeatInterval = setInterval(
+    entity._onHeartbeat,
+    config.app.heartbeat,
+  );
+
+  // Setup events
+  entity.events = new EventEmitter({ captureRejections: true });
+
+  entity.events.on('error', async (error) => {
+    await log.error('heartbeat EventEmitter Error', {
+      error,
+      relay: true,
+    });
+  });
+
+  // Handle promise rejection errors of event listeners
+  entity.events[Symbol.for('nodejs.rejection')] = async (error) => {
+    await log.error('heartbeat EventEmitter Promise Rejection', {
+      error,
+      relay: true,
+    });
+  };
+};
+
+/**
+ * Creates the new block watch.
+ *
+ * @private
+ */
+entity._createNewBlockWatch = () => {
+  const provider = getProvider(network.optimistic_kovan);
+
+  provider.on('block', handleNewBlock);
 };
