@@ -14,6 +14,7 @@ const {
   processPriceFeeds,
 } = require('./logic/price-feeds.ent');
 const { handleNewBlock } = require('./logic/handle-new-block.ent');
+const { determineAction } = require('./logic/decision-maker.ent');
 
 const log = require('../../services/log.service').get();
 
@@ -22,6 +23,7 @@ const entity = (module.exports = {});
 entity.fetchPriceFeeds = fetchPriceFeeds;
 entity.processPriceFeeds = processPriceFeeds;
 entity.handleNewBlock = handleNewBlock;
+entity.determineAction = determineAction;
 
 /**
  * Initialize frontrunner core functionality.
