@@ -7,7 +7,7 @@ const {
   dispose: disposeHeartbeat,
 } = require('./logic/heartbeat.ent');
 
-const { init: initFrontrunnerCore } = require('./logic/frontrunner-core.ent');
+const { init: initFrontrunnerCore } = require('./logic/events-plexer.ent');
 
 const {
   fetchPriceFeeds,
