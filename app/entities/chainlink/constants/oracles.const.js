@@ -4,32 +4,41 @@
 
 const consts = (module.exports = {});
 
+//
+// Decimals and Deviation data from: https://docs.chain.link/docs/ethereum-addresses/
+// Address data from: https://github1s.com/Synthetixio/synthetix/blob/develop/publish/deployed/kovan-ovm/feeds.json
+
 /** @const {Object} ETH_ORACLES Ethereum Chainlink Oracles */
 consts.ETH_ORACLES = {
   AAVEUSD: {
     decimals: 8,
-    address: '0x547a514d5e3769680Ce22B2361c10Ea13619e8a9',
+    address: '0xc051eCEaFd546e0Eb915a97F4D0643BEd7F98a11',
     pair: 'AAVEUSD',
+    deviation: 0.01,
   },
   BTCUSD: {
     decimals: 8,
-    address: '0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c',
+    address: '0x81AE7F8fF54070C52f0eB4EB5b8890e1506AA4f4',
     pair: 'BTCUSD',
+    deviation: 0.003,
   },
   ETHUSD: {
     decimals: 8,
-    address: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
+    address: '0xCb7895bDC70A1a1Dce69b689FD7e43A627475A06',
     pair: 'ETHUSD',
+    deviation: 0.005,
   },
   LINKUSD: {
     decimals: 8,
-    address: '	0x2c1d072e956AFFC0D435Cb7AC38EF18d24d9127c',
+    address: '0xb37aA79EBc31B93864Bff2d5390b385bE482897b',
     pair: 'LINKUSD',
+    deviation: 0.01,
   },
   UNIUSD: {
     decimals: 8,
-    address: '0x553303d460EE0afB37EdFf9bE42922D8FF63220e',
+    address: '0xbac904786e476632e75fC6214C797fA80cce9311',
     pair: 'UNIUSD',
+    deviation: 0.02,
   },
 };
 
