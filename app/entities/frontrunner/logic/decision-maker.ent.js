@@ -3,11 +3,15 @@
  */
 
 const { opportunities } = require('./decision-making/opportunities.ent');
+const { closeTrades } = require('./decision-making/close-trades.ent');
 const state = require('./decision-making/decision-state.ent');
 
 const log = require('../../../services/log.service').get();
 
 const entity = (module.exports = {});
+
+/** @type {boolean} Toggle to ensure determineAction will not have duplicate runs */
+entity._decisionRunning = false;
 
 /**
  * Will determine if an action needs to be taken based on the divergences
@@ -23,16 +27,22 @@ entity.determineAction = async (divergences) => {
     openedTrades: [],
     closedTrades: [],
   };
-  // const lastBlock = state.lastDivergences?.state?.blockNumber;
 
-  state.lastDivergences = divergences;
+  if (entity._decisionRunning) {
+    return result;
+  }
+  entity._decisionRunning = true;
 
-  const [openedTrades] = await Promise.all([
+  const [openedTrades, closedTrades] = await Promise.all([
     opportunities(divergences),
-    // entity._checkCloseTrades(lastBlock, divergences),
+    closeTrades(divergences),
   ]);
 
   result.openedTrades = openedTrades;
+  result.closedTrades = closedTrades;
+  state.lastDivergences = divergences;
+
+  entity._decisionRunning = false;
 
   return result;
 };
