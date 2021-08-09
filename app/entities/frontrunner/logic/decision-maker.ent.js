@@ -74,21 +74,3 @@ entity.logResults = async (divergences, result) => {
     relay: DECISION_ENDED,
   });
 };
-
-/**
- * Convert divergence values of a set of pair to human readable format.
- *
- * @param {Object<string>} singleSetDivergence A single set of divergence of pairs.
- * @return {Object<string>} Same set woth values converted to human readable form.
- * @private
- */
-entity._convertToHumarReadable = (singleSetDivergence) => {
-  const pairs = Object.keys(singleSetDivergence);
-
-  const hr = {};
-  pairs.forEach((pair) => {
-    hr[pair] = `${(singleSetDivergence[pair] * 100).toFixed(2)}%`;
-  });
-
-  return hr;
-};
