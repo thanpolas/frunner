@@ -16,7 +16,7 @@ const ALLOW_NUKE_DB = ['frontrunner-dev', 'frontrunner-test'];
  * @param {string=} targetDb The target database to nuke and recreate.
  * @return {Promise} A Promise.
  */
-testDb.recreateDatabase = async (targetDb = 'dbname') => {
+testDb.recreateDatabase = async (targetDb = 'frontrunner-test') => {
   try {
     const startTime = Date.now();
 
@@ -32,6 +32,7 @@ testDb.recreateDatabase = async (targetDb = 'dbname') => {
     );
   } catch (ex) {
     console.error('test/database.lib.js failed:', ex);
+    process.exit(1);
   }
 };
 
@@ -76,7 +77,7 @@ testDb.runMigrationsAndSeed = async (dbConfig, runSeeds) => {
  */
 testDb._cleanupDb = async (targetDb) => {
   if (!ALLOW_NUKE_DB.includes(targetDb)) {
-    throw new Error('Database name not in allowed list');
+    throw new Error(`Database name not in allowed list. Name: ${targetDb}`);
   }
 
   // Using a generic connection string to the "postgres" db so

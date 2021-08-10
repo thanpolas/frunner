@@ -5,7 +5,7 @@ ARG node_image=node:${node_version}-alpine
 #
 # Get the production dependencies.
 #
-FROM ${node_image} AS skgtech_slackbot_prod_image
+FROM ${node_image} AS frontrunner_prod_image
 
 # Working directory
 WORKDIR /home/node/slackbot
@@ -22,7 +22,7 @@ RUN npm ci --production
 #
 # Cascading build including development dependencies
 #
-FROM skgtech_slackbot_prod_image AS skgtech_slackbot_dev_image
+FROM frontrunner_prod_image AS frontrunner_dev_image
 
 # Install dev deps
 RUN npm ci
@@ -48,7 +48,7 @@ FROM slackbot_source_image AS prod_image
 ENV NODE_ENV=localdev
 
 # Copy created node modules
-COPY --from=skgtech_slackbot_prod_image /home/node/slackbot/node_modules ./node_modules
+COPY --from=frontrunner_prod_image /home/node/slackbot/node_modules ./node_modules
 
 # Run as non-root user
 USER node

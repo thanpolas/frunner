@@ -38,7 +38,7 @@ logger.init = function (bootOpts = {}) {
     return;
   }
 
-  const appName = bootOpts.appName || 'skgbot';
+  const appName = bootOpts.appName || 'frontrunner';
 
   const serializers = {
     relay: relaySerializer(),
