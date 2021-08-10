@@ -8,20 +8,21 @@ const assert = (module.exports = {});
  * Determines if the provided object is of type that complies with the API Spec.
  *
  * @param {Object} testObj The object to test.
+ * @param {string=} optPair Optionally define the pair being examined.
  * @param {Object=} optFixtureOpen Optionally provide the fixture used to open
  *    (create) the trade record.
  * @param {Object=} optFixtureClose Optionally provide the fixture used to close
  *    the trade record.
  * @throws {Error} if assertions failed.
  */
-assert.assert = (testObj, optFixtureOpen, optFixtureClose) => {
+assert.assert = (testObj, optPair, optFixtureOpen, optFixtureClose) => {
   if (!testObj) {
     throw new Error('Empty object passed on assertion');
   }
 
   assert.assertProperties(testObj);
-  assert.assertTypes(testObj);
-  assert.assertValues(testObj, optFixtureOpen, optFixtureClose);
+  assert.assertTypes(testObj, optFixtureClose);
+  assert.assertValues(testObj, optPair, optFixtureOpen, optFixtureClose);
 };
 
 /**
@@ -64,9 +65,11 @@ assert.assertProperties = (testObj) => {
  * Assert the test object's properties have the expected types.
  *
  * @param {Object} testObj The object to test.
+ * @param {Object=} optFixtureClose Optionally provide the fixture used to close
+ *    the trade record.
  * @throws {Error} if assertions failed.
  */
-assert.assertTypes = (testObj) => {
+assert.assertTypes = (testObj, optFixtureClose) => {
   expect(testObj.id).toBeUUID();
   expect(testObj.pair).toBeString();
   expect(testObj.opportunity_feed_price).toBeNumber();
@@ -82,15 +85,28 @@ assert.assertTypes = (testObj) => {
   expect(testObj.traded_tokens_total).toBeNumber();
   expect(testObj.traded_token_symbol).toBeString();
   expect(testObj.closed_trade).toBeBoolean();
-  expect(testObj.closed_at).toBeISODate();
-  expect(testObj.closed_tx).toBeString();
-  expect(testObj.closed_profit_loss_number).toBeNumber();
-  expect(testObj.closed_profit_loss_percent).toBeNumber();
-  expect(testObj.closed_feed_price).toBeNumber();
-  expect(testObj.closed_oracle_price).toBeNumber();
-  expect(testObj.closed_block_number).toBeNumber();
+
+  if (optFixtureClose) {
+    expect(testObj.closed_at).toBeDate();
+    expect(testObj.closed_tx).toBeString();
+    expect(testObj.closed_profit_loss_number).toBeNumber();
+    expect(testObj.closed_profit_loss_percent).toBeNumber();
+    expect(testObj.closed_feed_price).toBeNumber();
+    expect(testObj.closed_oracle_price).toBeNumber();
+    expect(testObj.closed_block_number).toBeNumber();
+  } else {
+    expect(testObj.closed_at).toBeNull();
+    expect(testObj.closed_tx).toBeNull();
+    expect(testObj.closed_profit_loss_number).toBeNull();
+    expect(testObj.closed_profit_loss_percent).toBeNull();
+    expect(testObj.closed_feed_price).toBeNull();
+    expect(testObj.closed_oracle_price).toBeNull();
+    expect(testObj.closed_block_number).toBeNull();
+  }
+
   expect(testObj.testing).toBeBoolean();
-  expect(testObj.created_at).toBeISODate();
+  expect(testObj.created_at).toBeDate();
+  expect(testObj.updated_at).toBeDate();
 };
 
 /**
@@ -110,9 +126,11 @@ assert.assertValues = (testObj, optPair, optFixtureOpen, optFixtureClose) => {
     const pair = optPair;
 
     expect(testObj.pair).toEqual(pair);
-    expect(testObj.feed_price).toEqual(fixOpen.state.feedPrices[pair]);
-    expect(testObj.oracle_price).toEqual(fixOpen.state.oraclePrices[pair]);
-    expect(testObj.opportunity_blockNumber).toEqual(fixOpen.state.blockNumber);
+    expect(testObj.traded_feed_price).toEqual(fixOpen.state.feedPrices[pair]);
+    expect(testObj.traded_oracle_price).toEqual(
+      fixOpen.state.oraclePrices[pair],
+    );
+    expect(testObj.opportunity_block_number).toEqual(fixOpen.state.blockNumber);
     expect(testObj.network).toEqual('optimistic_kovan');
     expect(testObj.testing).toBeTrue();
     expect(testObj.traded).toBeTrue();
