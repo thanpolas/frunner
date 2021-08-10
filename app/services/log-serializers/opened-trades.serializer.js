@@ -11,14 +11,14 @@ module.exports = (usePath = 'context.openedTrades') => {
     };
 
     val.forEach((tradeRecord, index) => {
-      value[`pair_${index}`] = tradeRecord.pair;
-      value[`network_${index}`] = tradeRecord.network;
-      value[`traded_feed_price_${index}`] = tradeRecord.traded_feed_price;
-      value[`traded_oracle_price_${index}`] = tradeRecord.traded_oracle_price;
-      value[`traded_tx_${index}`] = tradeRecord.traded_tx;
-      value[`traded_tokens_total_${index}`] = tradeRecord.traded_tokens_total;
-      value[`traded_token_symbol_${index}`] = tradeRecord.traded_token_symbol;
-      value[`testing_${index}`] = tradeRecord.testing;
+      value[`${index}_pair`] = tradeRecord.pair;
+      value[`${index}_network`] = tradeRecord.network;
+      value[`${index}_traded_feed_price`] = tradeRecord.traded_feed_price;
+      value[`${index}_traded_oracle_price`] = tradeRecord.traded_oracle_price;
+      value[`${index}_traded_tx`] = tradeRecord.traded_tx;
+      value[`${index}_traded_tokens_total`] = tradeRecord.traded_tokens_total;
+      value[`${index}_traded_token_symbol`] = tradeRecord.traded_token_symbol;
+      value[`${index}_testing`] = tradeRecord.testing;
     });
 
     return {

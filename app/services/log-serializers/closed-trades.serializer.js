@@ -11,17 +11,17 @@ module.exports = (usePath = 'context.closedTrades') => {
     };
 
     val.forEach((tradeRecord, index) => {
-      value[`pair_${index}`] = tradeRecord.pair;
-      value[`network_${index}`] = tradeRecord.network;
-      value[`traded_feed_price_${index}`] = tradeRecord.traded_feed_price;
-      value[`traded_oracle_price_${index}`] = tradeRecord.traded_oracle_price;
-      value[`traded_tx_${index}`] = tradeRecord.traded_tx;
-      value[`traded_tokens_total_${index}`] = tradeRecord.traded_tokens_total;
-      value[`traded_token_symbol_${index}`] = tradeRecord.traded_token_symbol;
-      value[`closed_tx_${index}`] = tradeRecord.closed_tx;
-      value[`closed_profit_loss_number_${index}`] =
+      value[`${index}_pair`] = tradeRecord.pair;
+      value[`${index}_network`] = tradeRecord.network;
+      value[`${index}_traded_feed_price`] = tradeRecord.traded_feed_price;
+      value[`${index}_traded_oracle_price`] = tradeRecord.traded_oracle_price;
+      value[`${index}_traded_tx`] = tradeRecord.traded_tx;
+      value[`${index}_traded_tokens_total`] = tradeRecord.traded_tokens_total;
+      value[`${index}_traded_token_symbol`] = tradeRecord.traded_token_symbol;
+      value[`${index}_closed_tx`] = tradeRecord.closed_tx;
+      value[`${index}_closed_profit_loss_number`] =
         tradeRecord.closed_profit_loss_number;
-      value[`closed_profit_loss_percent_${index}`] =
+      value[`${index}_closed_profit_loss_percent`] =
         tradeRecord.closed_profit_loss_percent;
     });
 
