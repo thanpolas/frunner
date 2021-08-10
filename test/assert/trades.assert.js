@@ -50,7 +50,8 @@ assert.assertProperties = (testObj) => {
     'closed_trade',
     'closed_at',
     'closed_tx',
-    'closed_profit_loss_number',
+    'closed_profit_loss_tokens',
+    'closed_profit_loss_money',
     'closed_profit_loss_percent',
     'closed_feed_price',
     'closed_oracle_price',
@@ -89,7 +90,8 @@ assert.assertTypes = (testObj, optFixtureClose) => {
   if (optFixtureClose) {
     expect(testObj.closed_at).toBeDate();
     expect(testObj.closed_tx).toBeString();
-    expect(testObj.closed_profit_loss_number).toBeNumber();
+    expect(testObj.closed_profit_loss_tokens).toBeNumber();
+    expect(testObj.closed_profit_loss_money).toBeNumber();
     expect(testObj.closed_profit_loss_percent).toBeString();
     expect(testObj.closed_feed_price).toBeNumber();
     expect(testObj.closed_oracle_price).toBeNumber();
@@ -97,7 +99,8 @@ assert.assertTypes = (testObj, optFixtureClose) => {
   } else {
     expect(testObj.closed_at).toBeNull();
     expect(testObj.closed_tx).toBeNull();
-    expect(testObj.closed_profit_loss_number).toBeNull();
+    expect(testObj.closed_profit_loss_tokens).toBeNull();
+    expect(testObj.closed_profit_loss_money).toBeNull();
     expect(testObj.closed_profit_loss_percent).toBeNull();
     expect(testObj.closed_feed_price).toBeNull();
     expect(testObj.closed_oracle_price).toBeNull();
@@ -150,10 +153,14 @@ assert.assertValues = (testObj, optPair, optFixtureOpen, optFixtureClose) => {
     const pair = optPair;
     const oraclePrice = fixClose.state.oraclePrices[pair];
 
-    const profitLoss = Number(
+    const profitLossStr = Number(
       oraclePrice - fixOpen.state.oraclePrices[pair],
     ).toFixed(1);
-    expect(testObj.closed_profit_loss_number).toEqual(Number(profitLoss));
+    const profitLossTokens = Number(profitLossStr);
+    const profitLossMoney = profitLossTokens * testObj.traded_tokens_total;
+
+    expect(testObj.closed_profit_loss_tokens).toEqual(profitLossTokens);
+    expect(testObj.closed_profit_loss_money).toEqual(profitLossMoney);
 
     expect(testObj.closed_trade).toBeTrue();
     expect(testObj.closed_at).toBeDate();

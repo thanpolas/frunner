@@ -25,7 +25,8 @@ exports.up = async function (knex) {
     table.boolean('closed_trade').defaultTo(false).notNullable();
     table.timestamp('closed_at');
     table.string('closed_tx');
-    table.float('closed_profit_loss_number');
+    table.float('closed_profit_loss_tokens');
+    table.float('closed_profit_loss_money');
     table.string('closed_profit_loss_percent', 10);
     table.float('closed_feed_price');
     table.float('closed_oracle_price');
