@@ -115,6 +115,24 @@ sql.getById = async (id, tx) => {
 };
 
 /**
+ * Query for all open orders.
+ *
+ * @param {Knex=} tx Transaction.
+ * @return {Promise<Array<Object>>}
+ */
+sql.getOpenTrades = async (tx) => {
+  const statement = sql.getSelect();
+  statement.where(`${TABLE}.closed_trade`, false);
+
+  if (tx) {
+    statement.transacting(tx);
+  }
+
+  const result = await statement;
+  return result;
+};
+
+/**
  * Delete a record by id physically.
  *
  * @param {UUID} id Record id to delete.

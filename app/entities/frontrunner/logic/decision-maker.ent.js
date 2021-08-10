@@ -5,6 +5,7 @@
 const { opportunities } = require('./decision-making/opportunities.ent');
 const { closeTrades } = require('./decision-making/close-trades.ent');
 const { LogEvents } = require('../../events');
+const { getOpenTrades } = require('../sql/trades.sql');
 
 const log = require('../../../services/log.service').get();
 
@@ -28,7 +29,25 @@ entity._decisionRunning = false;
  *
  * @return {Promise<void>} An empty promise.
  */
-entity.init = async () => {};
+entity.init = async () => {
+  const openTrades = await getOpenTrades();
+
+  if (openTrades.length === 0) {
+    return;
+  }
+
+  const { activeTrades } = entity;
+
+  openTrades.forEach((openTrade) => {
+    if (activeTrades[openTrade.pair]) {
+      throw new Error(
+        `Database in broken state, duplicate open order found for ${openTrade.pair}`,
+      );
+    }
+
+    activeTrades[openTrade.pair] = openTrade;
+  });
+};
 
 /**
  * Will determine if an action needs to be taken based on the divergences

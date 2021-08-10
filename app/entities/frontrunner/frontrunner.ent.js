@@ -14,7 +14,10 @@ const {
   processPriceFeeds,
 } = require('./logic/price-feeds.ent');
 const { handleNewBlock } = require('./logic/handle-new-block.ent');
-const { determineAction } = require('./logic/decision-maker.ent');
+const {
+  determineAction,
+  init: initDecision,
+} = require('./logic/decision-maker.ent');
 
 const log = require('../../services/log.service').get();
 
@@ -35,6 +38,7 @@ entity.determineAction = determineAction;
 entity.init = async (bootOpts) => {
   await log.info('Initializing Frontrunner...');
   await initHeartbeat(bootOpts);
+  await initDecision();
   await initFrontrunnerCore(bootOpts);
 };
 
