@@ -261,7 +261,7 @@ entity._formatTradesClosed = async (lc) => {
       closed_oracle_price,
       closed_feed_price,
       closed_tx,
-      closed_profit_loss_number,
+      closed_profit_loss_money,
       closed_profit_loss_percent,
       testing,
     } = closedTrade;
@@ -293,7 +293,7 @@ entity._formatTradesClosed = async (lc) => {
       .addField('Close TX', `${closed_tx}`, true)
       .addField(
         'Profit / Loss',
-        `${closed_profit_loss_number} (${closed_profit_loss_percent})`,
+        `${closed_profit_loss_money} ${traded_token_symbol} (${closed_profit_loss_percent})`,
         true,
       )
       .addField('Projected Profit %', `${traded_projected_percent}`, true)
