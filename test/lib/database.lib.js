@@ -8,7 +8,7 @@ const config = require('config');
 const testDb = (module.exports = {});
 
 /** @const {Array.<string>} ALLOW_NUKE_DB Which database names can be nuked */
-const ALLOW_NUKE_DB = ['dbname'];
+const ALLOW_NUKE_DB = ['frontrunner-dev', 'frontrunner-test'];
 
 /**
  * Drop and create test database[s].
