@@ -29,6 +29,7 @@ sql.getSelect = () => {
       `${TABLE}.traded`,
       `${TABLE}.traded_feed_price`,
       `${TABLE}.traded_oracle_price`,
+      `${TABLE}.traded_projected_percent`,
       `${TABLE}.traded_block_number`,
       `${TABLE}.traded_tx`,
       `${TABLE}.traded_tokens_total`,
@@ -36,10 +37,12 @@ sql.getSelect = () => {
       `${TABLE}.closed_trade`,
       `${TABLE}.closed_at`,
       `${TABLE}.closed_tx`,
-      `${TABLE}.closed_profit_loss_number`,
+      `${TABLE}.closed_profit_loss_tokens`,
+      `${TABLE}.closed_profit_loss_money`,
       `${TABLE}.closed_profit_loss_percent`,
       `${TABLE}.closed_feed_price`,
       `${TABLE}.closed_oracle_price`,
+      `${TABLE}.closed_block_number`,
       `${TABLE}.testing`,
       `${TABLE}.created_at`,
       `${TABLE}.updated_at`,
@@ -110,6 +113,24 @@ sql.getById = async (id, tx) => {
 
   const [result] = await statement;
   return result || null;
+};
+
+/**
+ * Query for all open orders.
+ *
+ * @param {Knex=} tx Transaction.
+ * @return {Promise<Array<Object>>}
+ */
+sql.getOpenTrades = async (tx) => {
+  const statement = sql.getSelect();
+  statement.where(`${TABLE}.closed_trade`, false);
+
+  if (tx) {
+    statement.transacting(tx);
+  }
+
+  const result = await statement;
+  return result;
 };
 
 /**

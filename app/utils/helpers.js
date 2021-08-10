@@ -3,6 +3,7 @@
  */
 
 const Bluebird = require('bluebird');
+const _ = require('lodash');
 
 const helpers = (module.exports = {});
 
@@ -124,4 +125,24 @@ helpers.getDivergence = (a, b) => {
  */
 helpers.wait = (msWait = 1000) => {
   return new Promise((resolve) => setTimeout(resolve, msWait));
+};
+
+/**
+ * Will deep flatten the given array and filter our falsy values.
+ *
+ * @param {Array<*>} ar Array with items.
+ * @return {Array<*>} Flattened and filtered array.
+ */
+helpers.flatFilter = (ar) => {
+  return _.flattenDeep(ar).filter((v) => !!v);
+};
+
+/**
+ * Convert divergence value to human readable format.
+ *
+ * @param {number} divergence A divergence float.
+ * @return {string} Human readable percentage.
+ */
+helpers.divergenceHr = (divergence) => {
+  return `${(divergence * 100).toFixed(2)}%`;
 };

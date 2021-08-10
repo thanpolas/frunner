@@ -7,6 +7,12 @@ require('dotenv').config();
 
 const logger = require('../../app/services/log.service');
 
+const {
+  toBeISODate,
+  toBeUUID,
+  toBeEmail,
+} = require('../assert/expect-extend.assert');
+
 // Initialize logger early.
 logger.init({
   appName: 'frontrunner-test',
@@ -54,6 +60,9 @@ heartbeat.events = {
   on: testLib.heartbeatOn,
 };
 
+/** @type {boolean}  Toggle to extend expect. */
+let expectExtended = false;
+
 /**
  * Core testing library, must be included by all tests.
  *
@@ -67,4 +76,14 @@ testLib.init = () => {
   afterAll(async () => {
     await app.dispose();
   });
+
+  if (!expectExtended) {
+    expectExtended = true;
+    // Augment expect
+    expect.extend({
+      toBeISODate,
+      toBeUUID,
+      toBeEmail,
+    });
+  }
 };
