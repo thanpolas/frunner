@@ -95,9 +95,9 @@ entity._executeOpportunity = async (divergences, activeTrades, opportunity) => {
 
   const tradeData = {
     pair,
-    feed_price: opportunity.feedPrice,
-    oracle_price: opportunity.oraclePrice,
-    opportunity_blockNumber: opportunity.blockNumber,
+    opportunity_feed_price: opportunity.feedPrice,
+    opportunity_oracle_price: opportunity.oraclePrice,
+    opportunity_block_number: opportunity.blockNumber,
     network: config.app.network,
     testing: config.app.testing,
   };
@@ -124,6 +124,7 @@ entity._executeOpportunity = async (divergences, activeTrades, opportunity) => {
     traded_feed_price,
     traded_oracle_price,
     traded_block_number: currentState.blockNumber,
+    traded_projected_percent: divergences.oracleToFeed[pair],
     traded_tx,
     traded_tokens_total: 1000,
     traded_token_symbol: 'sUSD',
