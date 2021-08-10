@@ -30,9 +30,10 @@ setup.create = async (options = {}) => {};
  * @return {Promise<void>}
  */
 setup.deleteAll = async () => {
-  const dbName = db.context.client.connectionSettings.database;
+  const dbName = db().context.client.connectionSettings.database;
+
   invariant(
-    dbName === 'noway',
+    dbName !== 'frontrunner-test',
     'Not in testing db, cannot truncate trade records',
   );
 

@@ -43,9 +43,9 @@ fix.divergenceStandard = () => {
 
 fix.divergenceOneOpportunity = () => {
   const divergenceOneOpportunity = fix.divergenceStandard();
-  divergenceOneOpportunity.heartbeat = 5;
-  divergenceOneOpportunity.blockNumber = 1054365;
-  divergenceOneOpportunity.feedPrices.BTCUSD = 47356.1246;
+  divergenceOneOpportunity.state.heartbeat = 5;
+  divergenceOneOpportunity.state.blockNumber = 1054365;
+  divergenceOneOpportunity.state.feedPrices.BTCUSD = 47356.1246;
   divergenceOneOpportunity.oracleToFeed.BTCUSD = 0.03;
 
   return divergenceOneOpportunity;
@@ -53,9 +53,9 @@ fix.divergenceOneOpportunity = () => {
 
 fix.divergenceTwoOpportunities = () => {
   const divergenceTwoOpportunities = fix.divergenceOneOpportunity();
-  divergenceTwoOpportunities.heartbeat = 8;
-  divergenceTwoOpportunities.blockNumber = 1054367;
-  divergenceTwoOpportunities.feedPrices.LINKUSD = 25.2683514;
+  divergenceTwoOpportunities.state.heartbeat = 8;
+  divergenceTwoOpportunities.state.blockNumber = 1054367;
+  divergenceTwoOpportunities.state.feedPrices.LINKUSD = 25.2683514;
   divergenceTwoOpportunities.oracleToFeed.LINKUSD = 0.03;
 
   return divergenceTwoOpportunities;
