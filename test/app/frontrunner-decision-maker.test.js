@@ -13,7 +13,7 @@ const {
 
 const { determineAction } = require('../../app/entities/frontrunner');
 const {
-  openTrades,
+  activeTrades,
 } = require('../../app/entities/frontrunner/logic/decision-maker.ent');
 
 describe('Frontrunner - Decision Making', () => {
@@ -23,11 +23,11 @@ describe('Frontrunner - Decision Making', () => {
     afterAll(async () => {
       await deleteAll();
     });
-    test('local openTrades state should be empty', () => {
-      expect(openTrades).toContainAllKeys([]);
+    test('local activeTrades state should be empty', () => {
+      expect(activeTrades).toContainAllKeys([]);
     });
-    test('Will complete an decision making without any new opportunities', async () => {
-      const result = await determineAction(divergenceStandard);
+    test('Will complete a decision without any new opportunities', async () => {
+      const result = await determineAction(divergenceStandard());
 
       expect(result).toContainAllKeys(['openedTrades', 'closedTrades']);
       expect(result.openedTrades).toHaveLength(0);
