@@ -16,6 +16,7 @@ const {
   asyncMapCap,
   wait,
   getDivergence,
+  divergenceHr,
 } = require('../../../../utils/helpers');
 
 const log = require('../../../../services/log.service').get();
@@ -38,7 +39,7 @@ entity.closeTrades = async (divergences, activeTrades) => {
     return [];
   }
 
-  const closedTradesRaw = asyncMapCap(
+  const closedTradesRaw = await asyncMapCap(
     tradePairs,
     entity._checkCloseTrade.bind(null, divergences, activeTrades),
   );
@@ -64,13 +65,15 @@ entity._checkCloseTrade = async (divergences, activeTrades, pair) => {
 
   // determine if a new block has been mined
   const currentBlock = state.blockNumber;
-  if (currentBlock === trade.opportunity_blockNumber) {
+
+  if (currentBlock === trade.opportunity_block_number) {
     return entity._checkStillOnTrack(divergences, activeTrades, pair);
   }
 
   // Check if oracle price has moved
   const currentOraclePrice = state.oraclePrices[pair];
-  if (currentOraclePrice === trade.oracle_price) {
+
+  if (currentOraclePrice === trade.traded_oracle_price) {
     return entity._checkStillOnTrack(divergences, activeTrades, pair);
   }
 
@@ -126,10 +129,12 @@ entity._closeTrade = async (divergences, activeTrades, pair) => {
   const trade = activeTrades[pair];
   const closed_oracle_price = divergences.state.oraclePrices[pair];
 
-  const closed_profit_loss_number = closed_oracle_price - trade.oracle_price;
+  const closed_profit_loss_number =
+    closed_oracle_price - trade.traded_oracle_price;
+
   const closed_profit_loss_percent = getDivergence(
-    trade.oracle_price,
     closed_oracle_price,
+    trade.traded_oracle_price,
   );
   const closed_feed_price = divergences.state.feedPrices[pair];
 
@@ -147,14 +152,14 @@ entity._closeTrade = async (divergences, activeTrades, pair) => {
     closed_at: db().fn.now(),
     closed_tx,
     closed_profit_loss_number,
-    closed_profit_loss_percent,
+    closed_profit_loss_percent: divergenceHr(closed_profit_loss_percent),
     closed_feed_price,
     closed_oracle_price,
     closed_block_number: divergences.state.blockNumber,
   };
 
   await tradeUpdate(trade.id, tradeUpdateData);
-  const closedTrade = tradeGetById(trade.id);
+  const closedTrade = await tradeGetById(trade.id);
   delete activeTrades[pair];
 
   return closedTrade;
