@@ -90,7 +90,7 @@ assert.assertTypes = (testObj, optFixtureClose) => {
     expect(testObj.closed_at).toBeDate();
     expect(testObj.closed_tx).toBeString();
     expect(testObj.closed_profit_loss_number).toBeNumber();
-    expect(testObj.closed_profit_loss_percent).toBeNumber();
+    expect(testObj.closed_profit_loss_percent).toBeString();
     expect(testObj.closed_feed_price).toBeNumber();
     expect(testObj.closed_oracle_price).toBeNumber();
     expect(testObj.closed_block_number).toBeNumber();
@@ -149,15 +149,15 @@ assert.assertValues = (testObj, optPair, optFixtureOpen, optFixtureClose) => {
     const fixClose = optFixtureClose;
     const pair = optPair;
     const oraclePrice = fixClose.state.oraclePrices[pair];
-    const profitLoss = oraclePrice - fixOpen.state.oraclePrices[pair];
-    const percentProfitLoss =
-      fixOpen.state.oraclePrices[pair] / oraclePrice - 1;
+
+    const profitLoss = Number(
+      oraclePrice - fixOpen.state.oraclePrices[pair],
+    ).toFixed(1);
+    expect(testObj.closed_profit_loss_number).toEqual(Number(profitLoss));
 
     expect(testObj.closed_trade).toBeTrue();
-    expect(testObj.closed_at).toBeISODate();
+    expect(testObj.closed_at).toBeDate();
     expect(testObj.closed_tx).toEqual('0x');
-    expect(testObj.closed_profit_loss_number).toEqual(profitLoss);
-    expect(testObj.closed_profit_loss_percent).toEqual(percentProfitLoss);
     expect(testObj.closed_feed_price).toEqual(fixClose.state.feedPrices[pair]);
     expect(testObj.closed_oracle_price).toEqual(oraclePrice);
     expect(testObj.closed_block_number).toEqual(fixClose.state.blockNumber);
