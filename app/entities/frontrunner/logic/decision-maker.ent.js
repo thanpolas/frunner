@@ -4,7 +4,6 @@
 
 const { opportunities } = require('./decision-making/opportunities.ent');
 const { closeTrades } = require('./decision-making/close-trades.ent');
-const state = require('./decision-making/decision-state.ent');
 const { LogEvents } = require('../../events');
 
 const log = require('../../../services/log.service').get();
@@ -13,8 +12,23 @@ const { DECISION_ENDED } = LogEvents;
 
 const entity = (module.exports = {});
 
+/** @type {Object} local state with active (open) trades */
+entity.activeTrades = {
+  // BTCUSD: {
+  //  id: [...]
+  //  [...] Rest of "trades" model fields
+  // }
+};
+
 /** @type {boolean} Toggle to ensure determineAction will not have duplicate runs */
 entity._decisionRunning = false;
+
+/**
+ * Warm up the local state from DB.
+ *
+ * @return {Promise<void>} An empty promise.
+ */
+entity.init = async () => {};
 
 /**
  * Will determine if an action needs to be taken based on the divergences
@@ -37,13 +51,12 @@ entity.determineAction = async (divergences) => {
   entity._decisionRunning = true;
 
   const [openedTrades, closedTrades] = await Promise.all([
-    opportunities(divergences),
-    closeTrades(divergences),
+    opportunities(divergences, entity.activeTrades),
+    closeTrades(divergences, entity.activeTrades),
   ]);
 
   result.openedTrades = openedTrades;
   result.closedTrades = closedTrades;
-  state.lastDivergences = divergences;
 
   entity._decisionRunning = false;
 

@@ -4,7 +4,6 @@
 
 const config = require('config');
 
-const state = require('./decision-state.ent');
 const { PAIRS_AR } = require('../../../price-feeds');
 const { ETH_ORACLES } = require('../../../chainlink');
 const {
@@ -17,18 +16,17 @@ const { asyncMapCap, wait } = require('../../../../utils/helpers');
 
 // const log = require('../../../../services/log.service').get();
 
-const { activeTrades } = state;
-
 const entity = (module.exports = {});
 
 /**
  * Discover and execute new trading opportunities.
  *
  * @param {Object} divergences The calculated divergences.
+ * @param {Object} activeTrades local state with active (open) trades.
  * @return {Promise<Array<Object>>} A promise with the new trade records if any.
  * @private
  */
-entity.opportunities = async (divergences) => {
+entity.opportunities = async (divergences, activeTrades) => {
   const opportunities = await entity._findOpportunities(divergences);
 
   // Filter out opportunities that open trades already exist for.
@@ -38,7 +36,7 @@ entity.opportunities = async (divergences) => {
 
   const tradeRecords = await asyncMapCap(
     newOpportunities,
-    entity._executeOpportunity,
+    entity._executeOpportunity.bind(null, divergences, activeTrades),
   );
 
   return tradeRecords;
@@ -83,11 +81,13 @@ entity._findOpportunities = async (divergences) => {
 /**
  * Execute the opportunity.
  *
+ * @param {Object} divergences The calculated divergences.
+ * @param {Object} activeTrades local state with active (open) trades.
  * @param {Object} opportunity Local opportunity object.
  * @return {Promise<Object>} A Promise with the created trade record.
  * @private
  */
-entity._executeOpportunity = async (opportunity) => {
+entity._executeOpportunity = async (divergences, activeTrades, opportunity) => {
   const { pair } = opportunity;
 
   // Lock pair on active trades to avoid race conditions
@@ -115,7 +115,7 @@ entity._executeOpportunity = async (opportunity) => {
     // Actually execute the trade.
   }
 
-  const { state: currentState } = state.lastDivergences;
+  const { state: currentState } = divergences;
   const traded_feed_price = currentState.feedPrices[pair];
   const traded_oracle_price = currentState.oraclePrices[pair];
 

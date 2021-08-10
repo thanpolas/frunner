@@ -5,7 +5,6 @@
 const config = require('config');
 
 const { db } = require('../../../../services/postgres.service');
-const decisionState = require('./decision-state.ent');
 const { LogEvents } = require('../../../events');
 const {
   update: tradeUpdate,
@@ -21,7 +20,6 @@ const {
 
 const log = require('../../../../services/log.service').get();
 
-const { activeTrades } = decisionState;
 const { STAYING_COURSE, CUTTING_LOSSES } = LogEvents;
 
 const entity = (module.exports = {});
@@ -30,9 +28,10 @@ const entity = (module.exports = {});
  * Will check and close trades if necessary.
  *
  * @param {Object} divergences The calculated divergences.
+ * @param {Object} activeTrades local state with active (open) trades.
  * @return {Promise<Array<Object>>} A Promise with the closed trade records.
  */
-entity.closeTrades = async (divergences) => {
+entity.closeTrades = async (divergences, activeTrades) => {
   const tradePairs = Object.keys(activeTrades);
 
   if (tradePairs.length === 0) {
@@ -41,7 +40,7 @@ entity.closeTrades = async (divergences) => {
 
   const closedTradesRaw = asyncMapCap(
     tradePairs,
-    entity._checkCloseTrade.bind(null, divergences),
+    entity._checkCloseTrade.bind(null, divergences, activeTrades),
   );
 
   const closedTrades = flatFilter(closedTradesRaw);
@@ -53,40 +52,42 @@ entity.closeTrades = async (divergences) => {
  * Checks if an open trade must be closed.
  *
  * @param {Object} divergences The calculated divergences.
+ * @param {Object} activeTrades local state with active (open) trades.
  * @param {string} pair The open trading pair.
  * @return {Promise<Object|void>} A Promise with the closed trade record or
  *    empty if not closed yet.
  * @private
  */
-entity._checkCloseTrade = async (divergences, pair) => {
+entity._checkCloseTrade = async (divergences, activeTrades, pair) => {
   const trade = activeTrades[pair];
   const { state } = divergences;
 
   // determine if a new block has been mined
   const currentBlock = state.blockNumber;
   if (currentBlock === trade.opportunity_blockNumber) {
-    return entity._checkStillOnTrack(divergences, pair);
+    return entity._checkStillOnTrack(divergences, activeTrades, pair);
   }
 
   // Check if oracle price has moved
   const currentOraclePrice = state.oraclePrices[pair];
   if (currentOraclePrice === trade.oracle_price) {
-    return entity._checkStillOnTrack(divergences, pair);
+    return entity._checkStillOnTrack(divergences, activeTrades, pair);
   }
 
-  return entity._closeTrade(divergences, pair);
+  return entity._closeTrade(divergences, activeTrades, pair);
 };
 
 /**
  * Oracle price has not moved yet, check if opportunity still is valid.
  *
  * @param {Object} divergences The calculated divergences.
+ * @param {Object} activeTrades local state with active (open) trades.
  * @param {string} pair The open trading pair.
  * @return {Promise<Object|void>} A Promise with the closed trade record or
  *    empty if not closed yet.
  * @private
  */
-entity._checkStillOnTrack = async (divergences, pair) => {
+entity._checkStillOnTrack = async (divergences, activeTrades, pair) => {
   const divergence = divergences.oracleToFeed[pair];
 
   // Strategy is to stay the course as long as divergence is positive
@@ -108,19 +109,20 @@ entity._checkStillOnTrack = async (divergences, pair) => {
   });
 
   // Pair flipped to negative divergence, cut losses.
-  return entity._closeTrade(divergences, pair);
+  return entity._closeTrade(divergences, activeTrades, pair);
 };
 
 /**
  * Close the open trade.
  *
  * @param {Object} divergences The calculated divergences.
+ * @param {Object} activeTrades local state with active (open) trades.
  * @param {string} pair The open trading pair.
  * @return {Promise<Object|void>} A Promise with the closed trade record or
  *    empty if not closed yet.
  * @private
  */
-entity._closeTrade = async (divergences, pair) => {
+entity._closeTrade = async (divergences, activeTrades, pair) => {
   const trade = activeTrades[pair];
   const closed_oracle_price = divergences.state.oraclePrices[pair];
 
