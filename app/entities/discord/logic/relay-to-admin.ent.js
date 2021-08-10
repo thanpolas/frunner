@@ -206,6 +206,7 @@ entity._formatTradesOpened = async (lc) => {
       network,
       traded_feed_price,
       traded_oracle_price,
+      traded_projected_percent,
       traded_tx,
       traded_tokens_total,
       traded_token_symbol,
@@ -220,7 +221,11 @@ entity._formatTradesOpened = async (lc) => {
     embedMessage
       .addField('BlockNumber', `${blockNumber}`, true)
       .addField('Oracle Price', `${traded_oracle_price}`, true)
-      .addField('Feed Price', `${traded_feed_price}`, true)
+      .addField(
+        'Feed Price',
+        `${traded_feed_price} (${traded_projected_percent})`,
+        true,
+      )
       .addField(
         'Tokens Traded',
         `${traded_tokens_total} ${traded_token_symbol}`,
@@ -239,4 +244,61 @@ entity._formatTradesOpened = async (lc) => {
  * @return {DiscordMessageEmbed} The string message.
  * @private
  */
-entity._formatTradesClosed = async (lc) => {};
+entity._formatTradesClosed = async (lc) => {
+  const { raw: closedTrades } = lc.context.closedTrades;
+
+  await asyncMapCap(closedTrades, async (closedTrade) => {
+    const {
+      pair,
+      network,
+      traded_feed_price,
+      traded_oracle_price,
+      traded_tokens_total,
+      traded_projected_percent,
+      traded_token_symbol,
+      traded_block_number: blockNumber,
+      closed_block_number: blockNumberClosed,
+      closed_oracle_price,
+      closed_feed_price,
+      closed_tx,
+      closed_profit_loss_number,
+      closed_profit_loss_percent,
+      testing,
+    } = closedTrade;
+
+    const embedMessage = new MessageEmbed()
+      .setTitle(`Closed trade on "${pair}"`)
+      .setColor(config.discord.embed_color_open);
+
+    embedMessage
+      .addField(
+        'Open / Close BlockNumber',
+        `${blockNumber} / ${blockNumberClosed}`,
+        true,
+      )
+      .addField(
+        'Open / Close Oracle Price',
+        `${traded_oracle_price} / ${closed_oracle_price}`,
+        true,
+      )
+      .addField(
+        'Open / Close Feed Price',
+        `${traded_feed_price} / ${closed_feed_price}`,
+        true,
+      )
+      .addField(
+        'Tokens Traded',
+        `${traded_tokens_total} ${traded_token_symbol}`,
+      )
+      .addField('Close TX', `${closed_tx}`, true)
+      .addField(
+        'Profit / Loss',
+        `${closed_profit_loss_number} (${closed_profit_loss_percent})`,
+        true,
+      )
+      .addField('Projected Profit %', `${traded_projected_percent}`, true)
+      .setFooter(`Network: ${network} :: Testing: ${testing}`);
+
+    return entity._channel.send(embedMessage);
+  });
+};
