@@ -10,25 +10,25 @@ fix.divergenceStandard = () => {
       heartbeat: 3,
       blockNumber: 1054363,
       feedPrices: {
-        BTCUSD: 45894.60999999999,
-        ETHUSD: 3154.31,
-        LINKUSD: 24.512469999999997,
-        UNIUSD: 28.393466666666665,
-        AAVEUSD: 381.70866666666666,
+        BTCUSD: 45894.6,
+        ETHUSD: 3154.3,
+        LINKUSD: 24.51,
+        UNIUSD: 28.39,
+        AAVEUSD: 381.7,
       },
       oraclePrices: {
-        AAVEUSD: 380.365,
-        BTCUSD: 45976.82,
-        ETHUSD: 3158.78,
-        LINKUSD: 24.53238,
-        UNIUSD: 28.409,
+        AAVEUSD: 380.36,
+        BTCUSD: 45976.8,
+        ETHUSD: 3158.7,
+        LINKUSD: 24.53,
+        UNIUSD: 28.4,
       },
       synthPrices: {
-        BTCUSD: 45976.82,
-        ETHUSD: 3158.78,
-        LINKUSD: 24.53238,
-        UNIUSD: 28.409,
-        AAVEUSD: 380.365,
+        BTCUSD: 45976.8,
+        ETHUSD: 3158.7,
+        LINKUSD: 24.53,
+        UNIUSD: 28.4,
+        AAVEUSD: 380.36,
       },
     },
     oracleToFeed: {
@@ -45,7 +45,7 @@ fix.divergenceOneOpportunity = () => {
   const divergenceOneOpportunity = fix.divergenceStandard();
   divergenceOneOpportunity.state.heartbeat = 5;
   divergenceOneOpportunity.state.blockNumber = 1054365;
-  divergenceOneOpportunity.state.feedPrices.BTCUSD = 47356.1246;
+  divergenceOneOpportunity.state.feedPrices.BTCUSD = 47356.1;
   divergenceOneOpportunity.oracleToFeed.BTCUSD = 0.03;
 
   return divergenceOneOpportunity;
@@ -55,7 +55,7 @@ fix.divergenceTwoOpportunities = () => {
   const divergenceTwoOpportunities = fix.divergenceOneOpportunity();
   divergenceTwoOpportunities.state.heartbeat = 8;
   divergenceTwoOpportunities.state.blockNumber = 1054367;
-  divergenceTwoOpportunities.state.feedPrices.LINKUSD = 25.2683514;
+  divergenceTwoOpportunities.state.feedPrices.LINKUSD = 25.26;
   divergenceTwoOpportunities.oracleToFeed.LINKUSD = 0.03;
 
   return divergenceTwoOpportunities;
