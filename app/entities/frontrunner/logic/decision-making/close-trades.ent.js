@@ -148,6 +148,7 @@ entity._closeTrade = async (divergences, pair) => {
     closed_profit_loss_percent,
     closed_feed_price,
     closed_oracle_price,
+    closed_block_number: divergences.state.blockNumber,
   };
 
   await tradeUpdate(trade.id, tradeUpdateData);

@@ -17,6 +17,7 @@ exports.up = async function (knex) {
     table.boolean('traded').defaultTo(false).notNullable();
     table.float('traded_feed_price');
     table.float('traded_oracle_price');
+    table.float('traded_projected_percent');
     table.integer('traded_block_number');
     table.string('traded_tx');
     table.float('traded_tokens_total');
@@ -28,6 +29,7 @@ exports.up = async function (knex) {
     table.string('closed_profit_loss_percent', 10);
     table.float('closed_feed_price');
     table.float('closed_oracle_price');
+    table.integer('closed_block_number');
     table.boolean('testing').defaultTo(false).notNullable();
 
     defaultFields(table, knex);

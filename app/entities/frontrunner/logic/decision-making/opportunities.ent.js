@@ -71,6 +71,7 @@ entity._findOpportunities = async (divergences) => {
       blockNumber: divergences.state.blockNumber,
       oraclePrice: divergences.state.oraclePrices[pair],
       feedPrice: divergences.state.feedPrices[pair],
+      traded_projected_percent: divergence,
     };
 
     opportunities.push(opportunity);
