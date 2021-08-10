@@ -49,14 +49,13 @@ describe('Frontrunner - Decision Making', () => {
       expect(result.closedTrades).toHaveLength(0);
 
       const [openTrade] = result.openedTrades;
-      console.log('openTrade:', openTrade);
       tradesAssert(openTrade, 'BTCUSD', divergences);
     });
     test('Will create two new trades', async () => {
       const divergences = divergenceTwoOpportunities();
       const result = await determineAction(divergences);
 
-      expect(result.openedTrades).toHaveLength(1);
+      expect(result.openedTrades).toHaveLength(2);
       expect(result.closedTrades).toHaveLength(0);
 
       const [openTrade1, openTrade2] = result.openedTrades;
@@ -74,8 +73,8 @@ describe('Frontrunner - Decision Making', () => {
 
       divergencesClose.state.heartbeat = 7;
       divergencesClose.state.blockNumber = 1054367;
-      divergencesClose.state.oraclePrices.BTCUSD = 47356.1246;
-      divergencesClose.state.synthPrices.BTCUSD = 47356.1246;
+      divergencesClose.state.oraclePrices.BTCUSD = 47356.1;
+      divergencesClose.state.synthPrices.BTCUSD = 47356.1;
       divergencesClose.oracleToFeed.BTCUSD = 0;
 
       const resultClose = await determineAction(divergencesClose);
@@ -85,6 +84,7 @@ describe('Frontrunner - Decision Making', () => {
 
       const [closedTrade] = resultClose.closedTrades;
 
+      expect(closedTrade.closed_profit_loss_percent).toEqual('3.00%');
       tradesAssert(closedTrade, 'BTCUSD', divergencesOpen, divergencesClose);
     });
   });
