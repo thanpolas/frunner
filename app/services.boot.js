@@ -47,7 +47,7 @@ appServices.boot = async (bootOpts) => {
  * @return {Promise<void>}
  */
 appServices.dispose = async () => {
-  await discordService.dispose();
   entities.dispose();
   await postgresService.dispose();
+  await discordService.dispose();
 };
