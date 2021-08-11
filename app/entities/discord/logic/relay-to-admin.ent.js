@@ -10,7 +10,7 @@ const { LogEvents } = require('../../events');
 const { isConnected } = require('../../../services/discord.service');
 const globals = require('../../../utils/globals');
 const { getGuildChannel } = require('./guild.ent');
-const { divergenceHr, asyncMapCap } = require('../../../utils/helpers');
+const { divergenceHr } = require('../../../utils/helpers');
 
 const { DECISION_ENDED, STAYING_COURSE, CUTTING_LOSSES, HEARTBEAT_UPDATE } =
   LogEvents;
@@ -50,7 +50,7 @@ entity.loggerToAdmin = async (logContext) => {
 
     // only deal with logs to relay or errors.
     if (logContext.relay || logContext.severity < 5) {
-      message = await entity._formatMessage(logContext);
+      message = entity._formatMessage(logContext);
     } else {
       return;
     }
@@ -60,7 +60,11 @@ entity.loggerToAdmin = async (logContext) => {
     }
 
     if (typeof message !== 'string') {
-      message = { embeds: [message] };
+      if (Array.isArray(message)) {
+        message = { embeds: message };
+      } else {
+        message = { embeds: [message] };
+      }
     }
     await entity._channel.send(message);
   } catch (ex) {
@@ -73,10 +77,10 @@ entity.loggerToAdmin = async (logContext) => {
  * Format log message.
  *
  * @param {Object} lc Logality log context object.
- * @return {string|DiscordMessageEmbed} The message.
+ * @return {string|DiscordMessageEmbed|Array<DiscordMessageEmbed>} The message.
  * @private
  */
-entity._formatMessage = async (lc) => {
+entity._formatMessage = (lc) => {
   if (lc.event.error) {
     return entity._formatError(lc);
   }
@@ -94,7 +98,14 @@ entity._formatMessage = async (lc) => {
       break;
   }
 
-  return lc.message;
+  let message = '';
+  if (lc.emoji) {
+    message = `${lc.emoji} [${lc.level}] ${lc.message}`;
+  } else {
+    message = `:information_source: [${lc.level}] ${lc.message}`;
+  }
+
+  return message;
 };
 
 /**
@@ -122,17 +133,20 @@ entity._formatError = (lc) => {
  * Format decision ended log event.
  *
  * @param {Object} lc Logality log context object.
- * @return {Promise<void>} An empty promise, this is a special case that manages
- *    dispatching message to channel itself as it may produce multiple messages.
+ * @return {Array<DiscordMessageEmber>} An array with the created embed messages.
  * @private
  */
-entity._formatDecisionEnded = async (lc) => {
+entity._formatDecisionEnded = (lc) => {
+  let arOpened = [];
+  let arClosed = [];
   if (lc.context.openedTrades.raw.length) {
-    await entity._formatAndSendTradesOpened(lc);
+    arOpened = entity._formatTradesOpened(lc);
   }
   if (lc.context.closedTrades.raw.length) {
-    await entity._formatAndSendTradesClosed(lc);
+    arClosed = entity._formatTradesClosed(lc);
   }
+
+  return arOpened.concat(arClosed);
 };
 
 /**
@@ -202,16 +216,16 @@ entity._formatCuttingLosses = (lc) => {
 };
 
 /**
- * Format an error log message.
+ * Format opened trades.
  *
  * @param {Object} lc Logality log context object.
- * @return {DiscordMessageEmbed} The string message.
+ * @return {Array<DiscordMessageEmbed>} Embed messages.
  * @private
  */
-entity._formatAndSendTradesOpened = async (lc) => {
+entity._formatTradesOpened = (lc) => {
   const { raw: openedTrades } = lc.context.openedTrades;
 
-  await asyncMapCap(openedTrades, async (openedTrade) => {
+  return openedTrades.map((openedTrade) => {
     const {
       pair,
       network,
@@ -244,7 +258,7 @@ entity._formatAndSendTradesOpened = async (lc) => {
       .addField('TX', `${traded_tx}`, true)
       .setFooter(`Network: ${network} :: Testing: ${testing}`);
 
-    return entity._channel.send(embedMessage);
+    return embedMessage;
   });
 };
 
@@ -252,13 +266,13 @@ entity._formatAndSendTradesOpened = async (lc) => {
  * Format a trade close event.
  *
  * @param {Object} lc Logality log context object.
- * @return {DiscordMessageEmbed} The string message.
+ * @return {Array<DiscordMessageEmbed>} Embed messages.
  * @private
  */
-entity._formatAndSendTradesClosed = async (lc) => {
+entity._formatTradesClosed = (lc) => {
   const { raw: closedTrades } = lc.context.closedTrades;
 
-  await asyncMapCap(closedTrades, async (closedTrade) => {
+  return closedTrades.map((closedTrade) => {
     const {
       pair,
       network,
@@ -310,7 +324,7 @@ entity._formatAndSendTradesClosed = async (lc) => {
       .addField('Projected Profit %', `${traded_projected_percent}`, true)
       .setFooter(`Network: ${network} :: Testing: ${testing}`);
 
-    return entity._channel.send(embedMessage);
+    return embedMessage;
   });
 };
 
@@ -323,7 +337,7 @@ entity._formatAndSendTradesClosed = async (lc) => {
  */
 entity._formatHeartbeatUpdate = (lc) => {
   const embedMessage = new MessageEmbed()
-    .setTitle(`Heartbeat Update`)
+    .setTitle(`Heartbeat Update - Prices`)
     .setColor(config.discord.embed_color_staying);
 
   const { divergencies: divergenciesRaw } = lc.context;
@@ -339,24 +353,25 @@ entity._formatHeartbeatUpdate = (lc) => {
     const synthValue = priceState.synthPrices[pair];
     const feedValue = priceState.feedPrices[pair];
     embedMessage
-      .addField('Oracle Price', `${oracleValue.toFixed(4)}`, true)
-      .addField('Synth Price', `${synthValue.toFixed(4)}`, true)
-      .addField('Feed Price', `${feedValue.toFixed(4)}`, true);
+      .addField(`Oracle ${pair} Price`, `${oracleValue.toFixed(4)}`, true)
+      .addField(`Synth ${pair} Price`, `${synthValue.toFixed(4)}`, true)
+      .addField(`Feed ${pair} Price`, `${feedValue.toFixed(4)}`, true);
   });
 
   const allPairs = Object.keys(oracleToFeed);
 
+  const embedMessageDiv = new MessageEmbed()
+    .setTitle(`Heartbeat Update - Divergencies`)
+    .setColor(config.discord.embed_color_staying);
+
   allPairs.forEach((pair) => {
-    embedMessage.addField(
-      `Divergence of ${pair}`,
-      divergenceHr(oracleToFeed[pair]),
-    );
+    embedMessageDiv.addField(`${pair}`, divergenceHr(oracleToFeed[pair]), true);
   });
 
-  embedMessage.setFooter(
+  embedMessageDiv.setFooter(
     `Heartbeat: ${heartbeat} :: BlockNumber: ${blockNumber} ::` +
       ` Network: ${config.app.network} :: Testing: ${config.app.testing}`,
   );
 
-  return embedMessage;
+  return [embedMessage, embedMessageDiv];
 };
