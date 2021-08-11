@@ -65,8 +65,7 @@ entity.getGuild = async () => {
  * @return {Promise<DiscordGuildChannel>}
  */
 entity.getGuildChannel = async (channelId) => {
-  const guild = await entity.getGuild();
-  const guildChannel = guild.channels.cache.get(channelId);
+  const guildChannel = await getClient().channels.fetch(channelId);
 
   return guildChannel;
 };
