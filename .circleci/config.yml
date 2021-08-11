@@ -72,7 +72,7 @@ jobs:
       - checkout
       - run:
           name: Deploy to Heroku for production.
-          command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/skgtechbot.git master -f
+          command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/frontrunner-polas.git main -f
 
 workflows:
   version: 2
@@ -97,10 +97,10 @@ workflows:
             branches:
               only: /.*/
 
-      # - deploy_prod:
-      #     requires:
-      #       - test_app
-      #       - eslint
-      #     filters:
-      #       branches:
-      #         only: /master/
+      - deploy_prod:
+          requires:
+            - test_app
+            - eslint
+          filters:
+            branches:
+              only: /main/
