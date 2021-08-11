@@ -1,3 +1,5 @@
+const { divergenceHr } = require('../../utils/helpers');
+
 /**
  * Serializes divergences.
  *
@@ -14,7 +16,7 @@ module.exports = (usePath = 'context.divergencies') => {
     const pairs = Object.keys(oracleToFeed);
 
     pairs.forEach((pair) => {
-      value[pair] = oracleToFeed[pair];
+      value[pair] = divergenceHr(oracleToFeed[pair]);
     });
 
     return {
