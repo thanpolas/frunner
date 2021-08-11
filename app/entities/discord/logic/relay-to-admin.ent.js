@@ -12,7 +12,8 @@ const globals = require('../../../utils/globals');
 const { getGuildChannel } = require('./guild.ent');
 const { divergenceHr, asyncMapCap } = require('../../../utils/helpers');
 
-const { DECISION_ENDED, STAYING_COURSE, CUTTING_LOSSES } = LogEvents;
+const { DECISION_ENDED, STAYING_COURSE, CUTTING_LOSSES, HEARTBEAT_UPDATE } =
+  LogEvents;
 
 const entity = (module.exports = {});
 
@@ -79,6 +80,8 @@ entity._formatMessage = (lc) => {
       return entity._formatStayingCourse(lc);
     case CUTTING_LOSSES:
       return entity._formatCuttingLosses(lc);
+    case HEARTBEAT_UPDATE:
+      return entity._formatHeartbeatUpdate(lc);
     default:
       break;
   }
@@ -238,7 +241,7 @@ entity._formatTradesOpened = async (lc) => {
 };
 
 /**
- * Format an error log message.
+ * Format a trade close event.
  *
  * @param {Object} lc Logality log context object.
  * @return {DiscordMessageEmbed} The string message.
@@ -301,4 +304,51 @@ entity._formatTradesClosed = async (lc) => {
 
     return entity._channel.send(embedMessage);
   });
+};
+
+/**
+ * Format a heartbeat update.
+ *
+ * @param {Object} lc Logality log context object.
+ * @return {DiscordMessageEmbed} The string message.
+ * @private
+ */
+entity._formatHeartbeatUpdate = async (lc) => {
+  const embedMessage = new MessageEmbed()
+    .setTitle(`Heartbeat Update`)
+    .setColor(config.discord.embed_color_staying);
+
+  const { divergencesRaw } = lc.context;
+  const { raw: divergences } = divergencesRaw;
+
+  const { state: priceState, oracleToFeed } = divergences;
+  const { heartbeat, blockNumber } = priceState;
+
+  const samplePairs = ['BTCUSD', 'ETHUSD'];
+
+  samplePairs.forEach((pair) => {
+    const oracleValue = priceState.oraclePrices[pair];
+    const synthValue = priceState.synthPrices[pair];
+    const feedValue = priceState.feedPrices[pair];
+    embedMessage
+      .addField('Oracle Price', oracleValue, true)
+      .addField('Synth Price', synthValue, true)
+      .addField('Feed Price', feedValue, true);
+  });
+
+  const allPairs = Object.keys(oracleToFeed);
+
+  allPairs.forEach((pair) => {
+    embedMessage.addField(
+      `Divergence of ${pair}`,
+      divergenceHr(oracleToFeed[pair]),
+    );
+  });
+
+  embedMessage.setFooter(
+    `Heartbeat: ${heartbeat} :: BlockNumber: ${blockNumber} ::` +
+      ` Network: ${config.app.network} :: Testing: ${config.app.testing}`,
+  );
+
+  return embedMessage;
 };
