@@ -87,6 +87,7 @@ app.init = async (optOpts) => {
 
   try {
     await appServices.boot(bootOpts);
+    await log.notice('Application initialized successfuly', { relay: true });
   } catch (ex) {
     await log.emergency('Error on boot:', { error: ex });
     if (!globals.isStandAlone) {
