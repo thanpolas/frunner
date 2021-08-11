@@ -32,7 +32,7 @@ entity.init = async (bootOpts) => {
     return;
   }
 
-  entity._createFeedHeartbeat();
+  await entity._createFeedHeartbeat();
   entity._createNewBlockWatch();
 };
 
@@ -81,10 +81,13 @@ entity._onHeartbeat = async () => {
  * Creates the heartbeat (setInterval) to fetch prices from external feeds
  * and process them.
  *
- * @return {void}
+ * @return {Promise<void>}
  * @private
  */
-entity._createFeedHeartbeat = () => {
+entity._createFeedHeartbeat = async () => {
+  await log.info(
+    `Creating feed heartbeat at an interval of: ${config.app.heartbeat}`,
+  );
   // Create heartbeat
   entity._heartbeatInterval = setInterval(
     entity._onHeartbeat,
