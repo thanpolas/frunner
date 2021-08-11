@@ -4,15 +4,20 @@
 
 const { assignIn } = require('lodash');
 
-const { events, eventTypes } = require('../../events');
+const { events, eventTypes, LogEvents } = require('../../events');
 const { PAIRS_AR } = require('../../price-feeds');
 
 const { determineAction } = require('./decision-maker.ent');
 const { getDivergence } = require('../../../utils/helpers');
+const log = require('../../../services/log.service').get();
 
 const { PRICE_FEED_PROCESSED, NEW_BLOCK } = eventTypes;
+const { HEARTBEAT_UPDATE } = LogEvents;
 
 const entity = (module.exports = {});
+
+/** @type {number} Store on which heartbeat an update log was made. */
+entity._lastHeartbeatUpdate = 0;
 
 /**
  * Stores necessary local state.
@@ -30,9 +35,9 @@ entity.localState = {
 /**
  * Initialize the heartbeat functionality.
  *
- * @return {Promise<void>}
+ * @return {void}
  */
-entity.init = async () => {
+entity.init = () => {
   events.on(PRICE_FEED_PROCESSED, entity._onPriceFeedProcessed);
   events.on(NEW_BLOCK, entity._onNewBlock);
 };
@@ -93,5 +98,34 @@ entity._processAndDecide = async () => {
     );
   });
 
+  if (entity._shouldLogUpdate(divergences)) {
+    log.info(
+      `Heartbeat Update ${state.heartbeat} - block number: ${state.blockNumber}`,
+      {
+        divergences,
+        relay: HEARTBEAT_UPDATE,
+      },
+    );
+  }
+
   return determineAction(divergences);
+};
+
+/**
+ * Will determine if it's good time to dispatch a log update.
+
+ * @param {Object} divergences The divergences object.
+ * @return {boolean} True if it's time to do an update.
+ * @private
+ */
+entity._shouldLogUpdate = (divergences) => {
+  if (entity._lastHeartbeatUpdate === 0) {
+    entity._lastHeartbeatUpdate = divergences.state.heartbeat;
+    return true;
+  }
+
+  if (divergences.state.heartbeat % 600 === 0) {
+    entity._lastHeartbeatUpdate = divergences.state.heartbeat;
+    return true;
+  }
 };

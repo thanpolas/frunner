@@ -10,9 +10,10 @@ const { LogEvents } = require('../../events');
 const { isConnected } = require('../../../services/discord.service');
 const globals = require('../../../utils/globals');
 const { getGuildChannel } = require('./guild.ent');
-const { divergenceHr, asyncMapCap } = require('../../../utils/helpers');
+const { divergenceHr } = require('../../../utils/helpers');
 
-const { DECISION_ENDED, STAYING_COURSE, CUTTING_LOSSES } = LogEvents;
+const { DECISION_ENDED, STAYING_COURSE, CUTTING_LOSSES, HEARTBEAT_UPDATE } =
+  LogEvents;
 
 const entity = (module.exports = {});
 
@@ -35,36 +36,48 @@ entity.init = async () => {
  * @return {Promise<void>} A Promise.
  */
 entity.loggerToAdmin = async (logContext) => {
-  // Don't log when not connected to discord
-  if (!isConnected()) {
-    return;
-  }
-
-  // don't relay when testing
-  if (globals.isTest) {
-    return;
-  }
-
-  // only deal with logs to relay or errors.
   let message;
-  if (logContext.relay || logContext.severity < 5) {
-    message = entity._formatMessage(logContext);
-  } else {
-    return;
-  }
+  try {
+    // Don't log when not connected to discord
+    if (!isConnected()) {
+      return;
+    }
 
-  if (!message) {
-    return;
-  }
+    // don't relay when testing
+    if (globals.isTest) {
+      return;
+    }
 
-  return entity._channel.send(message);
+    // only deal with logs to relay or errors.
+    if (logContext.relay || logContext.severity < 5) {
+      message = entity._formatMessage(logContext);
+    } else {
+      return;
+    }
+
+    if (!message) {
+      return;
+    }
+
+    if (typeof message !== 'string') {
+      if (Array.isArray(message)) {
+        message = { embeds: message };
+      } else {
+        message = { embeds: [message] };
+      }
+    }
+    await entity._channel.send(message);
+  } catch (ex) {
+    // eslint-disable-next-line no-console
+    console.error('ERROR loggerToAdmin() ::', ex);
+  }
 };
 
 /**
  * Format log message.
  *
  * @param {Object} lc Logality log context object.
- * @return {string|DiscordMessageEmbed} The message.
+ * @return {string|DiscordMessageEmbed|Array<DiscordMessageEmbed>} The message.
  * @private
  */
 entity._formatMessage = (lc) => {
@@ -79,18 +92,27 @@ entity._formatMessage = (lc) => {
       return entity._formatStayingCourse(lc);
     case CUTTING_LOSSES:
       return entity._formatCuttingLosses(lc);
+    case HEARTBEAT_UPDATE:
+      return entity._formatHeartbeatUpdate(lc);
     default:
       break;
   }
 
-  return lc.message;
+  let message = '';
+  if (lc.emoji) {
+    message = `${lc.emoji} [${lc.level}] ${lc.message}`;
+  } else {
+    message = `:information_source: [${lc.level}] ${lc.message}`;
+  }
+
+  return message;
 };
 
 /**
  * Format an error log message.
  *
  * @param {Object} lc Logality log context object.
- * @return {string} The string message.
+ * @return {string|void} The string message or empty for suppressed errors.
  * @private
  */
 entity._formatError = (lc) => {
@@ -111,17 +133,20 @@ entity._formatError = (lc) => {
  * Format decision ended log event.
  *
  * @param {Object} lc Logality log context object.
- * @return {Promise<void>} An empty promise, this is a special case that manages
- *    dispatching message to channel itself as it may produce multiple messages.
+ * @return {Array<DiscordMessageEmber>} An array with the created embed messages.
  * @private
  */
-entity._formatDecisionEnded = async (lc) => {
+entity._formatDecisionEnded = (lc) => {
+  let arOpened = [];
+  let arClosed = [];
   if (lc.context.openedTrades.raw.length) {
-    await entity._formatTradesOpened(lc);
+    arOpened = entity._formatTradesOpened(lc);
   }
   if (lc.context.closedTrades.raw.length) {
-    await entity._formatTradesOpened(lc);
+    arClosed = entity._formatTradesClosed(lc);
   }
+
+  return arOpened.concat(arClosed);
 };
 
 /**
@@ -137,10 +162,10 @@ entity._formatStayingCourse = (lc) => {
     .setTitle(`Staying the course for open trade "${pair}"`)
     .setColor(config.discord.embed_color_staying);
 
-  const { divergences } = lc.context;
-  const { oracleToFeed } = divergences.raw;
+  const { divergencies } = lc.context;
+  const { oracleToFeed } = divergencies.raw;
   const divergence = oracleToFeed[pair];
-  const { state: priceState } = divergences.raw;
+  const { state: priceState } = divergencies.raw;
 
   const { heartbeat, blockNumber } = priceState;
   const oracleValue = priceState.oraclePrices[pair];
@@ -170,10 +195,10 @@ entity._formatCuttingLosses = (lc) => {
     .setTitle(`Cutting losses on "${pair}"`)
     .setColor(config.discord.embed_color_loss);
 
-  const { divergences } = lc.context;
-  const { oracleToFeed } = divergences.raw;
+  const { divergencies } = lc.context;
+  const { oracleToFeed } = divergencies.raw;
   const divergence = oracleToFeed[pair];
-  const { state: priceState } = divergences.raw;
+  const { state: priceState } = divergencies.raw;
 
   const { heartbeat, blockNumber } = priceState;
   const oracleValue = priceState.oraclePrices[pair];
@@ -191,16 +216,16 @@ entity._formatCuttingLosses = (lc) => {
 };
 
 /**
- * Format an error log message.
+ * Format opened trades.
  *
  * @param {Object} lc Logality log context object.
- * @return {DiscordMessageEmbed} The string message.
+ * @return {Array<DiscordMessageEmbed>} Embed messages.
  * @private
  */
-entity._formatTradesOpened = async (lc) => {
+entity._formatTradesOpened = (lc) => {
   const { raw: openedTrades } = lc.context.openedTrades;
 
-  await asyncMapCap(openedTrades, async (openedTrade) => {
+  return openedTrades.map((openedTrade) => {
     const {
       pair,
       network,
@@ -233,21 +258,21 @@ entity._formatTradesOpened = async (lc) => {
       .addField('TX', `${traded_tx}`, true)
       .setFooter(`Network: ${network} :: Testing: ${testing}`);
 
-    return entity._channel.send(embedMessage);
+    return embedMessage;
   });
 };
 
 /**
- * Format an error log message.
+ * Format a trade close event.
  *
  * @param {Object} lc Logality log context object.
- * @return {DiscordMessageEmbed} The string message.
+ * @return {Array<DiscordMessageEmbed>} Embed messages.
  * @private
  */
-entity._formatTradesClosed = async (lc) => {
+entity._formatTradesClosed = (lc) => {
   const { raw: closedTrades } = lc.context.closedTrades;
 
-  await asyncMapCap(closedTrades, async (closedTrade) => {
+  return closedTrades.map((closedTrade) => {
     const {
       pair,
       network,
@@ -299,6 +324,54 @@ entity._formatTradesClosed = async (lc) => {
       .addField('Projected Profit %', `${traded_projected_percent}`, true)
       .setFooter(`Network: ${network} :: Testing: ${testing}`);
 
-    return entity._channel.send(embedMessage);
+    return embedMessage;
   });
+};
+
+/**
+ * Format a heartbeat update.
+ *
+ * @param {Object} lc Logality log context object.
+ * @return {DiscordMessageEmbed} The string message.
+ * @private
+ */
+entity._formatHeartbeatUpdate = (lc) => {
+  const embedMessage = new MessageEmbed()
+    .setTitle(`Heartbeat Update - Prices`)
+    .setColor(config.discord.embed_color_staying);
+
+  const { divergencies: divergenciesRaw } = lc.context;
+  const { raw: divergencies } = divergenciesRaw;
+
+  const { state: priceState, oracleToFeed } = divergencies;
+  const { heartbeat, blockNumber } = priceState;
+
+  const samplePairs = ['BTCUSD', 'ETHUSD'];
+
+  samplePairs.forEach((pair) => {
+    const oracleValue = priceState.oraclePrices[pair];
+    const synthValue = priceState.synthPrices[pair];
+    const feedValue = priceState.feedPrices[pair];
+    embedMessage
+      .addField(`Oracle ${pair} Price`, `${oracleValue.toFixed(4)}`, true)
+      .addField(`Synth ${pair} Price`, `${synthValue.toFixed(4)}`, true)
+      .addField(`Feed ${pair} Price`, `${feedValue.toFixed(4)}`, true);
+  });
+
+  const allPairs = Object.keys(oracleToFeed);
+
+  const embedMessageDiv = new MessageEmbed()
+    .setTitle(`Heartbeat Update - Divergencies`)
+    .setColor(config.discord.embed_color_staying);
+
+  allPairs.forEach((pair) => {
+    embedMessageDiv.addField(`${pair}`, divergenceHr(oracleToFeed[pair]), true);
+  });
+
+  embedMessageDiv.setFooter(
+    `Heartbeat: ${heartbeat} :: BlockNumber: ${blockNumber} ::` +
+      ` Network: ${config.app.network} :: Testing: ${config.app.testing}`,
+  );
+
+  return [embedMessage, embedMessageDiv];
 };
