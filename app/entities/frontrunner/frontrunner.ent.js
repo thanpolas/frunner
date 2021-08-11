@@ -39,7 +39,7 @@ entity.init = async (bootOpts) => {
   await log.info('Initializing Frontrunner...');
   await initHeartbeat(bootOpts);
   await initDecision();
-  await initFrontrunnerCore(bootOpts);
+  initFrontrunnerCore(bootOpts);
 };
 
 /**

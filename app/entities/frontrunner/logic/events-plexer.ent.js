@@ -35,9 +35,9 @@ entity.localState = {
 /**
  * Initialize the heartbeat functionality.
  *
- * @return {Promise<void>}
+ * @return {void}
  */
-entity.init = async () => {
+entity.init = () => {
   events.on(PRICE_FEED_PROCESSED, entity._onPriceFeedProcessed);
   events.on(NEW_BLOCK, entity._onNewBlock);
 };
