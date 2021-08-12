@@ -50,15 +50,15 @@ entity.init = async () => {
 };
 
 /**
- * Will determine if an action needs to be taken based on the divergences
+ * Will determine if an action needs to be taken based on the divergencies
  * and the current stored trading state.
  *
- * @param {Object} divergences The calculated divergences.
+ * @param {Object} divergencies The calculated divergencies.
  * @return {Promise<Object>} A Promise with two array keys: "openedTrades" and
  *    "closedTrades".
  * @private
  */
-entity.determineAction = async (divergences) => {
+entity.determineAction = async (divergencies) => {
   const result = {
     openedTrades: [],
     closedTrades: [],
@@ -70,8 +70,8 @@ entity.determineAction = async (divergences) => {
   entity._decisionRunning = true;
 
   const [openedTrades, closedTrades] = await Promise.all([
-    opportunities(divergences, entity.activeTrades),
-    closeTrades(divergences, entity.activeTrades),
+    opportunities(divergencies, entity.activeTrades),
+    closeTrades(divergencies, entity.activeTrades),
   ]);
 
   result.openedTrades = openedTrades;
@@ -79,20 +79,20 @@ entity.determineAction = async (divergences) => {
 
   entity._decisionRunning = false;
 
-  await entity.logResults(divergences, result);
+  await entity.logResults(divergencies, result);
 
   return result;
 };
 
 /**
- * Will log the divergences in a human readable format.
+ * Will log the divergencies in a human readable format.
  *
- * @param {Object} divergences The calculated divergences.
+ * @param {Object} divergencies The calculated divergencies.
  * @param {Object} result The decision making result.
  * @return {Promise<void>}
  * @private
  */
-entity.logResults = async (divergences, result) => {
+entity.logResults = async (divergencies, result) => {
   const { openedTrades, closedTrades } = result;
 
   if (openedTrades.length === 0 && closedTrades.length === 0) {
@@ -102,7 +102,7 @@ entity.logResults = async (divergences, result) => {
   await log.info('Decision Making Ended', {
     openedTrades,
     closedTrades,
-    divergences,
+    divergencies,
     relay: DECISION_ENDED,
   });
 };

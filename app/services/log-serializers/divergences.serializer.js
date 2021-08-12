@@ -1,7 +1,7 @@
 const { divergenceHr } = require('../../utils/helpers');
 
 /**
- * Serializes divergences.
+ * Serializes divergencies.
  *
  * @param {string=} usePath Set to override default log write path.
  * @return {function} Serializer for logality.
