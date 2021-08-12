@@ -96,11 +96,11 @@ entity._checkStillOnTrack = async (divergencies, activeTrades, pair) => {
   // Strategy is to stay the course as long as divergence is positive
   if (divergence > 0) {
     // Don't await for speed.
-    log.info('Staying the course on open trade', {
-      divergencies,
-      pair,
-      relay: STAYING_COURSE,
-    });
+    // log.info('Staying the course on open trade', {
+    //   divergencies,
+    //   pair,
+    //   relay: STAYING_COURSE,
+    // });
     return;
   }
 
