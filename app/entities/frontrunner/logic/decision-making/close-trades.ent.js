@@ -129,16 +129,16 @@ entity._closeTrade = async (divergences, activeTrades, pair) => {
   const trade = activeTrades[pair];
   const closed_oracle_price = divergences.state.oraclePrices[pair];
 
-  const closed_profit_loss_tokens =
-    closed_oracle_price - trade.traded_oracle_price;
-
-  const closed_profit_loss_money =
-    closed_profit_loss_tokens * trade.traded_tokens_total;
+  const closed_price_diff = closed_oracle_price - trade.traded_oracle_price;
 
   const closed_profit_loss_percent = getDivergence(
-    closed_oracle_price,
     trade.traded_oracle_price,
+    closed_oracle_price,
   );
+
+  const closed_profit_loss =
+    closed_profit_loss_percent * trade.traded_tokens_total;
+
   const closed_feed_price = divergences.state.feedPrices[pair];
 
   let closed_tx = '0x';
@@ -154,8 +154,8 @@ entity._closeTrade = async (divergences, activeTrades, pair) => {
     closed_trade: true,
     closed_at: db().fn.now(),
     closed_tx,
-    closed_profit_loss_tokens,
-    closed_profit_loss_money,
+    closed_price_diff,
+    closed_profit_loss,
     closed_profit_loss_percent: divergenceHr(closed_profit_loss_percent),
     closed_feed_price,
     closed_oracle_price,
