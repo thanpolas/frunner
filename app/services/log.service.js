@@ -18,7 +18,7 @@ const Logality = require('logality');
 const relaySerializer = require('./log-serializers/relay.serializer');
 const openedTradesSerializer = require('./log-serializers/opened-trades.serializer');
 const closedTradesSerializer = require('./log-serializers/closed-trades.serializer');
-const divergencesSerializer = require('./log-serializers/divergences.serializer');
+const divergenciesSerializer = require('./log-serializers/divergences.serializer');
 const pairSerializer = require('./log-serializers/pair.serializer');
 
 const logger = (module.exports = {});
@@ -44,7 +44,7 @@ logger.init = function (bootOpts = {}) {
     relay: relaySerializer(),
     openedTrades: openedTradesSerializer(),
     closedTrades: closedTradesSerializer(),
-    divergences: divergencesSerializer(),
+    divergenciess: divergenciesSerializer(),
     pair: pairSerializer(),
   };
 
