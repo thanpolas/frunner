@@ -5,7 +5,7 @@
 const config = require('config');
 
 const { PAIRS_AR } = require('../../../price-feeds');
-const { ETH_ORACLES } = require('../../../chainlink');
+// const { ETH_ORACLES } = require('../../../chainlink');
 const {
   create: tradeCreate,
   update: tradeUpdate,
@@ -56,9 +56,10 @@ entity._findOpportunities = async (divergences) => {
   const opportunities = [];
   PAIRS_AR.forEach((pair) => {
     const divergence = oracleToFeed[pair];
-    const oracle = ETH_ORACLES[pair];
+    // const oracle = ETH_ORACLES[pair];
 
-    if (divergence < oracle.deviation) {
+    const divergenceThreshold = config.app.divergence_threshold;
+    if (divergence < divergenceThreshold) {
       return;
     }
 
