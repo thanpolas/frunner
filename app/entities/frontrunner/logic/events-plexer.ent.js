@@ -4,15 +4,15 @@
 
 const { assignIn } = require('lodash');
 
-const { events, eventTypes, LogEvents } = require('../../events');
+const { events, eventTypes } = require('../../events');
 const { PAIRS_AR } = require('../../price-feeds');
 
 const { determineAction } = require('./decision-maker.ent');
 const { getDivergence } = require('../../../utils/helpers');
-const log = require('../../../services/log.service').get();
+// const log = require('../../../services/log.service').get();
 
 const { PRICE_FEED_PROCESSED, NEW_BLOCK } = eventTypes;
-const { HEARTBEAT_UPDATE } = LogEvents;
+// const { HEARTBEAT_UPDATE } = LogEvents;
 
 const entity = (module.exports = {});
 
@@ -98,15 +98,15 @@ entity._processAndDecide = async () => {
     );
   });
 
-  if (entity._shouldLogUpdate(divergences)) {
-    log.info(
-      `Heartbeat Update ${state.heartbeat} - block number: ${state.blockNumber}`,
-      {
-        divergences,
-        relay: HEARTBEAT_UPDATE,
-      },
-    );
-  }
+  // if (entity._shouldLogUpdate(divergences)) {
+  //   log.info(
+  //     `Heartbeat Update ${state.heartbeat} - block number: ${state.blockNumber}`,
+  //     {
+  //       divergences,
+  //       relay: HEARTBEAT_UPDATE,
+  //     },
+  //   );
+  // }
 
   return determineAction(divergences);
 };

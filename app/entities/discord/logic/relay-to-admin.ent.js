@@ -119,7 +119,11 @@ entity._formatError = (lc) => {
   const message = [];
 
   // suppress occassional 403 errors from RPC
-  if (lc?.event?.error?.message?.includes('bad response (status=403')) {
+  const errMsg = lc?.event?.error?.message;
+  if (
+    errMsg?.includes('bad response (status=403') ||
+    errMsg?.includes('Error fetching prices')
+  ) {
     return;
   }
   message.push(`:octagonal_sign: [${lc.level}] ${lc.message} :: `);
@@ -286,7 +290,7 @@ entity._formatTradesClosed = (lc) => {
       closed_oracle_price,
       closed_feed_price,
       closed_tx,
-      closed_profit_loss_money,
+      closed_profit_loss,
       closed_profit_loss_percent,
       testing,
     } = closedTrade;
@@ -318,7 +322,7 @@ entity._formatTradesClosed = (lc) => {
       .addField('Close TX', `${closed_tx}`, true)
       .addField(
         'Profit / Loss',
-        `${closed_profit_loss_money} ${traded_token_symbol} (${closed_profit_loss_percent})`,
+        `${closed_profit_loss} ${traded_token_symbol} (${closed_profit_loss_percent})`,
         true,
       )
       .addField('Projected Profit %', `${traded_projected_percent}`, true)

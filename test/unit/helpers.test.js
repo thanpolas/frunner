@@ -23,6 +23,17 @@ describe('UNIT Helpers', () => {
       expect(ret[1]).toEqual('two');
     });
   });
+  describe('getDivergence()', () => {
+    const { getDivergence } = helpers;
+    test('Should return negative result', () => {
+      const div = getDivergence(100, 90);
+      expect(div).toEqual(-0.09999999999999998);
+    });
+    test('Should return positive result', () => {
+      const div = getDivergence(100, 110);
+      expect(div).toEqual(0.10000000000000009);
+    });
+  });
 
   describe('medianOfArr()', () => {
     test('Should process an even unsorted array small', () => {
