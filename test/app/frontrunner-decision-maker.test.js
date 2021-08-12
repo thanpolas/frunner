@@ -98,6 +98,10 @@ describe('Frontrunner - Decision Making', () => {
       const [closedTrade] = resultClose.closedTrades;
 
       expect(closedTrade.closed_profit_loss_percent).toEqual('3.00%');
+      expect(closedTrade.closed_price_diff).toEqual(1379.3);
+      expect(Number(closedTrade.closed_profit_loss).toFixed(2)).toEqual(
+        '30.00',
+      );
       tradesAssert(closedTrade, 'BTCUSD', divergencesOpen, divergencesClose);
     });
   });
