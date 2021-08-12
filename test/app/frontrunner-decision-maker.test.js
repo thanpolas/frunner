@@ -54,7 +54,7 @@ describe('Frontrunner - Decision Making', () => {
       expect(result.openedTrades).toHaveLength(0);
       expect(result.closedTrades).toHaveLength(0);
     });
-    test('Will create a new trade', async () => {
+    test('Will create a new trade with a 3% profit', async () => {
       const divergences = divergenceOneOpportunity();
       const result = await determineAction(divergences);
 
