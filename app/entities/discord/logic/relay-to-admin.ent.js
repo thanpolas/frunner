@@ -122,7 +122,7 @@ entity._formatError = (lc) => {
   const errMsg = lc?.event?.error?.message;
   if (
     errMsg?.includes('bad response (status=403') ||
-    errMsg?.includes('Error fetching prices')
+    errMsg?.includes('timeout of')
   ) {
     return;
   }
