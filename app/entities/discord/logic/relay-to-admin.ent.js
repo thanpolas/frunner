@@ -166,22 +166,22 @@ entity._formatStayingCourse = (lc) => {
     .setTitle(`Staying the course for open trade "${pair}"`)
     .setColor(config.discord.embed_color_staying);
 
-  const { divergencies } = lc.context;
-  const { oracleToFeed } = divergencies.raw;
+  const { raw: divergencies } = lc.context.divergencies;
+  const { state: priceState, oracleToFeed } = divergencies;
   const divergence = oracleToFeed[pair];
-  const { state: priceState } = divergencies.raw;
-
   const { heartbeat, blockNumber } = priceState.state;
+
   const oracleValue = priceState.state.oraclePrices[pair];
   const synthValue = priceState.state.synthPrices[pair];
   const feedValue = priceState.state.feedPrices[pair];
 
   embedMessage
-    .addField('Heartbeat - BlockNumber', `${heartbeat} - ${blockNumber}`, true)
     .addField('Oracle to Feed Divergence', divergenceHr(divergence))
     .addField('Oracle Price', oracleValue, true)
     .addField('Synth Price', synthValue, true)
     .addField('Feed Price', feedValue, true);
+
+  entity._setFooter(embedMessage, heartbeat, blockNumber);
 
   return embedMessage;
 };
@@ -199,22 +199,22 @@ entity._formatCuttingLosses = (lc) => {
     .setTitle(`Cutting losses on "${pair}"`)
     .setColor(config.discord.embed_color_loss);
 
-  const { divergencies } = lc.context;
-  const { oracleToFeed } = divergencies.raw;
-  const divergence = oracleToFeed[pair];
-  const { state: priceState } = divergencies.raw;
-
+  const { raw: divergencies } = lc.context.divergencies;
+  const { state: priceState, oracleToFeed } = divergencies;
   const { heartbeat, blockNumber } = priceState;
+  const divergence = oracleToFeed[pair];
+
   const oracleValue = priceState.oraclePrices[pair];
   const synthValue = priceState.synthPrices[pair];
   const feedValue = priceState.feedPrices[pair];
 
   embedMessage
-    .addField('Heartbeat - BlockNumber', `${heartbeat} - ${blockNumber}`, true)
     .addField('Oracle to Feed Divergence', divergenceHr(divergence))
     .addField('Oracle Price', oracleValue, true)
     .addField('Synth Price', synthValue, true)
     .addField('Feed Price', feedValue, true);
+
+  entity._setFooter(embedMessage, heartbeat, blockNumber);
 
   return embedMessage;
 };
@@ -228,19 +228,20 @@ entity._formatCuttingLosses = (lc) => {
  */
 entity._formatTradesOpened = (lc) => {
   const { raw: openedTrades } = lc.context.openedTrades;
+  const { raw: divergencies } = lc.context.divergencies;
+  const { state: priceState } = divergencies;
+  const { heartbeat, blockNumber } = priceState;
 
   return openedTrades.map((openedTrade) => {
     const {
       pair,
-      network,
       traded_feed_price,
       traded_oracle_price,
       traded_projected_percent,
       traded_tx,
       traded_tokens_total,
       traded_token_symbol,
-      traded_block_number: blockNumber,
-      testing,
+      traded_block_number: tradedBlockNumber,
     } = openedTrade;
 
     const embedMessage = new MessageEmbed()
@@ -248,7 +249,7 @@ entity._formatTradesOpened = (lc) => {
       .setColor(config.discord.embed_color_open);
 
     embedMessage
-      .addField('BlockNumber', `${blockNumber}`, true)
+      .addField('Trade BlockNumber', `${tradedBlockNumber}`, true)
       .addField('Oracle Price', `${traded_oracle_price}`, true)
       .addField(
         'Feed Price',
@@ -259,8 +260,9 @@ entity._formatTradesOpened = (lc) => {
         'Tokens Traded',
         `${traded_tokens_total} ${traded_token_symbol}`,
       )
-      .addField('TX', `${traded_tx}`, true)
-      .setFooter(`Network: ${network} :: Testing: ${testing}`);
+      .addField('TX', `${traded_tx}`, true);
+
+    entity._setFooter(embedMessage, heartbeat, blockNumber);
 
     return embedMessage;
   });
@@ -275,24 +277,25 @@ entity._formatTradesOpened = (lc) => {
  */
 entity._formatTradesClosed = (lc) => {
   const { raw: closedTrades } = lc.context.closedTrades;
+  const { raw: divergencies } = lc.context.divergencies;
+  const { state: priceState } = divergencies;
+  const { heartbeat, blockNumber } = priceState;
 
   return closedTrades.map((closedTrade) => {
     const {
       pair,
-      network,
       traded_feed_price,
       traded_oracle_price,
       traded_tokens_total,
       traded_projected_percent,
       traded_token_symbol,
-      traded_block_number: blockNumber,
+      traded_block_number: tradedBlockNumber,
       closed_block_number: blockNumberClosed,
       closed_oracle_price,
       closed_feed_price,
       closed_tx,
       closed_profit_loss,
       closed_profit_loss_percent,
-      testing,
     } = closedTrade;
 
     const embedMessage = new MessageEmbed()
@@ -302,7 +305,7 @@ entity._formatTradesClosed = (lc) => {
     embedMessage
       .addField(
         'Open / Close BlockNumber',
-        `${blockNumber} / ${blockNumberClosed}`,
+        `${tradedBlockNumber} / ${blockNumberClosed}`,
         true,
       )
       .addField(
@@ -331,8 +334,9 @@ entity._formatTradesClosed = (lc) => {
         'Projected Profit %',
         `${divergenceHr(traded_projected_percent)}`,
         true,
-      )
-      .setFooter(`Network: ${network} :: Testing: ${testing}`);
+      );
+
+    entity._setFooter(embedMessage, heartbeat, blockNumber);
 
     return embedMessage;
   });
@@ -378,10 +382,22 @@ entity._formatHeartbeatUpdate = (lc) => {
     embedMessageDiv.addField(`${pair}`, divergenceHr(oracleToFeed[pair]), true);
   });
 
-  embedMessageDiv.setFooter(
+  entity._setFooter(embedMessageDiv, heartbeat, blockNumber);
+
+  return [embedMessage, embedMessageDiv];
+};
+
+/**
+ * Attach footer to the provided embed message.
+ *
+ * @param {DiscordMessageEmber} embedMessage The embed message to add footer to.
+ * @param {number} heartbeat The current heartbeat.
+ * @param {number} blockNumber The current blocknumber.
+ * @private
+ */
+entity._setFooter = (embedMessage, heartbeat, blockNumber) => {
+  embedMessage.setFooter(
     `Heartbeat: ${heartbeat} :: BlockNumber: ${blockNumber} ::` +
       ` Network: ${config.app.network} :: Testing: ${config.app.testing}`,
   );
-
-  return [embedMessage, embedMessageDiv];
 };
