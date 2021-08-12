@@ -127,7 +127,7 @@ entity._executeOpportunity = async (divergences, activeTrades, opportunity) => {
     traded_block_number: currentState.blockNumber,
     traded_projected_percent: divergences.oracleToFeed[pair],
     traded_tx,
-    traded_tokens_total: 1000,
+    traded_tokens_total: 10000,
     traded_token_symbol: 'sUSD',
   };
 
