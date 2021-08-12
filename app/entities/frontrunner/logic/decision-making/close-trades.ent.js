@@ -21,7 +21,8 @@ const {
 
 const log = require('../../../../services/log.service').get();
 
-const { STAYING_COURSE, CUTTING_LOSSES } = LogEvents;
+// const { STAYING_COURSE, CUTTING_LOSSES } = LogEvents;
+const { CUTTING_LOSSES } = LogEvents;
 
 const entity = (module.exports = {});
 
