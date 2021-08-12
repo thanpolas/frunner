@@ -119,7 +119,11 @@ entity._formatError = (lc) => {
   const message = [];
 
   // suppress occassional 403 errors from RPC
-  if (lc?.event?.error?.message?.includes('bad response (status=403')) {
+  const errMsg = lc?.event?.error?.message;
+  if (
+    errMsg?.includes('bad response (status=403') ||
+    errMsg?.includes('Error fetching prices')
+  ) {
     return;
   }
   message.push(`:octagonal_sign: [${lc.level}] ${lc.message} :: `);
