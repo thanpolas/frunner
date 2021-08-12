@@ -19,6 +19,9 @@ module.exports = (usePath = 'context.divergencies') => {
       value[pair] = divergenceHr(oracleToFeed[pair]);
     });
 
+    value.heartbeat = val.state.heartbeat;
+    value.blocknumber = val.state.blockNumber;
+
     return {
       path: usePath,
       value,

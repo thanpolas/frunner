@@ -169,11 +169,11 @@ entity._formatStayingCourse = (lc) => {
   const { raw: divergencies } = lc.context.divergencies;
   const { state: priceState, oracleToFeed } = divergencies;
   const divergence = oracleToFeed[pair];
-  const { heartbeat, blockNumber } = priceState.state;
+  const { heartbeat, blockNumber } = priceState;
 
-  const oracleValue = priceState.state.oraclePrices[pair];
-  const synthValue = priceState.state.synthPrices[pair];
-  const feedValue = priceState.state.feedPrices[pair];
+  const oracleValue = Number(priceState.oraclePrices[pair]).toFixed(2);
+  const synthValue = Number(priceState.synthPrices[pair]).toFixed(2);
+  const feedValue = Number(priceState.feedPrices[pair]).toFixed(2);
 
   embedMessage
     .addField('Oracle to Feed Divergence', divergenceHr(divergence))
@@ -204,9 +204,9 @@ entity._formatCuttingLosses = (lc) => {
   const { heartbeat, blockNumber } = priceState;
   const divergence = oracleToFeed[pair];
 
-  const oracleValue = priceState.oraclePrices[pair];
-  const synthValue = priceState.synthPrices[pair];
-  const feedValue = priceState.feedPrices[pair];
+  const oracleValue = Number(priceState.oraclePrices[pair]).toFixed(2);
+  const synthValue = Number(priceState.synthPrices[pair]).toFixed(2);
+  const feedValue = Number(priceState.feedPrices[pair]).toFixed(2);
 
   embedMessage
     .addField('Oracle to Feed Divergence', divergenceHr(divergence))
