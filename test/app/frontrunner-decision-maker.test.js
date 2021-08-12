@@ -41,6 +41,19 @@ describe('Frontrunner - Decision Making', () => {
       expect(result.openedTrades).toHaveLength(0);
       expect(result.closedTrades).toHaveLength(0);
     });
+    test('Testing with wrong open trade figures, should not open a trade', async () => {
+      const divergencies = divergenceStandard();
+      divergencies.state.oraclePrices.BTCUSD =
+        divergencies.state.synthPrices.BTCUSD = 46250.2;
+      divergencies.state.feedPrices.BTCUSD = 46109.914;
+      divergencies.oracleToFeed.BTCUSD = 0.0030424404;
+
+      const result = await determineAction(divergencies);
+
+      expect(result).toContainAllKeys(['openedTrades', 'closedTrades']);
+      expect(result.openedTrades).toHaveLength(0);
+      expect(result.closedTrades).toHaveLength(0);
+    });
     test('Will create a new trade', async () => {
       const divergences = divergenceOneOpportunity();
       const result = await determineAction(divergences);
