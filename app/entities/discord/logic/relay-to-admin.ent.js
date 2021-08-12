@@ -171,10 +171,10 @@ entity._formatStayingCourse = (lc) => {
   const divergence = oracleToFeed[pair];
   const { state: priceState } = divergencies.raw;
 
-  const { heartbeat, blockNumber } = priceState;
-  const oracleValue = priceState.oraclePrices[pair];
-  const synthValue = priceState.synthPrices[pair];
-  const feedValue = priceState.feedPrices[pair];
+  const { heartbeat, blockNumber } = priceState.state;
+  const oracleValue = priceState.state.oraclePrices[pair];
+  const synthValue = priceState.state.synthPrices[pair];
+  const feedValue = priceState.state.feedPrices[pair];
 
   embedMessage
     .addField('Heartbeat - BlockNumber', `${heartbeat} - ${blockNumber}`, true)
