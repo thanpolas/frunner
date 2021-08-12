@@ -46,7 +46,7 @@ describe('Frontrunner - Decision Making', () => {
       divergencies.state.oraclePrices.BTCUSD =
         divergencies.state.synthPrices.BTCUSD = 46250.2;
       divergencies.state.feedPrices.BTCUSD = 46109.914;
-      divergencies.oracleToFeed.BTCUSD = 0.0030424404;
+      divergencies.oracleToFeed.BTCUSD = -0.0030424404;
 
       const result = await determineAction(divergencies);
 
@@ -54,7 +54,7 @@ describe('Frontrunner - Decision Making', () => {
       expect(result.openedTrades).toHaveLength(0);
       expect(result.closedTrades).toHaveLength(0);
     });
-    test('Will create a new trade', async () => {
+    test('Will create a new trade with a 3% profit', async () => {
       const divergences = divergenceOneOpportunity();
       const result = await determineAction(divergences);
 

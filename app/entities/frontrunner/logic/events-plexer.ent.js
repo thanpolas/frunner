@@ -2,17 +2,18 @@
  * @fileoverview Frontrunner core functionality.
  */
 
+const config = require('config');
 const { assignIn } = require('lodash');
 
-const { events, eventTypes } = require('../../events');
+const { events, eventTypes, LogEvents } = require('../../events');
 const { PAIRS_AR } = require('../../price-feeds');
 
 const { determineAction } = require('./decision-maker.ent');
 const { getDivergence } = require('../../../utils/helpers');
-// const log = require('../../../services/log.service').get();
+const log = require('../../../services/log.service').get();
 
 const { PRICE_FEED_PROCESSED, NEW_BLOCK } = eventTypes;
-// const { HEARTBEAT_UPDATE } = LogEvents;
+const { HEARTBEAT_UPDATE } = LogEvents;
 
 const entity = (module.exports = {});
 
@@ -84,7 +85,7 @@ entity._processAndDecide = async () => {
     return;
   }
 
-  const divergences = {
+  const divergencies = {
     state: assignIn(state), // deep copy state
     oracleToFeed: {},
   };
@@ -92,40 +93,40 @@ entity._processAndDecide = async () => {
   // Note: Oracle prices and synth prices are 100% the same, so only the
   //    oracle to feed divergence is calculated.
   PAIRS_AR.forEach((pair) => {
-    divergences.oracleToFeed[pair] = getDivergence(
+    divergencies.oracleToFeed[pair] = getDivergence(
       state.oraclePrices[pair],
       state.feedPrices[pair],
     );
   });
 
-  // if (entity._shouldLogUpdate(divergences)) {
-  //   log.info(
-  //     `Heartbeat Update ${state.heartbeat} - block number: ${state.blockNumber}`,
-  //     {
-  //       divergences,
-  //       relay: HEARTBEAT_UPDATE,
-  //     },
-  //   );
-  // }
+  if (entity._shouldLogUpdate(divergencies)) {
+    log.info(
+      `Heartbeat Update ${state.heartbeat} - block number: ${state.blockNumber}`,
+      {
+        divergencies,
+        relay: HEARTBEAT_UPDATE,
+      },
+    );
+  }
 
-  return determineAction(divergences);
+  return determineAction(divergencies);
 };
 
 /**
  * Will determine if it's good time to dispatch a log update.
-
- * @param {Object} divergences The divergences object.
+ *
+ * @param {Object} divergencies The divergencies object.
  * @return {boolean} True if it's time to do an update.
  * @private
  */
-entity._shouldLogUpdate = (divergences) => {
+entity._shouldLogUpdate = (divergencies) => {
   if (entity._lastHeartbeatUpdate === 0) {
-    entity._lastHeartbeatUpdate = divergences.state.heartbeat;
+    entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
     return true;
   }
 
-  if (divergences.state.heartbeat % 600 === 0) {
-    entity._lastHeartbeatUpdate = divergences.state.heartbeat;
+  if (divergencies.state.heartbeat % config.app.heartbeat_log_update === 0) {
+    entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
     return true;
   }
 };
