@@ -46,7 +46,7 @@ describe('Frontrunner - Decision Making', () => {
       divergencies.state.oraclePrices.BTCUSD =
         divergencies.state.synthPrices.BTCUSD = 46250.2;
       divergencies.state.feedPrices.BTCUSD = 46109.914;
-      divergencies.oracleToFeed.BTCUSD = 0.0030424404;
+      divergencies.oracleToFeed.BTCUSD = -0.0030424404;
 
       const result = await determineAction(divergencies);
 
