@@ -252,7 +252,7 @@ entity._formatTradesOpened = (lc) => {
       .addField('Oracle Price', `${traded_oracle_price}`, true)
       .addField(
         'Feed Price',
-        `${traded_feed_price} (${traded_projected_percent})`,
+        `${traded_feed_price} (+${divergenceHr(traded_projected_percent)})`,
         true,
       )
       .addField(
@@ -297,7 +297,7 @@ entity._formatTradesClosed = (lc) => {
 
     const embedMessage = new MessageEmbed()
       .setTitle(`Closed trade on "${pair}"`)
-      .setColor(config.discord.embed_color_open);
+      .setColor(config.discord.embed_color_close);
 
     embedMessage
       .addField(
@@ -322,10 +322,16 @@ entity._formatTradesClosed = (lc) => {
       .addField('Close TX', `${closed_tx}`, true)
       .addField(
         'Profit / Loss',
-        `${closed_profit_loss} ${traded_token_symbol} (${closed_profit_loss_percent})`,
+        `${Number(closed_profit_loss).toFixed(
+          2,
+        )} ${traded_token_symbol} (${closed_profit_loss_percent})`,
         true,
       )
-      .addField('Projected Profit %', `${traded_projected_percent}`, true)
+      .addField(
+        'Projected Profit %',
+        `${divergenceHr(traded_projected_percent)}`,
+        true,
+      )
       .setFooter(`Network: ${network} :: Testing: ${testing}`);
 
     return embedMessage;
