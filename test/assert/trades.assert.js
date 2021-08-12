@@ -143,7 +143,7 @@ assert.assertValues = (testObj, optPair, optFixtureOpen, optFixtureClose) => {
     );
     expect(testObj.traded_block_number).toEqual(fixOpen.state.blockNumber);
     expect(testObj.traded_tx).toEqual('0x');
-    expect(testObj.traded_tokens_total).toEqual(1000);
+    expect(testObj.traded_tokens_total).toEqual(10000);
     expect(testObj.traded_token_symbol).toEqual('sUSD');
   }
 
