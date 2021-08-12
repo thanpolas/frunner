@@ -46,9 +46,14 @@ docker-compose up
 
 All targets require the following environment variables:
 
--   `DATABASE_URL` A url with credentials pointing to the data store.
+-   `DATABASE_URL` A url with credentials pointing to the data store, only required on production.
 -   `DISCORD_GUILD_ID` The guild id of your server.
 -   `DISCORD_BOT_TOKEN` The Discord token of the bot.
+-   `DISCORD_BOT_LOG_CHANNEL_ID` The channel id the bot will log to.
+-   `RPC_PROVIDER_KOVAN` RPC Provider for KOVAN.
+-   `RPC_PROVIDER_MAINNET` RPC Provider for MAINNET.
+-   `RPC_PROVIDER_POLYGON` RPC Provider for POLYGON.
+-   `SIGNER_PRIVATE_KEY` Signer private key.
 
 This project also supports a [`.env` file][dotenv] which is on `.gitignore`
 for your convenience when developing on your local.
@@ -115,7 +120,7 @@ ethkey inspect ./keyfile.json --private
 
 # Deployment
 
-TBD
+Merge to `main` branch and CI will automatically deploy to Heroku.
 
 ## License
 
