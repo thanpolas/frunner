@@ -109,12 +109,12 @@ helpers.medianOfArr = (arr) => {
 /**
  * Get the divergence between two numbered expressed in percentage as a float.
  *
- * @param {number} a Numerator.
- * @param {number} b Denominator
+ * @param {number} a Denominator.
+ * @param {number} b Numerator.
  * @return {number} 0.01 = 1%.
  */
 helpers.getDivergence = (a, b) => {
-  return a / b - 1;
+  return b / a - 1;
 };
 
 /**
