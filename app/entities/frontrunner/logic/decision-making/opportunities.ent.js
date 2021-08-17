@@ -13,7 +13,7 @@ const {
 } = require('../../sql/trades.sql');
 const { SynthsSymbols, snxTrade } = require('../../../synthetix');
 
-const { wait } = require('../../../../utils/helpers');
+const { wait, divergenceHr } = require('../../../../utils/helpers');
 
 const { sUSD } = SynthsSymbols;
 
@@ -228,6 +228,7 @@ entity._updateTradeRecord = async (divergencies, pair, tradeRecord, tx) => {
   const tradeUpdateData = {
     traded: true,
     traded_projected_percent: divergencies.oracleToFeed[pair],
+    traded_projected_percent_hr: divergenceHr(divergencies.oracleToFeed[pair]),
     traded_feed_price,
     traded_oracle_price,
     traded_block_number,
