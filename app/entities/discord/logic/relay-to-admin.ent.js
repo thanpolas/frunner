@@ -165,7 +165,7 @@ entity._formatTradesClosed = (lc) => {
   const initCap = Number(config.app.initial_capital);
   const currentCap = Number(trade.closed_dst_tokens);
 
-  const capDivergence = divergenceHr(getDivergence(initCap, currentCap));
+  const capDivergence = divergenceHr(getDivergence(currentCap, initCap));
 
   const parts = ['Closed Trade'];
 
