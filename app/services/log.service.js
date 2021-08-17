@@ -83,11 +83,11 @@ logger._addMiddleware = () => {
  * @param {Object} logContext Logality log context object.
  */
 logger._removeRawKeys = (logContext) => {
-  if (logContext.context?.closedTrades?.raw) {
-    delete logContext.context.closedTrades.raw;
+  if (logContext.context?.closedTrade?.raw) {
+    delete logContext.context.closedTrade.raw;
   }
-  if (logContext.context?.openedTrades?.raw) {
-    delete logContext.context.openedTrades.raw;
+  if (logContext.context?.openedTrade?.raw) {
+    delete logContext.context.openedTrade.raw;
   }
   if (logContext.context?.divergencies?.raw) {
     delete logContext.context.divergencies.raw;
