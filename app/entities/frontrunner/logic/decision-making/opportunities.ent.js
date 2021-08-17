@@ -13,7 +13,7 @@ const {
 } = require('../../sql/trades.sql');
 const { SynthsSymbols, snxTrade } = require('../../../synthetix');
 
-const { asyncMapCap, wait } = require('../../../../utils/helpers');
+const { wait } = require('../../../../utils/helpers');
 
 const { sUSD } = SynthsSymbols;
 
@@ -26,23 +26,35 @@ const entity = (module.exports = {});
  *
  * @param {Object} divergencies The calculated divergencies.
  * @param {Object} activeTrades local state with active (open) trades.
- * @return {Promise<Array<Object>>} A promise with the new trade records if any.
+ * @return {Promise<Object|void>} A promise with the new trade record if any.
  * @private
  */
 entity.opportunities = async (divergencies, activeTrades) => {
+  // Check if there are active trades, don't open a new trade if so.
+  const hasActiveTrades = Object.keys(activeTrades);
+  if (hasActiveTrades.length) {
+    return;
+  }
+
   const opportunities = await entity._findOpportunities(divergencies);
 
-  // Filter out opportunities that open trades already exist for.
-  const newOpportunities = opportunities.filter(
-    (opportunity) => !activeTrades[opportunity.pair],
+  const [bestOpportunity] = opportunities.sort((a, b) => {
+    if (a.divergence < b.divergence) {
+      return -1;
+    }
+    if (a.divergence > b.divergence) {
+      return 1;
+    }
+    return 0;
+  });
+
+  const tradeRecord = await entity._executeOpportunity(
+    divergencies,
+    activeTrades,
+    bestOpportunity,
   );
 
-  const tradeRecords = await asyncMapCap(
-    newOpportunities,
-    entity._executeOpportunity.bind(null, divergencies, activeTrades),
-  );
-
-  return tradeRecords.filter((t) => !!t);
+  return tradeRecord;
 };
 
 /**
@@ -59,7 +71,6 @@ entity._findOpportunities = async (divergencies) => {
   const opportunities = [];
   PAIRS_AR.forEach((pair) => {
     const divergence = oracleToFeed[pair];
-    // const oracle = ETH_ORACLES[pair];
 
     const divergenceThreshold = config.app.divergence_threshold;
     if (divergence < divergenceThreshold) {
@@ -97,12 +108,6 @@ entity._executeOpportunity = async (
   opportunity,
 ) => {
   const { pair } = opportunity;
-
-  // Check if there are activetrades, don't open a new trade if so.
-  const hasActiveTrades = Object.keys(activeTrades);
-  if (hasActiveTrades.length) {
-    return;
-  }
 
   // Lock pair on active trades to avoid race conditions
   activeTrades[pair] = {};

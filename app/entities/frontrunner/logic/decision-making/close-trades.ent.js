@@ -29,7 +29,7 @@ const entity = (module.exports = {});
  *
  * @param {Object} divergencies The calculated divergencies.
  * @param {Object} activeTrades local state with active (open) trades.
- * @return {Promise<Array<Object>>} A Promise with the closed trade records.
+ * @return {Promise<Object|void>} A Promise with the closed trade or empty.
  */
 entity.closeTrades = async (divergencies, activeTrades) => {
   const tradePairs = Object.keys(activeTrades);
@@ -43,9 +43,9 @@ entity.closeTrades = async (divergencies, activeTrades) => {
     entity._checkCloseTrade.bind(null, divergencies, activeTrades),
   );
 
-  const closedTrades = flatFilter(closedTradesRaw);
+  const [closedTrade] = flatFilter(closedTradesRaw);
 
-  return closedTrades;
+  return closedTrade;
 };
 
 /**
