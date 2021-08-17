@@ -38,15 +38,13 @@ entity.opportunities = async (divergencies, activeTrades) => {
 
   const opportunities = await entity._findOpportunities(divergencies);
 
-  const [bestOpportunity] = opportunities.sort((a, b) => {
-    if (a.divergence < b.divergence) {
-      return -1;
-    }
-    if (a.divergence > b.divergence) {
-      return 1;
-    }
-    return 0;
-  });
+  if (!opportunities.length) {
+    return;
+  }
+
+  entity._sortOpportunities(opportunities);
+
+  const [bestOpportunity] = opportunities;
 
   const tradeRecord = await entity._executeOpportunity(
     divergencies,
@@ -55,6 +53,24 @@ entity.opportunities = async (divergencies, activeTrades) => {
   );
 
   return tradeRecord;
+};
+
+/**
+ * Sorts the opportunities in place based on the divergence (higher first).
+ *
+ * @param {Array<Object>} opportunities The opportunities.
+ * @private
+ */
+entity._sortOpportunities = (opportunities) => {
+  opportunities.sort((a, b) => {
+    if (a.divergence > b.divergence) {
+      return -1;
+    }
+    if (a.divergence < b.divergence) {
+      return 1;
+    }
+    return 0;
+  });
 };
 
 /**
