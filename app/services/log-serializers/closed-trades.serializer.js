@@ -23,6 +23,7 @@ module.exports = (usePath = 'context.closedTrade') => {
       closed_profit_loss: val.closed_profit_loss,
       traded_projected_percent_hr: val.traded_projected_percent_hr,
       closed_profit_loss_percent_hr: val.closed_profit_loss_percent_hr,
+      closed_dst_tokens: val.closed_dst_tokens,
       closed_cut_losses: val.closed_cut_losses,
       testing: val.testing,
     };
