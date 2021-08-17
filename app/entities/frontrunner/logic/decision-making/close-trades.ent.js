@@ -35,7 +35,7 @@ entity.closeTrades = async (divergencies, activeTrades) => {
   const tradePairs = Object.keys(activeTrades);
 
   if (tradePairs.length === 0) {
-    return [];
+    return;
   }
 
   const closedTradesRaw = await asyncMapCap(
@@ -213,7 +213,8 @@ entity._updateTradeRecord = async (
     closed_tx,
     closed_price_diff,
     closed_profit_loss,
-    closed_profit_loss_percent: divergenceHr(closed_profit_loss_percent),
+    closed_profit_loss_percent,
+    closed_profit_loss_percent_hr: divergenceHr(closed_profit_loss_percent),
     closed_feed_price,
     closed_oracle_price,
     closed_block_number,
