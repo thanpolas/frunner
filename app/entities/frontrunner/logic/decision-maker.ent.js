@@ -74,8 +74,8 @@ entity.determineAction = async (divergencies) => {
     closeTrades(divergencies, entity.activeTrades),
   ]);
 
-  result.openedTrades = openedTrade;
-  result.closedTrades = closedTrade;
+  result.openedTrade = openedTrade;
+  result.closedTrade = closedTrade;
 
   entity._decisionRunning = false;
 
