@@ -37,9 +37,9 @@ describe('Frontrunner - Decision Making', () => {
     test('Will complete a decision without any new opportunities', async () => {
       const result = await determineAction(divergenceStandard());
 
-      expect(result).toContainAllKeys(['openedTrades', 'closedTrades']);
-      expect(result.openedTrades).toHaveLength(0);
-      expect(result.closedTrades).toHaveLength(0);
+      expect(result).toContainAllKeys(['openedTrade', 'closedTrade']);
+      expect(result.openedTrade).toBeUndefined();
+      expect(result.closedTrade).toBeUndefined();
     });
     test('Testing with wrong open trade figures, should not open a trade', async () => {
       const divergencies = divergenceStandard();
@@ -50,37 +50,36 @@ describe('Frontrunner - Decision Making', () => {
 
       const result = await determineAction(divergencies);
 
-      expect(result).toContainAllKeys(['openedTrades', 'closedTrades']);
-      expect(result.openedTrades).toHaveLength(0);
-      expect(result.closedTrades).toHaveLength(0);
+      expect(result).toContainAllKeys(['openedTrade', 'closedTrade']);
+      expect(result.openedTrade).toBeUndefined();
+      expect(result.closedTrade).toBeUndefined();
     });
     test('Will create a new trade with a 3% profit', async () => {
       const divergences = divergenceOneOpportunity();
       const result = await determineAction(divergences);
 
-      expect(result.openedTrades).toHaveLength(1);
-      expect(result.closedTrades).toHaveLength(0);
+      expect(result.openedTrade).toBeObject();
+      expect(result.closedTrade).toBeUndefined();
 
-      const [openTrade] = result.openedTrades;
-      tradesAssert(openTrade, 'BTCUSD', divergences);
+      const { openedTrade } = result;
+      tradesAssert(openedTrade, 'BTCUSD', divergences);
     });
-    test('Will create two new trades', async () => {
+    test('Will create one new trade out of two opportunities', async () => {
       const divergences = divergenceTwoOpportunities();
       const result = await determineAction(divergences);
 
-      expect(result.openedTrades).toHaveLength(2);
-      expect(result.closedTrades).toHaveLength(0);
+      expect(result.openedTrade).toBeObject();
+      expect(result.closedTrade).toBeUndefined();
 
-      const [openTrade1, openTrade2] = result.openedTrades;
-      tradesAssert(openTrade1, 'BTCUSD', divergences);
-      tradesAssert(openTrade2, 'LINKUSD', divergences);
+      const { openedTrade } = result;
+      tradesAssert(openedTrade, 'BTCUSD', divergences);
     });
     test('Will create a new trade and close it', async () => {
       const divergencesOpen = divergenceOneOpportunity();
       const result = await determineAction(divergencesOpen);
 
-      expect(result.openedTrades).toHaveLength(1);
-      expect(result.closedTrades).toHaveLength(0);
+      expect(result.openedTrade).toBeObject();
+      expect(result.closedTrad).toBeUndefined();
 
       const divergencesClose = divergenceOneOpportunity();
 
@@ -92,12 +91,12 @@ describe('Frontrunner - Decision Making', () => {
 
       const resultClose = await determineAction(divergencesClose);
 
-      expect(resultClose.openedTrades).toHaveLength(0);
-      expect(resultClose.closedTrades).toHaveLength(1);
+      expect(resultClose.openedTrade).toBeUndefined();
+      expect(resultClose.closedTrade).toBeObject();
 
-      const [closedTrade] = resultClose.closedTrades;
+      const { closedTrade } = resultClose;
 
-      expect(closedTrade.closed_profit_loss_percent).toEqual('3.00%');
+      expect(closedTrade.closed_profit_loss_percent_hr).toEqual('3.00%');
       expect(closedTrade.closed_price_diff).toEqual(1379.3);
       expect(Number(closedTrade.closed_profit_loss).toFixed(2)).toEqual(
         '300.00',

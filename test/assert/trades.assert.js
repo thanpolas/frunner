@@ -43,20 +43,31 @@ assert.assertProperties = (testObj) => {
     'traded_feed_price',
     'traded_oracle_price',
     'traded_projected_percent',
+    'traded_projected_percent_hr',
     'traded_block_number',
     'traded_tx',
-    'traded_tokens_total',
-    'traded_token_symbol',
+    'traded_source_tokens',
+    'traded_source_token_symbol',
+    'traded_dst_tokens',
+    'traded_dst_token_symbol',
+    'traded_gas_spent',
     'closed_trade',
     'closed_at',
     'closed_tx',
     'closed_price_diff',
     'closed_profit_loss',
     'closed_profit_loss_percent',
+    'closed_profit_loss_percent_hr',
     'closed_feed_price',
     'closed_oracle_price',
     'closed_block_number',
     'testing',
+    'closed_cut_losses',
+    'closed_source_tokens',
+    'closed_source_token_symbol',
+    'closed_dst_tokens',
+    'closed_dst_token_symbol',
+    'closed_gas_spent',
     'created_at',
     'updated_at',
   ]);
@@ -81,10 +92,11 @@ assert.assertTypes = (testObj, optFixtureClose) => {
   expect(testObj.traded_feed_price).toBeNumber();
   expect(testObj.traded_oracle_price).toBeNumber();
   expect(testObj.traded_projected_percent).toBeNumber();
+  expect(testObj.traded_projected_percent_hr).toBeString();
   expect(testObj.traded_block_number).toBeNumber();
   expect(testObj.traded_tx).toBeString();
-  expect(testObj.traded_tokens_total).toBeNumber();
-  expect(testObj.traded_token_symbol).toBeString();
+  expect(testObj.traded_source_tokens).toBeNumber();
+  expect(testObj.traded_source_token_symbol).toBeString();
   expect(testObj.closed_trade).toBeBoolean();
 
   if (optFixtureClose) {
@@ -92,7 +104,8 @@ assert.assertTypes = (testObj, optFixtureClose) => {
     expect(testObj.closed_tx).toBeString();
     expect(testObj.closed_price_diff).toBeNumber();
     expect(testObj.closed_profit_loss).toBeNumber();
-    expect(testObj.closed_profit_loss_percent).toBeString();
+    expect(testObj.closed_profit_loss_percent).toBeNumber();
+    expect(testObj.closed_profit_loss_percent_hr).toBeString();
     expect(testObj.closed_feed_price).toBeNumber();
     expect(testObj.closed_oracle_price).toBeNumber();
     expect(testObj.closed_block_number).toBeNumber();
@@ -143,8 +156,8 @@ assert.assertValues = (testObj, optPair, optFixtureOpen, optFixtureClose) => {
     );
     expect(testObj.traded_block_number).toEqual(fixOpen.state.blockNumber);
     expect(testObj.traded_tx).toEqual('0x');
-    expect(testObj.traded_tokens_total).toEqual(10000);
-    expect(testObj.traded_token_symbol).toEqual('sUSD');
+    expect(testObj.traded_source_tokens).toEqual(10000);
+    expect(testObj.traded_source_token_symbol).toEqual('sUSD');
   }
 
   if (optFixtureClose) {

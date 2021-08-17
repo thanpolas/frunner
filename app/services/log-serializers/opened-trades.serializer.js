@@ -4,22 +4,24 @@
  * @param {string=} usePath Set to override default log write path.
  * @return {function} Serializer for logality.
  */
-module.exports = (usePath = 'context.openedTrades') => {
+module.exports = (usePath = 'context.openedTrade') => {
   return (val) => {
+    if (!val) {
+      return { path: usePath };
+    }
     const value = {
       raw: val,
-    };
 
-    val.forEach((tradeRecord, index) => {
-      value[`${index}_pair`] = tradeRecord.pair;
-      value[`${index}_network`] = tradeRecord.network;
-      value[`${index}_traded_feed_price`] = tradeRecord.traded_feed_price;
-      value[`${index}_traded_oracle_price`] = tradeRecord.traded_oracle_price;
-      value[`${index}_traded_tx`] = tradeRecord.traded_tx;
-      value[`${index}_traded_tokens_total`] = tradeRecord.traded_tokens_total;
-      value[`${index}_traded_token_symbol`] = tradeRecord.traded_token_symbol;
-      value[`${index}_testing`] = tradeRecord.testing;
-    });
+      pair: val.pair,
+      network: val.network,
+      traded_feed_price: val.traded_feed_price,
+      traded_oracle_price: val.traded_oracle_price,
+      traded_tx: val.traded_tx,
+      traded_source_tokens: val.traded_source_tokens,
+      traded_source_token_symbol: val.traded_source_token_symbol,
+      traded_projected_percent_hr: val.traded_projected_percent_hr,
+      testing: val.testing,
+    };
 
     return {
       path: usePath,

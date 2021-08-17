@@ -60,8 +60,8 @@ entity.init = async () => {
  */
 entity.determineAction = async (divergencies) => {
   const result = {
-    openedTrades: [],
-    closedTrades: [],
+    openedTrade: null,
+    closedTrade: null,
   };
 
   if (entity._decisionRunning) {
@@ -69,13 +69,13 @@ entity.determineAction = async (divergencies) => {
   }
   entity._decisionRunning = true;
 
-  const [openedTrades, closedTrades] = await Promise.all([
+  const [openedTrade, closedTrade] = await Promise.all([
     opportunities(divergencies, entity.activeTrades),
     closeTrades(divergencies, entity.activeTrades),
   ]);
 
-  result.openedTrades = openedTrades;
-  result.closedTrades = closedTrades;
+  result.openedTrade = openedTrade;
+  result.closedTrade = closedTrade;
 
   entity._decisionRunning = false;
 
@@ -93,15 +93,15 @@ entity.determineAction = async (divergencies) => {
  * @private
  */
 entity.logResults = async (divergencies, result) => {
-  const { openedTrades, closedTrades } = result;
+  const { openedTrade, closedTrade } = result;
 
-  if (openedTrades.length === 0 && closedTrades.length === 0) {
+  if (!openedTrade && !closedTrade) {
     return;
   }
 
   await log.info('Decision Making Ended', {
-    openedTrades,
-    closedTrades,
+    openedTrade,
+    closedTrade,
     divergencies,
     relay: DECISION_ENDED,
   });

@@ -5,7 +5,7 @@
 const { getAllPricesCoinbase } = require('./logic/coinbase-price.ent');
 const { getAllPriceBitfinex } = require('./logic/bitfinex-price.ent');
 const { getAllPricesKraken } = require('./logic/kraken-price.ent');
-const { Pairs, PAIRS_AR } = require('./constants/pairs.const');
+const { Pairs, PAIRS_AR, PairsToSynths } = require('./constants/pairs.const');
 const { Sources, SOURCES_AR } = require('./constants/sources.const');
 
 const log = require('../../services/log.service').get();
@@ -35,6 +35,7 @@ entity.Pairs = Pairs;
 entity.PAIRS_AR = PAIRS_AR;
 entity.Sources = Sources;
 entity.SOURCES_AR = SOURCES_AR;
+entity.PairsToSynths = PairsToSynths;
 
 /**
  * Initialize the entity and service.

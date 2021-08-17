@@ -16,8 +16,8 @@ const Logality = require('logality');
 
 // Serializers
 const relaySerializer = require('./log-serializers/relay.serializer');
-const openedTradesSerializer = require('./log-serializers/opened-trades.serializer');
-const closedTradesSerializer = require('./log-serializers/closed-trades.serializer');
+const openedTradeSerializer = require('./log-serializers/opened-trades.serializer');
+const closedTradeSerializer = require('./log-serializers/closed-trades.serializer');
 const divergenciesSerializer = require('./log-serializers/divergencies.serializer');
 const pairSerializer = require('./log-serializers/pair.serializer');
 
@@ -42,8 +42,8 @@ logger.init = function (bootOpts = {}) {
 
   const serializers = {
     relay: relaySerializer(),
-    openedTrades: openedTradesSerializer(),
-    closedTrades: closedTradesSerializer(),
+    openedTrade: openedTradeSerializer(),
+    closedTrade: closedTradeSerializer(),
     divergencies: divergenciesSerializer(),
     pair: pairSerializer(),
   };
@@ -83,11 +83,11 @@ logger._addMiddleware = () => {
  * @param {Object} logContext Logality log context object.
  */
 logger._removeRawKeys = (logContext) => {
-  if (logContext.context?.closedTrades?.raw) {
-    delete logContext.context.closedTrades.raw;
+  if (logContext.context?.closedTrade?.raw) {
+    delete logContext.context.closedTrade.raw;
   }
-  if (logContext.context?.openedTrades?.raw) {
-    delete logContext.context.openedTrades.raw;
+  if (logContext.context?.openedTrade?.raw) {
+    delete logContext.context.openedTrade.raw;
   }
   if (logContext.context?.divergencies?.raw) {
     delete logContext.context.divergencies.raw;
