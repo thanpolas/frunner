@@ -4,15 +4,18 @@
 
 const config = require('config');
 
-const { PAIRS_AR } = require('../../../price-feeds');
-// const { ETH_ORACLES } = require('../../../chainlink');
+const { PAIRS_AR, PairsToSynths } = require('../../../price-feeds');
+
 const {
   create: tradeCreate,
   update: tradeUpdate,
   getById: tradeGetById,
 } = require('../../sql/trades.sql');
+const { SynthsSymbols, snxTrade } = require('../../../synthetix');
 
 const { asyncMapCap, wait } = require('../../../../utils/helpers');
+
+const { sUSD } = SynthsSymbols;
 
 // const log = require('../../../../services/log.service').get();
 
@@ -95,9 +98,49 @@ entity._executeOpportunity = async (
 ) => {
   const { pair } = opportunity;
 
+  // Check if there are activetrades, don't open a new trade if so.
+  const hasActiveTrades = Object.keys(activeTrades);
+  if (hasActiveTrades.length) {
+    return;
+  }
+
   // Lock pair on active trades to avoid race conditions
   activeTrades[pair] = {};
 
+  const tradeRecord = await entity._createTradeRecord(opportunity);
+
+  activeTrades[pair] = tradeRecord;
+
+  let tx;
+  if (config.app.testing) {
+    // On testing, emulate trade TX, as if it takes 2s.
+    await wait(2000);
+  } else {
+    // Actually execute the trade.
+    tx = await entity._performTrade(pair);
+  }
+
+  const updatedTradeRecord = await entity._updateTradeRecord(
+    divergencies,
+    pair,
+    tradeRecord,
+    tx,
+  );
+
+  activeTrades[opportunity.pair] = updatedTradeRecord;
+
+  return updatedTradeRecord;
+};
+
+/**
+ * Create the initial trade record.
+ *
+ * @param {Object} opportunity Local opportunity object.
+ * @return {Promise<Object>} A Promise with the created record.
+ * @private
+ */
+entity._createTradeRecord = async (opportunity) => {
+  const { pair } = opportunity;
   const tradeData = {
     pair,
     opportunity_feed_price: opportunity.feedPrice,
@@ -108,37 +151,67 @@ entity._executeOpportunity = async (
   };
 
   const tradeId = await tradeCreate(tradeData);
-  let tradeRecord = await tradeGetById(tradeId);
-  activeTrades[opportunity.pair] = tradeRecord;
+  const tradeRecord = await tradeGetById(tradeId);
 
-  let traded_tx = '0x';
-  if (config.app.testing) {
-    // On testing, emulate trade TX, as if it takes 2s.
-    await wait(2000);
-  } else {
-    traded_tx = await entity._performTrade();
-    // Actually execute the trade.
-  }
+  return tradeRecord;
+};
 
+/**
+ * Will perform the actual trade, if all the conditions are met.
+ *
+ * @param {string} pair The pair to perform a trade for.
+ * @return {Promise<Object|void>} A Promise with the tx object or empty.
+ * @private
+ */
+entity._performTrade = async (pair) => {
+  const synthSymbol = PairsToSynths[pair];
+
+  const tx = await snxTrade(sUSD, synthSymbol);
+
+  return tx;
+};
+
+/**
+ * Updates the trade record with the executed trade.
+ *
+ * @param {Object} divergencies The calculated divergencies.
+ * @param {string} pair The pair of the opportunity.
+ * @param {Object} tradeRecord The created trade record.
+ * @param {Object=} tx Transaction object of the trade or empty if testing.
+ * @return {Promise<Object>} A Promise with the updated trade record.
+ * @private
+ */
+entity._updateTradeRecord = async (divergencies, pair, tradeRecord, tx) => {
+  const { id: tradeId } = tradeRecord;
   const { state: currentState } = divergencies;
   const traded_feed_price = currentState.feedPrices[pair];
   const traded_oracle_price = currentState.oraclePrices[pair];
+  let traded_tx = '0x';
+  let traded_tokens_total = 10000;
+  let traded_token_symbol = 'sUSD';
+  let traded_block_number = currentState.blockNumber;
+
+  if (tx) {
+    traded_tx = tx.transactionHash;
+    traded_tokens_total = tx.sourceTokenQuantityReadable;
+    traded_token_symbol = tx.sourceTokenSymbol;
+    traded_block_number = tx.blockNumber;
+  }
 
   const tradeUpdateData = {
     traded: true,
+    traded_projected_percent: divergencies.oracleToFeed[pair],
     traded_feed_price,
     traded_oracle_price,
-    traded_block_number: currentState.blockNumber,
-    traded_projected_percent: divergencies.oracleToFeed[pair],
+    traded_block_number,
     traded_tx,
-    traded_tokens_total: 10000,
-    traded_token_symbol: 'sUSD',
+    traded_tokens_total,
+    traded_token_symbol,
   };
 
   await tradeUpdate(tradeId, tradeUpdateData);
 
-  tradeRecord = await tradeGetById(tradeId);
-  activeTrades[opportunity.pair] = tradeRecord;
+  const updatedTradeRecord = await tradeGetById(tradeId);
 
-  return tradeRecord;
+  return updatedTradeRecord;
 };
