@@ -169,24 +169,22 @@ entity._formatTradesClosed = (lc) => {
 
   const parts = ['Closed Trade'];
 
-  parts.push(`Network: ${trade.network}`);
-  parts.push(`Testing: ${trade.testing}`);
-  parts.push(`Cut Loss: ${trade.closed_cut_losses}`);
-
-  parts.push(`Current sUSD Cap: ${trade.closed_dst_tokens}`);
-  parts.push(`Original sUSD Cap & %: ${initCap} (${capDivergence})`);
-  parts.push(`Synth: ${trade.traded_dst_token_symbol}`);
-
-  parts.push(`Profit/loss: ${trade.closed_profit_loss.toFixed(4)}`);
+  parts.push(`**Network**: ${trade.network}`);
+  parts.push(`**Testing**: ${trade.testing}`);
+  parts.push(`**Cut Loss**: ${trade.closed_cut_losses}`);
+  parts.push(`**Current sUSD Cap**: ${trade.closed_dst_tokens}`);
+  parts.push(`**Original sUSD Cap & %**: ${initCap} (${capDivergence})`);
+  parts.push(`**Synth**: ${trade.traded_dst_token_symbol}`);
+  parts.push(`**Profit/loss**: ${trade.closed_profit_loss.toFixed(4)}`);
   parts.push(
-    `Open/Close Percent: ${trade.traded_projected_percent_hr}/${trade.closed_profit_loss_percent_hr}`,
+    `**Open/Close Percent**: ${trade.traded_projected_percent_hr}/${trade.closed_profit_loss_percent_hr}`,
   );
 
   parts.push(
-    `Open/Close Feed Price: ${trade.traded_feed_price}/${trade.closed_feed_price}`,
+    `**Open/Close Feed Price**: ${trade.traded_feed_price}/${trade.closed_feed_price}`,
   );
   parts.push(
-    `Open/Close Oracle Price: ${trade.traded_oracle_price}/${trade.closed_oracle_price}`,
+    `**Open/Close Oracle Price**: ${trade.traded_oracle_price}/${trade.closed_oracle_price}`,
   );
 
   const message = parts.join(' - ');
