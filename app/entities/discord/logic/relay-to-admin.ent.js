@@ -48,6 +48,10 @@ entity.loggerToAdmin = async (logContext) => {
       return;
     }
 
+    if (!entity._channel) {
+      return;
+    }
+
     // only deal with logs to relay or errors.
     if (logContext.relay || logContext.severity < 5) {
       message = entity._formatMessage(logContext);
