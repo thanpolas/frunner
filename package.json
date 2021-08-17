@@ -46,6 +46,7 @@
     "dependencies": {
         "@synthetixio/contracts-interface": "2.47.0-ovm.5",
         "@synthetixio/queries": "2.47.0-ovm.5",
+        "@thanpolas/crypto-utils": "0.1.1",
         "axios": "0.21.1",
         "bluebird": "3.7.2",
         "config": "3.3.6",
