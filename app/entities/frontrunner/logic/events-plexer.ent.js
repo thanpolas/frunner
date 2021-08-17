@@ -5,7 +5,7 @@
 const config = require('config');
 const { assignIn } = require('lodash');
 
-const { events, eventTypes, LogEvents } = require('../../events');
+const { events, eventTypes } = require('../../events');
 const { PAIRS_AR } = require('../../price-feeds');
 
 const { determineAction } = require('./decision-maker.ent');
@@ -13,7 +13,6 @@ const { getDivergence } = require('../../../utils/helpers');
 const log = require('../../../services/log.service').get();
 
 const { PRICE_FEED_PROCESSED, NEW_BLOCK } = eventTypes;
-const { HEARTBEAT_UPDATE } = LogEvents;
 
 const entity = (module.exports = {});
 
@@ -104,7 +103,6 @@ entity._processAndDecide = async () => {
       `Heartbeat Update ${state.heartbeat} - block number: ${state.blockNumber}`,
       {
         divergencies,
-        relay: HEARTBEAT_UPDATE,
       },
     );
   }
