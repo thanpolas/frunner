@@ -3,9 +3,13 @@
  */
 
 const { ethers } = require('ethers');
+const { tokenAuto } = require('@thanpolas/crypto-utils');
 
 const { getSigner, network, erc20GenericAbi } = require('../../ether');
-const { SynthERC20AddressesAr } = require('../constants/synths.const');
+const {
+  SynthERC20AddressesAr,
+  SYNTH_DECIMALS,
+} = require('../constants/synths.const');
 const { asyncMapCap } = require('../../../utils/helpers');
 
 const log = require('../../../services/log.service').get();
@@ -23,7 +27,14 @@ entity.balances = {};
  * @return {Promise<void>}
  */
 entity.init = async () => {
-  entity.balances = await entity.getBalances();
+  const balances = await entity.getBalances();
+  const tokens = Object.keys(balances);
+  const balancesReadable = tokens.map((token) => {
+    const val = tokenAuto(balances[token], SYNTH_DECIMALS);
+    return `${token}: ${val}`;
+  });
+
+  await log.info(`Balances of synths: ${balancesReadable.join(' - ')}`);
 };
 
 /**
@@ -45,7 +56,7 @@ entity.getBalances = async () => {
         const contract = new ethers.Contract(addr, erc20GenericAbi, signer);
         const balance = await contract.balanceOf(ourAddr);
         const symbol = await contract.symbol();
-        balances[symbol] = balance;
+        entity.balances[symbol] = balances[symbol] = balance;
       },
       10,
     );
