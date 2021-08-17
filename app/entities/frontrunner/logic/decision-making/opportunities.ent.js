@@ -187,14 +187,14 @@ entity._updateTradeRecord = async (divergencies, pair, tradeRecord, tx) => {
   const traded_feed_price = currentState.feedPrices[pair];
   const traded_oracle_price = currentState.oraclePrices[pair];
   let traded_tx = '0x';
-  let traded_tokens_total = 10000;
-  let traded_token_symbol = 'sUSD';
+  let traded_source_tokens = 10000;
+  let traded_source_token_symbol = 'sUSD';
   let traded_block_number = currentState.blockNumber;
 
   if (tx) {
     traded_tx = tx.transactionHash;
-    traded_tokens_total = tx.sourceTokenQuantityReadable;
-    traded_token_symbol = tx.sourceTokenSymbol;
+    traded_source_tokens = tx.sourceTokenQuantityReadable;
+    traded_source_token_symbol = tx.sourceTokenSymbol;
     traded_block_number = tx.blockNumber;
   }
 
@@ -205,8 +205,8 @@ entity._updateTradeRecord = async (divergencies, pair, tradeRecord, tx) => {
     traded_oracle_price,
     traded_block_number,
     traded_tx,
-    traded_tokens_total,
-    traded_token_symbol,
+    traded_source_tokens,
+    traded_source_token_symbol,
   };
 
   await tradeUpdate(tradeId, tradeUpdateData);

@@ -45,8 +45,8 @@ assert.assertProperties = (testObj) => {
     'traded_projected_percent',
     'traded_block_number',
     'traded_tx',
-    'traded_tokens_total',
-    'traded_token_symbol',
+    'traded_source_tokens',
+    'traded_source_token_symbol',
     'closed_trade',
     'closed_at',
     'closed_tx',
@@ -83,8 +83,8 @@ assert.assertTypes = (testObj, optFixtureClose) => {
   expect(testObj.traded_projected_percent).toBeNumber();
   expect(testObj.traded_block_number).toBeNumber();
   expect(testObj.traded_tx).toBeString();
-  expect(testObj.traded_tokens_total).toBeNumber();
-  expect(testObj.traded_token_symbol).toBeString();
+  expect(testObj.traded_source_tokens).toBeNumber();
+  expect(testObj.traded_source_token_symbol).toBeString();
   expect(testObj.closed_trade).toBeBoolean();
 
   if (optFixtureClose) {
@@ -143,8 +143,8 @@ assert.assertValues = (testObj, optPair, optFixtureOpen, optFixtureClose) => {
     );
     expect(testObj.traded_block_number).toEqual(fixOpen.state.blockNumber);
     expect(testObj.traded_tx).toEqual('0x');
-    expect(testObj.traded_tokens_total).toEqual(10000);
-    expect(testObj.traded_token_symbol).toEqual('sUSD');
+    expect(testObj.traded_source_tokens).toEqual(10000);
+    expect(testObj.traded_source_token_symbol).toEqual('sUSD');
   }
 
   if (optFixtureClose) {

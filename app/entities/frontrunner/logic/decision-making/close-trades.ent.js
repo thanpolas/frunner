@@ -138,7 +138,7 @@ entity._closeTrade = async (divergencies, activeTrades, pair) => {
   );
 
   const closed_profit_loss =
-    closed_profit_loss_percent * trade.traded_tokens_total;
+    closed_profit_loss_percent * trade.traded_source_tokens;
 
   const closed_feed_price = divergencies.state.feedPrices[pair];
 

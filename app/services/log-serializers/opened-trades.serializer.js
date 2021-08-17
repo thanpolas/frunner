@@ -16,8 +16,9 @@ module.exports = (usePath = 'context.openedTrades') => {
       value[`${index}_traded_feed_price`] = tradeRecord.traded_feed_price;
       value[`${index}_traded_oracle_price`] = tradeRecord.traded_oracle_price;
       value[`${index}_traded_tx`] = tradeRecord.traded_tx;
-      value[`${index}_traded_tokens_total`] = tradeRecord.traded_tokens_total;
-      value[`${index}_traded_token_symbol`] = tradeRecord.traded_token_symbol;
+      value[`${index}_traded_source_tokens`] = tradeRecord.traded_source_tokens;
+      value[`${index}_traded_source_token_symbol`] =
+        tradeRecord.traded_source_token_symbol;
       value[`${index}_testing`] = tradeRecord.testing;
     });
 

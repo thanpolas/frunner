@@ -243,8 +243,8 @@ entity._formatTradesOpened = (lc) => {
       traded_oracle_price,
       traded_projected_percent,
       traded_tx,
-      traded_tokens_total,
-      traded_token_symbol,
+      traded_source_tokens,
+      traded_source_token_symbol,
       traded_block_number: tradedBlockNumber,
     } = openedTrade;
 
@@ -262,7 +262,7 @@ entity._formatTradesOpened = (lc) => {
       )
       .addField(
         'Tokens Traded',
-        `${traded_tokens_total} ${traded_token_symbol}`,
+        `${traded_source_tokens} ${traded_source_token_symbol}`,
       )
       .addField('TX', `${traded_tx}`, true);
 
@@ -290,9 +290,9 @@ entity._formatTradesClosed = (lc) => {
       pair,
       traded_feed_price,
       traded_oracle_price,
-      traded_tokens_total,
+      traded_source_tokens,
       traded_projected_percent,
-      traded_token_symbol,
+      traded_source_token_symbol,
       traded_block_number: tradedBlockNumber,
       closed_block_number: blockNumberClosed,
       closed_oracle_price,
@@ -324,14 +324,14 @@ entity._formatTradesClosed = (lc) => {
       )
       .addField(
         'Tokens Traded',
-        `${traded_tokens_total} ${traded_token_symbol}`,
+        `${traded_source_tokens} ${traded_source_token_symbol}`,
       )
       .addField('Close TX', `${closed_tx}`, true)
       .addField(
         'Profit / Loss',
         `${Number(closed_profit_loss).toFixed(
           2,
-        )} ${traded_token_symbol} (${closed_profit_loss_percent})`,
+        )} ${traded_source_token_symbol} (${closed_profit_loss_percent})`,
         true,
       )
       .addField(
