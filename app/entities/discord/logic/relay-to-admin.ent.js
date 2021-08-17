@@ -4,16 +4,14 @@
  */
 
 const config = require('config');
-const { MessageEmbed } = require('discord.js');
 
 const { LogEvents } = require('../../events');
 const { isConnected } = require('../../../services/discord.service');
 const globals = require('../../../utils/globals');
 const { getGuildChannel } = require('./guild.ent');
-const { divergenceHr } = require('../../../utils/helpers');
+const { divergenceHr, getDivergence } = require('../../../utils/helpers');
 
-const { DECISION_ENDED, STAYING_COURSE, CUTTING_LOSSES, HEARTBEAT_UPDATE } =
-  LogEvents;
+const { DECISION_ENDED } = LogEvents;
 
 const entity = (module.exports = {});
 
@@ -91,7 +89,7 @@ entity.loggerToAdmin = async (logContext) => {
  * Format log message.
  *
  * @param {Object} lc Logality log context object.
- * @return {string|DiscordMessageEmbed|Array<DiscordMessageEmbed>} The message.
+ * @return {string|void>} The message.
  * @private
  */
 entity._formatMessage = (lc) => {
@@ -102,12 +100,6 @@ entity._formatMessage = (lc) => {
   switch (lc.relay) {
     case DECISION_ENDED:
       return entity._formatDecisionEnded(lc);
-    case STAYING_COURSE:
-      return entity._formatStayingCourse(lc);
-    case CUTTING_LOSSES:
-      return entity._formatCuttingLosses(lc);
-    case HEARTBEAT_UPDATE:
-      return entity._formatHeartbeatUpdate(lc);
     default:
       break;
   }
@@ -151,22 +143,54 @@ entity._formatError = (lc) => {
  * Format decision ended log event.
  *
  * @param {Object} lc Logality log context object.
- * @return {Object<DiscordMessageEmber>} An object with the created embed messages.
+ * @return {string|void} If trade closed return formatted message or void.
  * @private
  */
 entity._formatDecisionEnded = (lc) => {
-  const res = {
-    opened: null,
-    closed: null,
-  };
-  if (lc.context?.openedTrade?.raw) {
-    res.opened = entity._formatTradesOpened(lc);
-  }
   if (lc.context?.closedTrade?.raw) {
-    res.closed = entity._formatTradesClosed(lc);
+    return entity._formatTradesClosed(lc);
   }
+};
 
-  return res;
+/**
+ * Format the close trade event.
+ *
+ * @param {Object} lc Logality log context object.
+ * @return {string} Formatted close trade message.
+ * @private
+ */
+entity._formatTradesClosed = (lc) => {
+  const { raw: trade } = lc.context.closedTrade;
+
+  const initCap = Number(config.app.initial_capital);
+  const currentCap = Number(trade.closed_dst_tokens);
+
+  const capDivergence = divergenceHr(getDivergence(initCap, currentCap));
+
+  const parts = ['Closed Trade'];
+
+  parts.push(`Network: ${trade.network}`);
+  parts.push(`Testing: ${trade.testing}`);
+  parts.push(`Cut Loss: ${trade.closed_cut_losses}`);
+
+  parts.push(`Current sUSD Cap: ${trade.closed_dst_tokens}`);
+  parts.push(`Original sUSD Cap & %: ${initCap} (${capDivergence})`);
+  parts.push(`Synth: ${trade.traded_dst_token_symbol}`);
+
+  parts.push(`Profit/loss: ${trade.closed_profit_loss.toFixed(4)}`);
+  parts.push(
+    `Open/Close Percent: ${trade.traded_projected_percent_hr}/${trade.closed_profit_loss_percent_hr}`,
+  );
+
+  parts.push(
+    `Open/Close Feed Price: ${trade.traded_feed_price}/${trade.closed_feed_price}`,
+  );
+  parts.push(
+    `Open/Close Oracle Price: ${trade.traded_oracle_price}/${trade.closed_oracle_price}`,
+  );
+
+  const message = parts.join(' - ');
+  return message;
 };
 
 //
