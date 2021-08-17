@@ -35,6 +35,6 @@
         "testing": true,
         "divergence_threshold": 0.001,
         "heartbeat_log_update": 900,
-        "initial_capital": 2066.65
+        "initial_capital": 2033.78
     }
 }
