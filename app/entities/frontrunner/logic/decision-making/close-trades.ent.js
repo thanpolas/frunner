@@ -151,7 +151,7 @@ entity._closeTrade = async (divergencies, activeTrades, pair, cutLosses) => {
 entity._performTrade = async (pair) => {
   const synthSymbol = PairsToSynths[pair];
 
-  const tx = await snxTrade(sUSD, synthSymbol);
+  const tx = await snxTrade(synthSymbol, sUSD);
 
   return tx;
 };
