@@ -4,8 +4,12 @@
  * @param {string=} usePath Set to override default log write path.
  * @return {function} Serializer for logality.
  */
-module.exports = (usePath = 'context.closedTrades') => {
+module.exports = (usePath = 'context.closedTrade') => {
   return (val) => {
+    if (!val) {
+      return { path: usePath };
+    }
+
     const value = {
       raw: val,
       pair: val.pair,
@@ -16,8 +20,11 @@ module.exports = (usePath = 'context.closedTrades') => {
       traded_source_tokens: val.traded_source_tokens,
       traded_source_token_symbol: val.traded_source_token_symbol,
       closed_tx: val.closed_tx,
-      closed_profit_loss_number: val.closed_profit_loss_number,
-      closed_profit_loss_percent: val.closed_profit_loss_percent,
+      closed_profit_loss: val.closed_profit_loss,
+      traded_projected_percent_hr: val.traded_projected_percent_hr,
+      closed_profit_loss_percent_hr: val.closed_profit_loss_percent_hr,
+      closed_cut_losses: val.closed_cut_losses,
+      testing: val.testing,
     };
 
     return {
