@@ -192,6 +192,7 @@ entity._updateTradeRecord = async (divergencies, pair, tradeRecord, tx) => {
   let traded_block_number = currentState.blockNumber;
   let traded_dst_tokens = 1000;
   let traded_dst_token_symbol = pair;
+  let traded_gas_spent = 0;
 
   if (tx) {
     traded_tx = tx.transactionHash;
@@ -200,6 +201,7 @@ entity._updateTradeRecord = async (divergencies, pair, tradeRecord, tx) => {
     traded_block_number = tx.blockNumber;
     traded_dst_tokens = tx.dstTokenQuantityReadable;
     traded_dst_token_symbol = tx.dstTokenSymbol;
+    traded_gas_spent = tx.gasUsed.toString();
   }
 
   const tradeUpdateData = {
@@ -213,6 +215,7 @@ entity._updateTradeRecord = async (divergencies, pair, tradeRecord, tx) => {
     traded_source_token_symbol,
     traded_dst_tokens,
     traded_dst_token_symbol,
+    traded_gas_spent,
   };
 
   await tradeUpdate(tradeId, tradeUpdateData);
