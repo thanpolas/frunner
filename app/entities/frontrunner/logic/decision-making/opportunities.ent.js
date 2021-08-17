@@ -42,7 +42,7 @@ entity.opportunities = async (divergencies, activeTrades) => {
     entity._executeOpportunity.bind(null, divergencies, activeTrades),
   );
 
-  return tradeRecords;
+  return tradeRecords.filter((t) => !!t);
 };
 
 /**
