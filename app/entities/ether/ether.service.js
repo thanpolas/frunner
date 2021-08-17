@@ -22,7 +22,7 @@ service._providerKovan = null;
 service._providerOPKovan = null;
 
 /** @type {Object?} Stores the instantiated ether.js wallet */
-service._wallet = null;
+service._signer = null;
 
 /**
  * Inialize the ether service, create the provider.
@@ -44,7 +44,7 @@ service.init = async () => {
 
   service._providerKovan = new ethers.providers.JsonRpcProvider(kovan.jsonRpc);
 
-  service._wallet = new ethers.Wallet(
+  service._signer = new ethers.Wallet(
     config.ether.signer_private_key,
     service._providerOPKovan,
   );
@@ -93,7 +93,7 @@ service.getSigner = (network) => {
   );
 
   if (network.name === 'optimistic_kovan') {
-    return service._wallet;
+    return service._signer;
   }
 
   throw new Error('getSigner() :: Network does not exist');
