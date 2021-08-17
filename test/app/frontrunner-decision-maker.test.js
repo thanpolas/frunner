@@ -68,12 +68,11 @@ describe('Frontrunner - Decision Making', () => {
       const divergences = divergenceTwoOpportunities();
       const result = await determineAction(divergences);
 
-      expect(result.openedTrades).toHaveLength(2);
+      expect(result.openedTrades).toHaveLength(1);
       expect(result.closedTrades).toHaveLength(0);
 
-      const [openTrade1, openTrade2] = result.openedTrades;
+      const [openTrade1] = result.openedTrades;
       tradesAssert(openTrade1, 'BTCUSD', divergences);
-      tradesAssert(openTrade2, 'LINKUSD', divergences);
     });
     test('Will create a new trade and close it', async () => {
       const divergencesOpen = divergenceOneOpportunity();
