@@ -4,6 +4,6 @@
     },
     "app": {
         "testing": false,
-        "divergence_threshold": 0.0045
+        "divergence_threshold": 0.005
     }
 }
