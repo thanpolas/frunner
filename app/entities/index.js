@@ -27,6 +27,7 @@ const bootstrap = (module.exports = {});
  */
 bootstrap.init = async (bootOpts) => {
   await log.notice('Starting entities boot...');
+
   await initEther(bootOpts);
   await initSnx(bootOpts);
   await initFrontrunner(bootOpts);

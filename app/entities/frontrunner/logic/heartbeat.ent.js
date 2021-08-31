@@ -37,6 +37,15 @@ entity.init = async (bootOpts) => {
 };
 
 /**
+ * Determines if service has started or is paused.
+ *
+ * @return {boolean} If the trading service is live.
+ */
+entity.isStarted = () => {
+  return !!entity._heartbeatInterval;
+};
+
+/**
  * Dispose of all the open handlers.
  *
  */

@@ -3,7 +3,12 @@
  */
 
 const { msgError, help } = require('../messages');
-const { startTrade } = require('../../frontrunner');
+const {
+  startTrade,
+  stopTrade,
+  testToggle,
+  setThreshold,
+} = require('../../frontrunner');
 
 const log = require('../../../services/log.service').get();
 
@@ -26,6 +31,15 @@ router.handleChannelMessage = async (message) => {
       break;
     case 'start':
       await router._invokeCommand(startTrade, message, 'start', false);
+      break;
+    case 'stop':
+      await router._invokeCommand(stopTrade, message, 'stop', false);
+      break;
+    case 'test':
+      await router._invokeCommand(testToggle, message, 'test', false);
+      break;
+    case 'threshold':
+      await router._invokeCommand(setThreshold, message, 'threshold', false);
       break;
 
     default:

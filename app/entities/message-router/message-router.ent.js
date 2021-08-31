@@ -17,7 +17,7 @@ const messageRouter = (module.exports = {});
 const ALLOWED_MEMBERS = config.allowed_members.split(',');
 
 /** @const {Array<strimg>} PUBLIC_COMMANDS Public commands this bot listens to */
-messageRouter.PUBLIC_COMMANDS = ['stop', 'start', 'test', 'help'];
+messageRouter.PUBLIC_COMMANDS = ['stop', 'start', 'test', 'help', 'threshold'];
 
 /**
  * Initialize Discord event listeners for performing message router.

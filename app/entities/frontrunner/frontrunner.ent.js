@@ -19,6 +19,13 @@ const {
   init: initDecision,
 } = require('./logic/decision-maker.ent');
 
+const {
+  startTrade,
+  stopTrade,
+  testToggle,
+  setThreshold,
+} = require('./logic/command-controller.ent');
+
 const log = require('../../services/log.service').get();
 
 const entity = (module.exports = {});
@@ -27,6 +34,10 @@ entity.fetchPriceFeeds = fetchPriceFeeds;
 entity.processPriceFeeds = processPriceFeeds;
 entity.handleNewBlock = handleNewBlock;
 entity.determineAction = determineAction;
+entity.startTrade = startTrade;
+entity.stopTrade = stopTrade;
+entity.testToggle = testToggle;
+entity.setThreshold = setThreshold;
 
 /**
  * Initialize frontrunner core functionality.
