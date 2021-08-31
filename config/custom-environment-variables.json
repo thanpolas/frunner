@@ -8,7 +8,8 @@
     "discord": {
         "guild_id": "DISCORD_GUILD_ID",
         "token": "DISCORD_BOT_TOKEN",
-        "bot_log_channel_id": "DISCORD_BOT_LOG_CHANNEL_ID"
+        "bot_log_channel_id": "DISCORD_BOT_LOG_CHANNEL_ID",
+        "allowed_members": "DISCORD_ALLOWED_MEMBERS"
     },
     "ether": {
         "rpc_provider_mainnet": "RPC_PROVIDER_MAINNET",
