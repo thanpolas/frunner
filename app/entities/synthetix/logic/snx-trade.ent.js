@@ -11,6 +11,7 @@ const { SynthAddresses, SYNTH_DECIMALS } = require('../constants/synths.const');
 const { balances, getBalances } = require('./snx-balances.ent');
 
 const { getSigner, network } = require('../../ether');
+const log = require('../../../services/log.service').get();
 
 const entity = (module.exports = {});
 
@@ -27,6 +28,7 @@ entity._snxContract = null;
  * Warm up the local caches.
  */
 entity.init = async () => {
+  await log.info('initializing SNX Trading module...');
   entity._signer = getSigner(network.optimistic_kovan);
   entity._ourAddr = await entity._signer.getAddress();
   entity._snxContract = new ethers.Contract(
@@ -46,6 +48,9 @@ entity.init = async () => {
  * @return {Promise<Object>} A Promise with the completed transaction object.
  */
 entity.snxTrade = async (sourceSymbol, destinationSymbol, optSum) => {
+  await log.info(
+    `SNX Trade requested from ${sourceSymbol} to ${destinationSymbol} for ${optSum}`,
+  );
   const sourceToken = SynthAddresses[sourceSymbol];
   const destinationToken = SynthAddresses[destinationSymbol];
   const sourceAmount = optSum || balances[sourceSymbol];
