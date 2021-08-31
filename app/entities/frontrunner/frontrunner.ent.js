@@ -24,6 +24,7 @@ const {
   stopTrade,
   testToggle,
   setThreshold,
+  getBalance,
 } = require('./logic/command-controller.ent');
 
 const log = require('../../services/log.service').get();
@@ -38,6 +39,7 @@ entity.startTrade = startTrade;
 entity.stopTrade = stopTrade;
 entity.testToggle = testToggle;
 entity.setThreshold = setThreshold;
+entity.getBalance = getBalance;
 
 /**
  * Initialize frontrunner core functionality.

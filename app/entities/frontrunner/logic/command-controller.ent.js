@@ -3,8 +3,10 @@
  */
 
 const config = require('config');
+const { tokenAuto } = require('@thanpolas/crypto-utils');
 
 const { isStarted, init, dispose } = require('./heartbeat.ent');
+const { getBalances, SYNTH_DECIMALS } = require('../../synthetix');
 
 const entity = (module.exports = {});
 
@@ -70,4 +72,22 @@ entity.setThreshold = async (message) => {
   await message.reply(
     `Set divergence threshold to ${percentDivergence}% (${decimalDivergence})`,
   );
+};
+
+/**
+ * Get the current balances.
+ *
+ * @param {DiscordMessage} message The discord message.
+ * @return {Promise<void>} A Promise.
+ */
+entity.getBalance = async (message) => {
+  const balances = await getBalances();
+  const symbols = Object.keys(balances);
+  const balancesReadable = symbols.map((symbol) => {
+    const val = tokenAuto(balances[symbol], SYNTH_DECIMALS);
+    return `${symbol}: ${val}`;
+  });
+
+  const response = balancesReadable.join('\n');
+  await message.reply(response);
 };

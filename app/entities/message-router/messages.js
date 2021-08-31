@@ -11,7 +11,8 @@ messages.help = () =>
 * \`start\` :: Start trading.
 * \`stop\` :: Stop trading.
 * \`test\` :: Toggle (start ot stop) testing mode.
-* \`set [threshold]\` :: Define a new threshold.`;
+* \`threshold [threshold]\` :: Define a new threshold, i.e. \`threshold 0.65%\`
+* \`balance\` :: Get the current balances the bot has.`;
 
 messages.error = () =>
   'Unknown command, type `!help` for a list of available commands.';

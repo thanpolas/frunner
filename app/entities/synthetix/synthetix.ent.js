@@ -7,16 +7,21 @@ const log = require('../../services/log.service').get();
 const { init: initService } = require('./synthetix.service');
 const { init: initPrices, snxPrices } = require('./logic/snx-price.ent');
 const { init: initTrade, snxTrade } = require('./logic/snx-trade.ent');
-const { init: initBalances, balances } = require('./logic/snx-balances.ent');
-const { SynthsSymbols } = require('./constants/synths.const');
-// const { init: initApprove } = require('./logic/snx-approve.ent');
+const {
+  init: initBalances,
+  balances,
+  getBalances,
+} = require('./logic/snx-balances.ent');
+const { SynthsSymbols, SYNTH_DECIMALS } = require('./constants/synths.const');
 
 const entity = (module.exports = {});
 
 entity.snxPrices = snxPrices;
 entity.snxTrade = snxTrade;
 entity.balances = balances;
+entity.getBalances = getBalances;
 
+entity.SYNTH_DECIMALS = SYNTH_DECIMALS;
 entity.SynthsSymbols = SynthsSymbols;
 
 /**
@@ -30,6 +35,4 @@ entity.init = async () => {
   initPrices();
   await initBalances();
   await initTrade();
-
-  // await initApprove();
 };

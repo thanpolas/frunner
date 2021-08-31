@@ -8,6 +8,7 @@ const {
   stopTrade,
   testToggle,
   setThreshold,
+  getBalance,
 } = require('../../frontrunner');
 
 const log = require('../../../services/log.service').get();
@@ -41,7 +42,9 @@ router.handleChannelMessage = async (message) => {
     case 'threshold':
       await router._invokeCommand(setThreshold, message, 'threshold', false);
       break;
-
+    case 'balance':
+      await router._invokeCommand(getBalance, message, 'balance', true);
+      break;
     default:
       await log.warn('handleChannelMessage() :: Bogus command invoked', {
         custom: {
