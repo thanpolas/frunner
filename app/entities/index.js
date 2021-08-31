@@ -6,7 +6,7 @@
 require('./events');
 
 const discordEnt = require('./discord');
-// const messageRouter = require('./message-router');
+const messageRouter = require('./message-router');
 const { init: initEther } = require('./ether');
 const { init: initPriceFeeds } = require('./price-feeds');
 const { init: initSnx } = require('./synthetix');
@@ -27,6 +27,7 @@ const bootstrap = (module.exports = {});
  */
 bootstrap.init = async (bootOpts) => {
   await log.notice('Starting entities boot...');
+
   await initEther(bootOpts);
   await initSnx(bootOpts);
   await initFrontrunner(bootOpts);
@@ -34,7 +35,7 @@ bootstrap.init = async (bootOpts) => {
     return;
   }
 
-  // messageRouter.init(bootOpts);
+  messageRouter.init(bootOpts);
   await discordEnt.init(bootOpts);
   await initPriceFeeds(bootOpts);
 

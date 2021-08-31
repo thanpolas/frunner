@@ -30,6 +30,7 @@ entity._decisionRunning = false;
  * @return {Promise<void>} An empty promise.
  */
 entity.init = async () => {
+  await log.info('Initializing decision maker...');
   const openTrades = await getOpenTrades();
 
   if (openTrades.length === 0) {
