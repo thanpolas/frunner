@@ -65,8 +65,8 @@ entity.testToggle = async (message) => {
  * @return {Promise<void>} A Promise.
  */
 entity.setThreshold = async (message) => {
-  const [, threshold] = message.content;
-  const percentDivergence = Number.toFloat(threshold);
+  const [, threshold] = message.content.split(' ');
+  const percentDivergence = Number.parseFloat(threshold);
   const decimalDivergence = percentDivergence / 100;
   config.app.divergence_threshold = decimalDivergence;
   await message.reply(

@@ -23,11 +23,11 @@ entity._heartbeatInterval = null;
 /**
  * Initialize the heartbeat functionality.
  *
- * @param {Object} bootOpts Application boot options.
+ * @param {Object=} bootOpts Application boot options.
  * @param {boolean} bootOpts.testing When true go into testing mode.
  * @return {Promise<void>}
  */
-entity.init = async (bootOpts) => {
+entity.init = async (bootOpts = {}) => {
   if (bootOpts.testing) {
     return;
   }
@@ -51,6 +51,7 @@ entity.isStarted = () => {
  */
 entity.dispose = () => {
   clearInterval(entity._heartbeatInterval);
+  entity._heartbeatInterval = null;
 
   const provider = getProvider(network.optimistic_kovan);
   provider.removeAllListeners();

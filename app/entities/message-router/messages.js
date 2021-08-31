@@ -16,3 +16,5 @@ messages.help = () =>
 
 messages.error = () =>
   'Unknown command, type `!help` for a list of available commands.';
+
+messages.msgError = () => "An unknown error occured, it's not you, it's me";

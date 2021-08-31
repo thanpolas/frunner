@@ -5,7 +5,7 @@
 const config = require('config');
 
 const { getClient } = require('../../services/discord.service');
-const { handleMemberCommands } = require('./logic/router-member-command.ent');
+const { handleChannelMessage } = require('./logic/router-member-command.ent');
 const log = require('../../services/log.service').get();
 
 const messageRouter = (module.exports = {});
@@ -14,7 +14,7 @@ const messageRouter = (module.exports = {});
  * @const {Array<strimg>} ALLOWED_MEMBERS Discord member ids of members allowed
  *    to interact with the bot.
  */
-const ALLOWED_MEMBERS = config.allowed_members.split(',');
+const ALLOWED_MEMBERS = config.discord.allowed_members.split(',');
 
 /** @const {Array<strimg>} PUBLIC_COMMANDS Public commands this bot listens to */
 messageRouter.PUBLIC_COMMANDS = [
@@ -34,7 +34,7 @@ messageRouter.init = () => {
   log.info('Initializing message router entity...');
   const client = getClient();
 
-  client.on('message', messageRouter._onMessage);
+  client.on('messageCreate', messageRouter._onMessage);
 };
 
 /**
@@ -44,8 +44,10 @@ messageRouter.init = () => {
  * @private
  */
 messageRouter._onMessage = async (message) => {
-  // only care for channel messages. (private are  type === "dm").
-  if (message.channel.type !== 'text') {
+  if (message.type !== 'DEFAULT') {
+    return;
+  }
+  if (message.channel.type !== 'GUILD_TEXT') {
     return;
   }
 
@@ -68,5 +70,5 @@ messageRouter._onMessage = async (message) => {
     return;
   }
 
-  await handleMemberCommands(message);
+  await handleChannelMessage(message);
 };
