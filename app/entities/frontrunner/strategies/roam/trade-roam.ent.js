@@ -20,29 +20,30 @@ const { snxTrade, SYNTH_DECIMALS } = require('../../../synthetix');
 
 const { wait, divergenceHr } = require('../../../../utils/helpers');
 
-/** @type {boolean} Toggle to avoid race conditions */
-let performingTrade = false;
-
 const log = require('../../../../services/log.service').get();
 
 const entity = (module.exports = {});
+
+/** @type {boolean} Toggle to avoid race conditions */
+let performingTrade = false;
 
 /**
  * Discover and execute new trading opportunities, roam strategy.
  *
  * @param {Object} divergencies The calculated divergencies.
- * @param {string} currentTokenSymbol Current token symbol the bot holds.
+ * @param {Object?} activeOpportunity Current active opportunity if one exists.
  * @return {Promise<Object|void>} A promise with the new trade record if any.
  * @private
  */
-entity.opportunities = async (divergencies, currentTokenSymbol) => {
+entity.findOpportunity = async (divergencies, activeOpportunity) => {
+  if (activeOpportunity) {
+    return;
+  }
   if (performingTrade) {
     return;
   }
-  const opportunities = await entity._findOpportunities(
-    divergencies,
-    currentTokenSymbol,
-  );
+
+  const opportunities = await entity._findOpportunities(divergencies);
 
   if (!opportunities.length) {
     return;
@@ -52,10 +53,7 @@ entity.opportunities = async (divergencies, currentTokenSymbol) => {
 
   const [bestOpportunity] = opportunities;
 
-  const tradeRecord = await entity._executeOpportunity(
-    divergencies,
-    bestOpportunity,
-  );
+  const tradeRecord = await entity._executeOpportunity(bestOpportunity);
 
   return tradeRecord;
 };
@@ -68,10 +66,16 @@ entity.opportunities = async (divergencies, currentTokenSymbol) => {
  */
 entity._sortOpportunities = (opportunities) => {
   opportunities.sort((a, b) => {
-    if (a.divergenceFromSource > b.divergenceFromSource) {
+    if (
+      a.opportunity_source_target_diff_percent >
+      b.opportunity_source_target_diff_percent
+    ) {
       return -1;
     }
-    if (a.divergenceFromSource < b.divergenceFromSource) {
+    if (
+      a.opportunity_source_target_diff_percent <
+      b.opportunity_source_target_diff_percent
+    ) {
       return 1;
     }
     return 0;
@@ -83,12 +87,12 @@ entity._sortOpportunities = (opportunities) => {
  * divergence threshold of each token and amongst them.
  *
  * @param {Object} divergencies The calculated divergencies.
- * @param {string} sourceTokenSymbol Current token symbol the bot holds.
  * @return {Array<Object>} Opportunities objects.
  * @private
  */
-entity._findOpportunities = async (divergencies, sourceTokenSymbol) => {
-  const sourcePair = SynthsToPairs[sourceTokenSymbol];
+entity._findOpportunities = async (divergencies) => {
+  const { currentTokenSymbol } = divergencies;
+  const sourcePair = SynthsToPairs[currentTokenSymbol];
   const { oracleToFeed } = divergencies;
   // Reverse sign to get the distance between the source token divergence
   // and the candidate token divergence.
@@ -109,18 +113,29 @@ entity._findOpportunities = async (divergencies, sourceTokenSymbol) => {
       return;
     }
 
-    // There is a trading opportunity, mark it
+    // There is a trading opportunity, create it
     const opportunity = {
-      sourceTokenSymbol,
-      targetSourceSymbol,
-      sourceDivergence,
-      targetDivergence,
-      sourceVsTargetDivergence,
-      blockNumber: divergencies.state.blockNumber,
-      sourceOraclePrice: divergencies.state.oraclePrices[sourcePair],
-      sourceFeedPrice: divergencies.state.feedPrices[sourcePair],
-      targetOraclePrice: divergencies.state.oraclePrices[pair],
-      targetFeedPrice: divergencies.state.feedPrices[pair],
+      opportunity_source_symbol: currentTokenSymbol,
+      opportunity_source_feed_price: divergencies.state.feedPrices[sourcePair],
+      opportunity_source_oracle_price:
+        divergencies.state.oraclePrices[sourcePair],
+      opportunity_source_usd_diff_percent: sourceDivergence,
+      opportunity_source_usd_diff_percent_hr: divergenceHr(sourceDivergence),
+
+      opportunity_target_symbol: targetSourceSymbol,
+      opportunity_target_feed_price: divergencies.state.feedPrices[pair],
+      opportunity_target_oracle_price: divergencies.state.oraclePrices[pair],
+      opportunity_target_usd_diff_percent: targetDivergence,
+      opportunity_target_usd_diff_percent_hr: divergenceHr(targetDivergence),
+
+      opportunity_source_target_diff_percent: sourceVsTargetDivergence,
+      opportunity_source_target_diff_percent_hr: divergenceHr(
+        sourceVsTargetDivergence,
+      ),
+      opportunity_block_number: divergencies.state.blockNumber,
+
+      network: config.app.network,
+      testing: config.app.testing,
     };
 
     opportunities.push(opportunity);
@@ -137,15 +152,10 @@ entity._findOpportunities = async (divergencies, sourceTokenSymbol) => {
  * @return {Promise<Object>} A Promise with the created trade record.
  * @private
  */
-entity._executeOpportunity = async (divergencies, bestOpportunity) => {
+entity._executeOpportunity = async (bestOpportunity) => {
   try {
-    // Lock trading to avoid race conditions
     performingTrade = true;
-
-    const tradeRecord = await entity._createTradeRecord(
-      divergencies,
-      bestOpportunity,
-    );
+    const tradeRecord = await entity._createTradeRecord(bestOpportunity);
 
     let tx;
     if (config.app.testing) {
@@ -169,48 +179,12 @@ entity._executeOpportunity = async (divergencies, bestOpportunity) => {
 /**
  * Create the initial trade-roam record.
  *
- * @param {Object} divergencies The calculated divergencies.
  * @param {Object} bestOpportunity Local opportunity object.
  * @return {Promise<Object>} A Promise with the created record.
  * @private
  */
-entity._createTradeRecord = async (divergencies, bestOpportunity) => {
-  const {
-    sourceTokenSymbol,
-    sourceFeedPrice,
-    sourceOraclePrice,
-    sourceDivergence,
-    targetDivergence,
-    targetSourceSymbol,
-    targetOraclePrice,
-    targetFeedPrice,
-    sourceVsTargetDivergence,
-  } = bestOpportunity;
-
-  const tradeData = {
-    opportunity_source_symbol: sourceTokenSymbol,
-    opportunity_source_feed_price: sourceFeedPrice,
-    opportunity_source_oracle_price: sourceOraclePrice,
-    opportunity_source_usd_diff_percent: sourceDivergence,
-    opportunity_source_usd_diff_percent_hr: divergenceHr(sourceDivergence),
-
-    opportunity_target_symbol: targetSourceSymbol,
-    opportunity_target_feed_price: targetFeedPrice,
-    opportunity_target_oracle_price: targetOraclePrice,
-    opportunity_target_usd_diff_percent: targetDivergence,
-    opportunity_target_usd_diff_percent_hr: divergenceHr(targetDivergence),
-
-    opportunity_source_target_diff_percent: sourceVsTargetDivergence,
-    opportunity_source_target_diff_percent_hr: divergenceHr(
-      sourceVsTargetDivergence,
-    ),
-    opportunity_block_number: divergencies.state.blockNumber,
-
-    network: config.app.network,
-    testing: config.app.testing,
-  };
-
-  const tradeId = await tradeCreate(tradeData);
+entity._createTradeRecord = async (bestOpportunity) => {
+  const tradeId = await tradeCreate(bestOpportunity);
   const tradeRecord = await tradeGetById(tradeId);
 
   return tradeRecord;
@@ -224,9 +198,13 @@ entity._createTradeRecord = async (divergencies, bestOpportunity) => {
  * @private
  */
 entity._performTrade = async (bestOpportunity) => {
-  const { sourceTokenSymbol, targetSourceSymbol } = bestOpportunity;
+  const { opportunity_source_symbol, opportunity_target_symbol } =
+    bestOpportunity;
 
-  const tx = await snxTrade(sourceTokenSymbol, targetSourceSymbol);
+  const tx = await snxTrade(
+    opportunity_source_symbol,
+    opportunity_target_symbol,
+  );
 
   return tx;
 };
