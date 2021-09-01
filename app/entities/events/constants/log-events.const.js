@@ -9,4 +9,5 @@ consts.LogEvents = {
   STAYING_COURSE: 'stayingCourse',
   CUTTING_LOSSES: 'cuttingLosses',
   HEARTBEAT_UPDATE: 'heartbeatUpdate',
+  ROAM_TRADE_EVENT_HANDLED: 'roamTradeEventHandled',
 };

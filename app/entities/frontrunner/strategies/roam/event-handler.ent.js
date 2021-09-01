@@ -3,12 +3,13 @@
  */
 
 const { findOpportunity } = require('./trade-roam.ent');
+const { closeTradeRoam } = require('./close-trade-roam.ent');
 const { LogEvents } = require('../../../events');
 const { getOpenTrades } = require('../../sql/trades-roam.sql');
 
 const log = require('../../../../services/log.service').get();
 
-const { DECISION_ENDED } = LogEvents;
+const { ROAM_TRADE_EVENT_HANDLED } = LogEvents;
 
 const entity = (module.exports = {});
 
@@ -62,11 +63,18 @@ entity.determineActionRoam = async (divergencies) => {
 
   const [openedTrade, closedTrade] = await Promise.all([
     findOpportunity(divergencies, entity.activeOpportunity),
-    closeTrade(divergencies, entity.activeOpportunity),
+    closeTradeRoam(divergencies, entity.activeOpportunity),
   ]);
 
   result.openedTrade = openedTrade;
   result.closedTrade = closedTrade;
+
+  if (openedTrade) {
+    entity.activeOpportunity = openedTrade;
+  }
+  if (closedTrade) {
+    entity.activeOpportunity = null;
+  }
 
   entity._decisionRunning = false;
 
@@ -90,10 +98,10 @@ entity.logResults = async (divergencies, result) => {
     return;
   }
 
-  await log.info('Decision Making Ended', {
+  await log.info('Event Handled for roaming trade', {
     openedTrade,
     closedTrade,
     divergencies,
-    relay: DECISION_ENDED,
+    relay: ROAM_TRADE_EVENT_HANDLED,
   });
 };
