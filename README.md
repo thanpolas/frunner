@@ -2,6 +2,10 @@
 
 > Study of an SNX frontrunning bot.
 
+# Trading Strategies
+
+> [Go to the trading straregies README][strategies]
+
 # How To Install
 
 ## Clone and Build
@@ -131,3 +135,4 @@ Copyright © [Thanos Polychronakis][thanpolas], All Rights Reserved.
 [dotenv]: https://github.com/motdotla/dotenv#readme
 [thanpolas]: https://github.com/thanpolas
 [tz]: https://momentjs.com/timezone
+[strategies]: /app/entities/frontrunner/strategies/README.md
