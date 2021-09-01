@@ -7,8 +7,9 @@ const { assignIn } = require('lodash');
 
 const { events, eventTypes } = require('../../events');
 const { PAIRS_AR } = require('../../price-feeds');
+const { getCurrentTokenSymbol } = require('../../synthetix');
 
-const { determineAction } = require('./decision-maker.ent');
+const { determineActionOpenClose } = require('../strategies/open-close');
 const { getDivergence, perf } = require('../../../utils/helpers');
 const log = require('../../../services/log.service').get();
 
@@ -94,6 +95,7 @@ entity._processAndDecide = async () => {
   const divergencies = {
     state: assignIn(state), // deep copy state
     oracleToFeed: {},
+    currentTokenSymbol: getCurrentTokenSymbol(),
   };
 
   // Note: Oracle prices and synth prices are 100% the same, so only the
@@ -114,7 +116,7 @@ entity._processAndDecide = async () => {
     );
   }
 
-  return determineAction(divergencies);
+  return determineActionOpenClose(divergencies);
 };
 
 /**

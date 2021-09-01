@@ -59,7 +59,7 @@ entity.init = async () => {
  *    "closedTrades".
  * @private
  */
-entity.determineAction = async (divergencies) => {
+entity.determineActionOpenClose = async (divergencies) => {
   const result = {
     openedTrade: null,
     closedTrade: null,
