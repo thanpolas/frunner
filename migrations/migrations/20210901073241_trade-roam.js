@@ -37,13 +37,15 @@ exports.up = async function (knex) {
 
     // calculate ratio between source & target using oracle prices and
     // then based on that price, calculate the percentage difference between them.
+    table.float('closed_source_usd_value');
+    table.float('closed_target_usd_value');
     table.float('closed_source_target_diff_percent');
     table.string('closed_source_target_diff_percent_hr', 10);
 
     // Translate the difference into USD
     table.float('closed_profit_loss_usd');
-    table.float('closed_oracle_price');
-    table.float('closed_usd_value');
+    table.float('closed_target_oracle_price');
+    table.float('closed_source_oracle_price');
 
     //  Indicates the trade has concluded collecting data (happens after the
     // target token oracle changes value).

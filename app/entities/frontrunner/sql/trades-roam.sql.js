@@ -51,13 +51,15 @@ sql.getSelect = () => {
 
       // calculate ratio between source & target using oracle prices and
       // then based on that price, calculate the percentage difference between them.
+      `${TABLE}.closed_source_usd_value`,
+      `${TABLE}.closed_target_usd_value`,
       `${TABLE}.closed_source_target_diff_percent`,
       `${TABLE}.closed_source_target_diff_percent_hr`,
 
       // Translate the difference into USD
       `${TABLE}.closed_profit_loss_usd`,
-      `${TABLE}.closed_oracle_price`,
-      `${TABLE}.closed_usd_value`,
+      `${TABLE}.closed_source_oracle_price`,
+      `${TABLE}.closed_target_oracle_price`,
 
       //  Indicates the trade has concluded collecting data (happens after the
       // target token oracle changes value).
