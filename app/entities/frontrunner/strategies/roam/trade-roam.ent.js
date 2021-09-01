@@ -147,7 +147,6 @@ entity._findOpportunities = async (divergencies) => {
 /**
  * Execute the opportunity.
  *
- * @param {Object} divergencies The calculated divergencies.
  * @param {Object} bestOpportunity Local opportunity object.
  * @return {Promise<Object>} A Promise with the created trade record.
  * @private
@@ -223,18 +222,21 @@ entity._updateTradeRecord = async (tradeRecord, tx) => {
   let traded_tx = '0x';
   let traded_block_number = 0;
   let traded_source_tokens = 10000;
-  let traded_dst_tokens = 10000;
+  let traded_target_tokens = 10000;
   let traded_gas_spent = 0;
   let traded_actual_ratio_between_tokens = 1;
+  let traded_source_usd_value = 10000;
 
   if (tx) {
     traded_tx = tx.transactionHash;
     traded_block_number = tx.blockNumber;
     traded_source_tokens = tx.sourceTokenQuantityReadable;
-    traded_dst_tokens = tx.dstTokenQuantityReadable;
+    traded_source_usd_value =
+      traded_source_tokens * tradeRecord.opportunity_source_oracle_price;
+    traded_target_tokens = tx.dstTokenQuantityReadable;
     traded_gas_spent = tx.gasUsed.toString();
 
-    const tokenFraction = [traded_source_tokens, traded_dst_tokens];
+    const tokenFraction = [traded_source_tokens, traded_target_tokens];
     const decimalFraction = [SYNTH_DECIMALS, SYNTH_DECIMALS];
     traded_actual_ratio_between_tokens = poolTokensToAuto(
       tokenFraction,
@@ -246,7 +248,8 @@ entity._updateTradeRecord = async (tradeRecord, tx) => {
     traded_tx,
     traded_block_number,
     traded_source_tokens,
-    traded_dst_tokens,
+    traded_source_usd_value,
+    traded_target_tokens,
     traded_gas_spent,
     traded_actual_ratio_between_tokens,
   };
