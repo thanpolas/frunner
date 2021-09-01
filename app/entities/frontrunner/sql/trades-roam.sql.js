@@ -44,23 +44,27 @@ sql.getSelect = () => {
       `${TABLE}.traded_block_number`,
 
       `${TABLE}.traded_source_tokens`,
-      `${TABLE}.traded_dst_tokens`,
+      `${TABLE}.traded_source_usd_value`,
+      `${TABLE}.traded_target_tokens`,
       `${TABLE}.traded_actual_ratio_between_tokens`,
       `${TABLE}.traded_gas_spent`,
 
       // calculate ratio between source & target using oracle prices and
       // then based on that price, calculate the percentage difference between them.
-      `${TABLE}.traded_source_target_diff_percent`,
-      `${TABLE}.traded_source_target_diff_percent_hr`,
+      `${TABLE}.closed_source_target_diff_percent`,
+      `${TABLE}.closed_source_target_diff_percent_hr`,
 
       // Translate the difference into USD
-      `${TABLE}.traded_profit_loss_usd`,
-      `${TABLE}.testing`,
+      `${TABLE}.closed_profit_loss_usd`,
+      `${TABLE}.closed_oracle_price`,
+      `${TABLE}.closed_usd_value`,
 
       //  Indicates the trade has concluded collecting data (happens after the
       // target token oracle changes value).
       `${TABLE}.closed_trade`,
+      `${TABLE}.closed_at`,
 
+      `${TABLE}.testing`,
       `${TABLE}.created_at`,
       `${TABLE}.updated_at`,
     )

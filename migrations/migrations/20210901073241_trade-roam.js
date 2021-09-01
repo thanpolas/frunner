@@ -29,25 +29,28 @@ exports.up = async function (knex) {
     table.integer('traded_block_number');
 
     table.float('traded_source_tokens');
-    table.float('traded_dst_tokens');
+    table.float('traded_source_usd_value');
+    table.float('traded_target_tokens');
     table.float('traded_actual_ratio_between_tokens');
 
     table.bigInteger('traded_gas_spent');
 
     // calculate ratio between source & target using oracle prices and
     // then based on that price, calculate the percentage difference between them.
-    table.float('traded_source_target_diff_percent');
-    table.string('traded_source_target_diff_percent_hr', 10);
+    table.float('closed_source_target_diff_percent');
+    table.string('closed_source_target_diff_percent_hr', 10);
 
     // Translate the difference into USD
-    table.float('traded_profit_loss_usd');
-
-    table.boolean('testing').defaultTo(false);
+    table.float('closed_profit_loss_usd');
+    table.float('closed_oracle_price');
+    table.float('closed_usd_value');
 
     //  Indicates the trade has concluded collecting data (happens after the
     // target token oracle changes value).
     table.boolean('closed_trade').defaultTo(false);
+    table.timestamp('closed_at');
 
+    table.boolean('testing').defaultTo(false);
     defaultFields(table, knex);
 
     table.index('opportunity_source_symbol');
