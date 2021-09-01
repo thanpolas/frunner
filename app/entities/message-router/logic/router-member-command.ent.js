@@ -9,6 +9,8 @@ const {
   testToggle,
   setThreshold,
   getBalance,
+  startOracleTrack,
+  stopOracleTrack,
 } = require('../../frontrunner');
 
 const log = require('../../../services/log.service').get();
@@ -45,6 +47,23 @@ router.handleChannelMessage = async (message) => {
     case 'balance':
       await router._invokeCommand(getBalance, message, 'balance', true);
       break;
+    case 'oraclestart':
+      await router._invokeCommand(
+        startOracleTrack,
+        message,
+        'oraclestart',
+        false,
+      );
+      break;
+    case 'oraclestop':
+      await router._invokeCommand(
+        stopOracleTrack,
+        message,
+        'oraclestop',
+        false,
+      );
+      break;
+
     default:
       await log.warn('handleChannelMessage() :: Bogus command invoked', {
         custom: {

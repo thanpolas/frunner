@@ -24,6 +24,8 @@ messageRouter.PUBLIC_COMMANDS = [
   'help',
   'threshold',
   'balance',
+  'oraclestart',
+  'oraclestop',
 ];
 
 /**

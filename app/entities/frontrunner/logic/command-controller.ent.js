@@ -7,6 +7,7 @@ const { tokenAuto } = require('@thanpolas/crypto-utils');
 
 const { isStarted, init, dispose } = require('./heartbeat.ent');
 const { getBalances, SYNTH_DECIMALS } = require('../../synthetix');
+const { localState } = require('./events-plexer.ent');
 
 const entity = (module.exports = {});
 
@@ -90,4 +91,26 @@ entity.getBalance = async (message) => {
 
   const response = balancesReadable.join('\n');
   await message.reply(response);
+};
+
+/**
+ * Start oracle tracking.
+ *
+ * @param {DiscordMessage} message The discord message.
+ * @return {Promise<void>} A Promise.
+ */
+entity.startOracleTrack = async (message) => {
+  localState._tempEnableBlockMonitor = true;
+  await message.reply('Oracle tracking activated for BTCUSD.');
+};
+
+/**
+ * Stop oracle tracking.
+ *
+ * @param {DiscordMessage} message The discord message.
+ * @return {Promise<void>} A Promise.
+ */
+entity.stopOracleTrack = async (message) => {
+  localState._tempEnableBlockMonitor = false;
+  await message.reply('Oracle tracking stopped for BTCUSD.');
 };
