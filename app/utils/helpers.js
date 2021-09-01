@@ -146,3 +146,24 @@ helpers.flatFilter = (ar) => {
 helpers.divergenceHr = (divergence) => {
   return `${(divergence * 100).toFixed(2)}%`;
 };
+
+/**
+ * Helper for performance measuring of execution time.
+ *
+ * Invoke without argument to get the starting timestamp.
+ * Invoke with argument the starting timestamp and get a human readable perf
+ * measurement.
+ *
+ * @param {Array<number>=} optSince tuple return value of hrtime().
+ * @return {Array<number>|string} If argument is defined string, otherwise
+ *    process.hrtime() return value.
+ */
+helpers.perf = (optSince) => {
+  if (!optSince) {
+    return process.hrtime();
+  }
+
+  const [seconds, ns] = process.hrtime(optSince);
+  const ms = Number.parseInt(ns / 1000000, 10);
+  return `${seconds}" ${ms}ms`;
+};
