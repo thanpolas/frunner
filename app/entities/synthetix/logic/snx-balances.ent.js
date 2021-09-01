@@ -14,6 +14,8 @@ const { asyncMapCap } = require('../../../utils/helpers');
 
 const log = require('../../../services/log.service').get();
 
+const { BigNumber } = ethers;
+
 const entity = (module.exports = {});
 
 /**
@@ -35,6 +37,36 @@ entity.init = async () => {
   });
 
   await log.info(`Balances of synths: ${balancesReadable.join(' - ')}`);
+};
+
+/**
+ * Based on latest balances cache, will determine which is token the bot
+ * holds currently.
+ *
+ * @return {string} The token symbol the bot holds.
+ */
+entity.getCurrentTokenSymbol = () => {
+  const { balances } = entity;
+
+  const tokenSymbols = Object.keys(balances);
+  if (!tokenSymbols.length) {
+    throw new Error('Local token balances cache not populated');
+  }
+
+  const currentTokenSymbol = tokenSymbols.reduce((currentSymbol, symbol) => {
+    if (!currentSymbol) {
+      return symbol;
+    }
+    const currentQuantity = BigNumber.from(balances[currentSymbol]);
+
+    if (currentQuantity.gt(balances[symbol])) {
+      return currentSymbol;
+    }
+
+    return symbol;
+  }, null);
+
+  return currentTokenSymbol;
 };
 
 /**
