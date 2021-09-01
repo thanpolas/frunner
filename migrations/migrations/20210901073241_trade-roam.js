@@ -44,6 +44,10 @@ exports.up = async function (knex) {
 
     table.boolean('testing').defaultTo(false);
 
+    //  Indicates the trade has concluded collecting data (happens after the
+    // target token oracle changes value).
+    table.boolean('closed_trade').defaultTo(false);
+
     defaultFields(table, knex);
 
     table.index('opportunity_source_symbol');
