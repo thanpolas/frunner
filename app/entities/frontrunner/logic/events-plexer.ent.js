@@ -9,7 +9,7 @@ const { events, eventTypes } = require('../../events');
 const { PAIRS_AR } = require('../../price-feeds');
 
 const { determineAction } = require('./decision-maker.ent');
-const { getDivergence } = require('../../../utils/helpers');
+const { getDivergence, perf } = require('../../../utils/helpers');
 const log = require('../../../services/log.service').get();
 
 const { PRICE_FEED_PROCESSED, NEW_BLOCK } = eventTypes;
@@ -30,6 +30,9 @@ entity.localState = {
   feedPrices: {},
   oraclePrices: {},
   synthPrices: {},
+  _tempEnableBlockMonitor: false,
+  _tempLastBtcBlockNumber: 0,
+  _tempLastBtcStamp: null,
 };
 
 /**
@@ -64,10 +67,14 @@ entity._onPriceFeedProcessed = async (prices, heartbeat) => {
  */
 entity._onNewBlock = async (data) => {
   const { synthPrices, oraclePrices, blockNumber } = data;
+
+  if (entity.localState._tempEnableBlockMonitor) {
+    await entity._checkNewPrice(data);
+  }
+
   entity.localState.blockNumber = blockNumber;
   entity.localState.oraclePrices = oraclePrices.oracleByPair;
   entity.localState.synthPrices = synthPrices;
-
   await entity._processAndDecide();
 };
 
@@ -127,4 +134,37 @@ entity._shouldLogUpdate = (divergencies) => {
     entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
     return true;
   }
+};
+
+/**
+ * When enabled, checks and reports oracle price changes.
+ *
+ * @param {Object} data Data from the new block event.
+ * @return {Promise<void>}
+ * @private
+ */
+entity._checkNewPrice = async (data) => {
+  const { oraclePrices, blockNumber } = data;
+  const { BTCUSD: oldBTCUSD } = entity.localState.oraclePrices;
+  const { BTCUSD: newBTCUSD } = oraclePrices.oracleByPair;
+
+  if (oldBTCUSD === newBTCUSD) {
+    return;
+  }
+
+  const firstTime = !entity.localState._tempLastBtcStamp;
+  const blocksDiff = blockNumber - entity.localState._tempLastBtcBlockNumber;
+  const timeDiff = perf(entity.localState._tempLastBtcStamp);
+
+  if (!firstTime) {
+    await log.info(
+      `BTC Oracle Price change. Block Diff: ${blocksDiff}, TimeDiff: ${timeDiff}` +
+        ` Old Price: ${entity.localState.oraclePrices.BTCUSD}` +
+        ` New Price: ${oraclePrices.oracleByPair.BTCUSD}`,
+      { relay: true },
+    );
+  }
+
+  entity.localState._tempLastBtcBlockNumber = blockNumber;
+  entity.localState._tempLastBtcStamp = perf();
 };
