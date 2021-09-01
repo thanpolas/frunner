@@ -15,9 +15,11 @@ const {
 } = require('./logic/price-feeds.ent');
 const { handleNewBlock } = require('./logic/handle-new-block.ent');
 const {
-  determineAction,
-  init: initDecision,
+  determineActionOpenClose,
+  init: initOpenClose,
 } = require('./strategies/open-close');
+
+const { determineActionRoam, init: initRoam } = require('./strategies/roam');
 
 const {
   startTrade,
@@ -36,7 +38,8 @@ const entity = (module.exports = {});
 entity.fetchPriceFeeds = fetchPriceFeeds;
 entity.processPriceFeeds = processPriceFeeds;
 entity.handleNewBlock = handleNewBlock;
-entity.determineAction = determineAction;
+entity.determineActionOpenClose = determineActionOpenClose;
+entity.determineActionRoam = determineActionRoam;
 entity.startTrade = startTrade;
 entity.stopTrade = stopTrade;
 entity.testToggle = testToggle;
@@ -55,7 +58,8 @@ entity.stopOracleTrack = stopOracleTrack;
 entity.init = async (bootOpts) => {
   await log.info('Initializing Frontrunner...');
   await initHeartbeat(bootOpts);
-  await initDecision();
+  await initOpenClose();
+  await initRoam();
   initFrontrunnerCore(bootOpts);
 };
 

@@ -1,5 +1,5 @@
 /**
- * @fileoverview Decision maker.
+ * @fileoverview Open - Close trading strategy event handler.
  */
 
 const { opportunities } = require('./open-trade.ent');
