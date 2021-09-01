@@ -12,7 +12,9 @@ messages.help = () =>
 * \`stop\` :: Stop trading.
 * \`test\` :: Toggle (start ot stop) testing mode.
 * \`threshold [threshold]\` :: Define a new threshold, i.e. \`threshold 0.65%\`
-* \`balance\` :: Get the current balances the bot has.`;
+* \`balance\` :: Get the current balances the bot has.
+* \`oraclestart\` :: Start oracle tracking.
+* \`oraclestop\` :: Stop oracle tracking.`;
 
 messages.error = () =>
   'Unknown command, type `!help` for a list of available commands.';
