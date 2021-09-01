@@ -2,12 +2,12 @@
  * @fileoverview Decision maker.
  */
 
-const { opportunities } = require('./decision-making/opportunities.ent');
-const { closeTrades } = require('./decision-making/close-trades.ent');
-const { LogEvents } = require('../../events');
-const { getOpenTrades } = require('../sql/trades.sql');
+const { opportunities } = require('./open-trade.ent');
+const { closeTrades } = require('./close-trade.ent');
+const { LogEvents } = require('../../../events');
+const { getOpenTrades } = require('../../sql/trades.sql');
 
-const log = require('../../../services/log.service').get();
+const log = require('../../../../services/log.service').get();
 
 const { DECISION_ENDED } = LogEvents;
 

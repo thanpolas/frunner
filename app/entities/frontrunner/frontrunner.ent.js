@@ -17,7 +17,7 @@ const { handleNewBlock } = require('./logic/handle-new-block.ent');
 const {
   determineAction,
   init: initDecision,
-} = require('./logic/decision-maker.ent');
+} = require('./strategies/open-close');
 
 const {
   startTrade,

@@ -15,7 +15,7 @@ const {
 const { determineAction } = require('../../app/entities/frontrunner');
 const {
   activeTrades,
-} = require('../../app/entities/frontrunner/logic/decision-maker.ent');
+} = require('../../app/entities/frontrunner/strategies/open-close');
 
 describe('Frontrunner - Decision Making', () => {
   testLib.init();
