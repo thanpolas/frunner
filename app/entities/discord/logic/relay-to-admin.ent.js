@@ -11,7 +11,7 @@ const globals = require('../../../utils/globals');
 const { getGuildChannel } = require('./guild.ent');
 const { divergenceHr, getDivergence } = require('../../../utils/helpers');
 
-const { DECISION_ENDED } = LogEvents;
+const { DECISION_ENDED, ROAM_TRADE_EVENT_HANDLED } = LogEvents;
 
 const entity = (module.exports = {});
 
@@ -89,7 +89,7 @@ entity.loggerToAdmin = async (logContext) => {
  * Format log message.
  *
  * @param {Object} lc Logality log context object.
- * @return {string|void>} The message.
+ * @return {string|void} The message.
  * @private
  */
 entity._formatMessage = (lc) => {
@@ -100,6 +100,8 @@ entity._formatMessage = (lc) => {
   switch (lc.relay) {
     case DECISION_ENDED:
       return entity._formatDecisionEnded(lc);
+    case ROAM_TRADE_EVENT_HANDLED:
+      return entity._formatRoamTrade(lc);
     default:
       break;
   }
@@ -191,43 +193,41 @@ entity._formatTradesClosed = (lc) => {
   return message;
 };
 
-//
-// A Trade Record
-//
-// id: '8ed52026-2654-48fd-b2a0-c4dc4a9cd133',
-// pair: 'BTCUSD',
-// opportunity_feed_price: 45163.8,
-// opportunity_oracle_price: 45090.9,
-// opportunity_block_number: 1091018,
-// network: 'optimistic_kovan',
-// traded: true,
-// traded_feed_price: 45163.8,
-// traded_oracle_price: 45090.9,
-// traded_projected_percent: 0.00161688,
-// traded_projected_percent_hr: '0.16%',
-// traded_block_number: 1091018,
-// traded_tx: '0x',
-// traded_source_tokens: 10000,
-// traded_source_token_symbol: 'sUSD',
-// traded_dst_tokens: 1000,
-// traded_dst_token_symbol: 'BTCUSD',
-// traded_gas_spent: '0',
-// closed_trade: true,
-// closed_at: 2021-08-17T20:12:25.632Z,
-// closed_tx: '0x',
-// closed_price_diff: -0.01,
-// closed_profit_loss: -0.00221774,
-// closed_profit_loss_percent: -2.21774e-7,
-// closed_profit_loss_percent_hr: '-0.00%',
-// closed_feed_price: 45156.2,
-// closed_oracle_price: 45090.9,
-// closed_block_number: 1091019,
-// testing: true,
-// closed_cut_losses: false,
-// closed_source_tokens: 1000,
-// closed_source_token_symbol: 'BTCUSD',
-// closed_dst_tokens: 10000,
-// closed_dst_token_symbol: 'sUSD',
-// closed_gas_spent: '0',
-// created_at: 2021-08-17T20:11:54.767Z,
-// updated_at: 2021-08-17T20:12:25.632Z
+/**
+ * Format the roam trade event.
+ *
+ * @param {Object} lc Logality log context object.
+ * @return {string} Formatted close trade message.
+ * @private
+ */
+entity._formatRoamTrade = (lc) => {
+  const { raw: trade } = lc.context.closedTrade;
+
+  const initCap = Number(config.app.initial_capital);
+  const currentCap = Number(trade.closed_dst_tokens);
+
+  const capDivergence = divergenceHr(getDivergence(initCap, currentCap));
+
+  const parts = ['Closed Trade'];
+
+  parts.push(`**Network**: ${trade.network}`);
+  parts.push(`**Testing**: ${trade.testing}`);
+  parts.push(`**Cut Loss**: ${trade.closed_cut_losses}`);
+  parts.push(`**Current sUSD Cap**: ${trade.closed_dst_tokens}`);
+  parts.push(`**Original sUSD Cap & %**: ${initCap} (${capDivergence})`);
+  parts.push(`**Synth**: ${trade.traded_dst_token_symbol}`);
+  parts.push(`**Profit/loss**: ${trade.closed_profit_loss.toFixed(4)}`);
+  parts.push(
+    `**Open/Close Percent**: ${trade.traded_projected_percent_hr}/${trade.closed_profit_loss_percent_hr}`,
+  );
+
+  parts.push(
+    `**Open/Close Feed Price**: ${trade.traded_feed_price}/${trade.closed_feed_price}`,
+  );
+  parts.push(
+    `**Open/Close Oracle Price**: ${trade.traded_oracle_price}/${trade.closed_oracle_price}`,
+  );
+
+  const message = parts.join(' - ');
+  return message;
+};
