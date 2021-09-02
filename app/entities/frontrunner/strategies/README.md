@@ -27,4 +27,5 @@ For example, if the bot holds UNI and we have the following divergences:
 
 The bot will determine that there is a tradeing opportunity between UNI (-0.58%) and AAAVE (+0.63) for a total of +1.21%. It will execute the trade, exchanging UNI for AAVE and stop. Wait for the next cross-token opportunity, so on and so forth.
 
-ℹ️ The roam strategy to work, cannot even hold sUSD, it needs to start with any other synth.
+-   ℹ️ The roam strategy is considered closed, once the target token (the one the bot bought), has an oracle price change. It is at that point that the bot considers the trade "closed" and performs the final update on the trade-roam record and reports on discord. This is done so we can view how the trade went from prediction (opportunity feed price) to when the oracle actually updated.
+-   ℹ️ The roam strategy to work, cannot even hold sUSD, it needs to start with any other synth.
