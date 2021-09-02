@@ -252,6 +252,10 @@ entity._formatRoamTrade = (lc) => {
   );
   parts.push(`**Trade to Close Elapsed Time (seconds)**: ${elapsedTimeClose}"`);
 
+  parts.push(
+    `**Trade - Close Block**: ${trade.traded_block_number} - ${trade.closed_block_number}"`,
+  );
+
   const message = parts.join('\n');
   return message;
 };
