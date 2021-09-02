@@ -35,6 +35,7 @@ fix.closedTrade = () => {
     closed_profit_loss_usd: -30600,
     closed_source_oracle_price: 28.4,
     closed_target_oracle_price: 25.34,
+    closed_block_number: 1054368,
     closed_trade: true,
     testing: true,
     closed_at: '2021-09-02T11:32:51.357Z',
