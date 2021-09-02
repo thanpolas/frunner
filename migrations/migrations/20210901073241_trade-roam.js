@@ -51,6 +51,7 @@ exports.up = async function (knex) {
     //  Indicates the trade has concluded collecting data (happens after the
     // target token oracle changes value).
     table.boolean('closed_trade').defaultTo(false);
+    table.integer('closed_block_number');
     table.timestamp('closed_at');
 
     table.boolean('testing').defaultTo(false);

@@ -103,6 +103,7 @@ entity._closeTrade = async (divergencies, activeOpportunity) => {
 
     // Translate the difference into USD
     closed_profit_loss_usd,
+    closed_block_number: divergencies.state.blockNumber,
 
     //  Indicates the trade has concluded collecting data (happens after the
     // target token oracle changes value).

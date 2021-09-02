@@ -65,6 +65,7 @@ sql.getSelect = () => {
       //  Indicates the trade has concluded collecting data (happens after the
       // target token oracle changes value).
       `${TABLE}.closed_trade`,
+      `${TABLE}.closed_block_number`,
       `${TABLE}.closed_at`,
 
       `${TABLE}.testing`,

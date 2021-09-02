@@ -63,6 +63,7 @@ assert.assertProperties = (testObj) => {
     'closed_source_oracle_price',
     'closed_target_oracle_price',
     'closed_trade',
+    'closed_block_number',
     'closed_at',
     'testing',
     'created_at',
@@ -111,6 +112,7 @@ assert.assertTypes = (testObj, optFixtureClose) => {
     expect(testObj.closed_profit_loss_usd).toBeNumber();
     expect(testObj.closed_source_oracle_price).toBeNumber();
     expect(testObj.closed_target_oracle_price).toBeNumber();
+    expect(testObj.closed_block_number).toBeNumber();
     expect(testObj.closed_at).toBeDate();
   } else {
     expect(testObj.closed_source_usd_value).toBeNull();
@@ -120,6 +122,7 @@ assert.assertTypes = (testObj, optFixtureClose) => {
     expect(testObj.closed_profit_loss_usd).toBeNull();
     expect(testObj.closed_source_oracle_price).toBeNull();
     expect(testObj.closed_target_oracle_price).toBeNull();
+    expect(testObj.closed_block_number).toBeNull();
     expect(testObj.closed_at).toBeNull();
   }
   expect(testObj.closed_trade).toBeBoolean();
