@@ -12,7 +12,7 @@ const {
   divergenceTwoOpportunities,
 } = require('../fixtures/divergences.fix');
 
-const { determineAction } = require('../../app/entities/frontrunner');
+const { determineActionOpenClose } = require('../../app/entities/frontrunner');
 const {
   activeTrades,
 } = require('../../app/entities/frontrunner/strategies/open-close');
@@ -35,7 +35,7 @@ describe('Frontrunner - trade open-close strat', () => {
       expect(activeTrades).toContainAllKeys([]);
     });
     test('Will complete a decision without any new opportunities', async () => {
-      const result = await determineAction(divergenceStandard());
+      const result = await determineActionOpenClose(divergenceStandard());
 
       expect(result).toContainAllKeys(['openedTrade', 'closedTrade']);
       expect(result.openedTrade).toBeUndefined();
@@ -48,7 +48,7 @@ describe('Frontrunner - trade open-close strat', () => {
       divergencies.state.feedPrices.BTCUSD = 46109.914;
       divergencies.oracleToFeed.BTCUSD = -0.0030424404;
 
-      const result = await determineAction(divergencies);
+      const result = await determineActionOpenClose(divergencies);
 
       expect(result).toContainAllKeys(['openedTrade', 'closedTrade']);
       expect(result.openedTrade).toBeUndefined();
@@ -56,7 +56,7 @@ describe('Frontrunner - trade open-close strat', () => {
     });
     test('Will create a new trade with a 3% profit', async () => {
       const divergences = divergenceOneOpportunity();
-      const result = await determineAction(divergences);
+      const result = await determineActionOpenClose(divergences);
 
       expect(result.openedTrade).toBeObject();
       expect(result.closedTrade).toBeUndefined();
@@ -66,7 +66,7 @@ describe('Frontrunner - trade open-close strat', () => {
     });
     test('Will create one new trade out of two opportunities', async () => {
       const divergences = divergenceTwoOpportunities();
-      const result = await determineAction(divergences);
+      const result = await determineActionOpenClose(divergences);
 
       expect(result.openedTrade).toBeObject();
       expect(result.closedTrade).toBeUndefined();
@@ -76,7 +76,7 @@ describe('Frontrunner - trade open-close strat', () => {
     });
     test('Will create a new trade and close it', async () => {
       const divergencesOpen = divergenceOneOpportunity();
-      const result = await determineAction(divergencesOpen);
+      const result = await determineActionOpenClose(divergencesOpen);
 
       expect(result.openedTrade).toBeObject();
       expect(result.closedTrad).toBeUndefined();
@@ -89,7 +89,7 @@ describe('Frontrunner - trade open-close strat', () => {
       divergencesClose.state.synthPrices.BTCUSD = 47356.1;
       divergencesClose.oracleToFeed.BTCUSD = 0;
 
-      const resultClose = await determineAction(divergencesClose);
+      const resultClose = await determineActionOpenClose(divergencesClose);
 
       expect(resultClose.openedTrade).toBeUndefined();
       expect(resultClose.closedTrade).toBeObject();
