@@ -75,7 +75,6 @@ fix.divergenceOneRoamOpportunity = () => {
   divergenceOneRoamOpportunity.state.blockNumber = 1054367;
   divergenceOneRoamOpportunity.state.feedPrices.LINKUSD = 25.26;
   divergenceOneRoamOpportunity.oracleToFeed.LINKUSD = 0.03;
-  divergenceOneRoamOpportunity.currentTokenSymbol = 'sUNI';
 
   return divergenceOneRoamOpportunity;
 };
@@ -96,18 +95,16 @@ fix.divergenceNegativeRoamOpportunity = () => {
   divergenceNegativeRoamOpportunity.state.blockNumber = 1054367;
   divergenceNegativeRoamOpportunity.state.feedPrices.UNIUSD = 27.5;
   divergenceNegativeRoamOpportunity.oracleToFeed.UNIUSD = -0.05;
-  divergenceNegativeRoamOpportunity.currentTokenSymbol = 'sUNI';
 
   return divergenceNegativeRoamOpportunity;
 };
 
 fix.divergenceTwoRoamOpportunities = () => {
-  const divergenceTwoRoamOpportunities = fix.divergenceTwoRoamOpportunities();
+  const divergenceTwoRoamOpportunities = fix.divergenceOneRoamOpportunity();
   divergenceTwoRoamOpportunities.state.heartbeat = 8;
   divergenceTwoRoamOpportunities.state.blockNumber = 1054367;
   divergenceTwoRoamOpportunities.state.feedPrices.BTCUSD = 47356.1;
   divergenceTwoRoamOpportunities.oracleToFeed.BTCUSD = 0.04;
-  divergenceTwoRoamOpportunities.currentTokenSymbol = 'sUNI';
 
   return divergenceTwoRoamOpportunities;
 };
