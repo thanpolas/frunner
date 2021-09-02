@@ -91,9 +91,9 @@ entity._sortOpportunities = (opportunities) => {
  * @private
  */
 entity._findOpportunities = async (divergencies) => {
-  const { currentTokenSymbol } = divergencies;
+  const { currentTokenSymbol, state, oracleToFeed } = divergencies;
   const sourcePair = SynthsToPairs[currentTokenSymbol];
-  const { oracleToFeed } = divergencies;
+
   // Reverse sign to get the distance between the source token divergence
   // and the candidate token divergence.
   const sourceDivergence = oracleToFeed[sourcePair];
@@ -116,15 +116,14 @@ entity._findOpportunities = async (divergencies) => {
     // There is a trading opportunity, create it
     const opportunity = {
       opportunity_source_symbol: currentTokenSymbol,
-      opportunity_source_feed_price: divergencies.state.feedPrices[sourcePair],
-      opportunity_source_oracle_price:
-        divergencies.state.oraclePrices[sourcePair],
+      opportunity_source_feed_price: state.feedPrices[sourcePair],
+      opportunity_source_oracle_price: state.oraclePrices[sourcePair],
       opportunity_source_usd_diff_percent: sourceDivergence,
       opportunity_source_usd_diff_percent_hr: divergenceHr(sourceDivergence),
 
       opportunity_target_symbol: targetSourceSymbol,
-      opportunity_target_feed_price: divergencies.state.feedPrices[pair],
-      opportunity_target_oracle_price: divergencies.state.oraclePrices[pair],
+      opportunity_target_feed_price: state.feedPrices[pair],
+      opportunity_target_oracle_price: state.oraclePrices[pair],
       opportunity_target_usd_diff_percent: targetDivergence,
       opportunity_target_usd_diff_percent_hr: divergenceHr(targetDivergence),
 
@@ -132,7 +131,7 @@ entity._findOpportunities = async (divergencies) => {
       opportunity_source_target_diff_percent_hr: divergenceHr(
         sourceVsTargetDivergence,
       ),
-      opportunity_block_number: divergencies.state.blockNumber,
+      opportunity_block_number: state.blockNumber,
 
       network: config.app.network,
       testing: config.app.testing,
