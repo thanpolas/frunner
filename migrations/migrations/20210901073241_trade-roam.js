@@ -32,6 +32,7 @@ exports.up = async function (knex) {
     table.float('traded_source_usd_value');
     table.float('traded_target_tokens');
     table.float('traded_actual_ratio_between_tokens');
+    table.timestamp('traded_at');
 
     table.bigInteger('traded_gas_spent');
 

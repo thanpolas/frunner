@@ -5,6 +5,8 @@
 const config = require('config');
 const { poolTokensToAuto } = require('@thanpolas/crypto-utils');
 
+const { db } = require('../../../../services/postgres.service');
+
 const {
   PAIRS_AR,
   PairsToSynths,
@@ -251,6 +253,7 @@ entity._updateTradeRecord = async (tradeRecord, tx) => {
     traded_target_tokens,
     traded_gas_spent,
     traded_actual_ratio_between_tokens,
+    traded_at: db().fn.now(),
   };
 
   await tradeUpdate(tradeId, tradeUpdateData);

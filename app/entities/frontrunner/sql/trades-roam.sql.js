@@ -48,6 +48,7 @@ sql.getSelect = () => {
       `${TABLE}.traded_target_tokens`,
       `${TABLE}.traded_actual_ratio_between_tokens`,
       `${TABLE}.traded_gas_spent`,
+      `${TABLE}.traded_at`,
 
       // calculate ratio between source & target using oracle prices and
       // then based on that price, calculate the percentage difference between them.

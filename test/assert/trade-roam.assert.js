@@ -54,6 +54,7 @@ assert.assertProperties = (testObj) => {
     'traded_target_tokens',
     'traded_actual_ratio_between_tokens',
     'traded_gas_spent',
+    'traded_at',
     'closed_source_usd_value',
     'closed_target_usd_value',
     'closed_source_target_diff_percent',
@@ -100,6 +101,7 @@ assert.assertTypes = (testObj, optFixtureClose) => {
   expect(testObj.traded_target_tokens).toBeNumber();
   expect(testObj.traded_actual_ratio_between_tokens).toBeNumber();
   expect(testObj.traded_gas_spent).toBeString();
+  expect(testObj.traded_at).toBeDate();
 
   if (optFixtureClose) {
     expect(testObj.closed_source_usd_value).toBeNumber();
