@@ -3,7 +3,7 @@
         "connection_string": "USE ENV VAR"
     },
     "app": {
-        "testing": true,
-        "divergence_threshold": 0.0085
+        "testing": false,
+        "divergence_threshold": 0.005
     }
 }

@@ -15,9 +15,11 @@ const {
 } = require('./logic/price-feeds.ent');
 const { handleNewBlock } = require('./logic/handle-new-block.ent');
 const {
-  determineAction,
-  init: initDecision,
-} = require('./logic/decision-maker.ent');
+  determineActionOpenClose,
+  init: initOpenClose,
+} = require('./strategies/open-close');
+
+const { determineActionRoam, init: initRoam } = require('./strategies/roam');
 
 const {
   startTrade,
@@ -27,6 +29,7 @@ const {
   getBalance,
   startOracleTrack,
   stopOracleTrack,
+  status,
 } = require('./logic/command-controller.ent');
 
 const log = require('../../services/log.service').get();
@@ -36,7 +39,8 @@ const entity = (module.exports = {});
 entity.fetchPriceFeeds = fetchPriceFeeds;
 entity.processPriceFeeds = processPriceFeeds;
 entity.handleNewBlock = handleNewBlock;
-entity.determineAction = determineAction;
+entity.determineActionOpenClose = determineActionOpenClose;
+entity.determineActionRoam = determineActionRoam;
 entity.startTrade = startTrade;
 entity.stopTrade = stopTrade;
 entity.testToggle = testToggle;
@@ -44,6 +48,7 @@ entity.setThreshold = setThreshold;
 entity.getBalance = getBalance;
 entity.startOracleTrack = startOracleTrack;
 entity.stopOracleTrack = stopOracleTrack;
+entity.status = status;
 
 /**
  * Initialize frontrunner core functionality.
@@ -55,7 +60,8 @@ entity.stopOracleTrack = stopOracleTrack;
 entity.init = async (bootOpts) => {
   await log.info('Initializing Frontrunner...');
   await initHeartbeat(bootOpts);
-  await initDecision();
+  await initOpenClose();
+  await initRoam();
   initFrontrunnerCore(bootOpts);
 };
 

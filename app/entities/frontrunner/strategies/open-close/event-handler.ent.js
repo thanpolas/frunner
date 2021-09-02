@@ -1,13 +1,13 @@
 /**
- * @fileoverview Decision maker.
+ * @fileoverview Open - Close trading strategy event handler.
  */
 
-const { opportunities } = require('./decision-making/opportunities.ent');
-const { closeTrades } = require('./decision-making/close-trades.ent');
-const { LogEvents } = require('../../events');
-const { getOpenTrades } = require('../sql/trades.sql');
+const { opportunities } = require('./open-trade.ent');
+const { closeTrades } = require('./close-trade.ent');
+const { LogEvents } = require('../../../events');
+const { getOpenTrades } = require('../../sql/trades.sql');
 
-const log = require('../../../services/log.service').get();
+const log = require('../../../../services/log.service').get();
 
 const { DECISION_ENDED } = LogEvents;
 
@@ -30,7 +30,7 @@ entity._decisionRunning = false;
  * @return {Promise<void>} An empty promise.
  */
 entity.init = async () => {
-  await log.info('Initializing decision maker...');
+  await log.info('Initializing open-close decision maker...');
   const openTrades = await getOpenTrades();
 
   if (openTrades.length === 0) {
@@ -59,7 +59,7 @@ entity.init = async () => {
  *    "closedTrades".
  * @private
  */
-entity.determineAction = async (divergencies) => {
+entity.determineActionOpenClose = async (divergencies) => {
   const result = {
     openedTrade: null,
     closedTrade: null,

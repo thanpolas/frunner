@@ -11,7 +11,7 @@ const globals = require('../../../utils/globals');
 const { getGuildChannel } = require('./guild.ent');
 const { divergenceHr, getDivergence } = require('../../../utils/helpers');
 
-const { DECISION_ENDED } = LogEvents;
+const { DECISION_ENDED, ROAM_TRADE_EVENT_HANDLED } = LogEvents;
 
 const entity = (module.exports = {});
 
@@ -89,7 +89,7 @@ entity.loggerToAdmin = async (logContext) => {
  * Format log message.
  *
  * @param {Object} lc Logality log context object.
- * @return {string|void>} The message.
+ * @return {string|void} The message.
  * @private
  */
 entity._formatMessage = (lc) => {
@@ -100,6 +100,8 @@ entity._formatMessage = (lc) => {
   switch (lc.relay) {
     case DECISION_ENDED:
       return entity._formatDecisionEnded(lc);
+    case ROAM_TRADE_EVENT_HANDLED:
+      return entity._formatRoamTrade(lc);
     default:
       break;
   }
@@ -177,7 +179,8 @@ entity._formatTradesClosed = (lc) => {
   parts.push(`**Synth**: ${trade.traded_dst_token_symbol}`);
   parts.push(`**Profit/loss**: ${trade.closed_profit_loss.toFixed(4)}`);
   parts.push(
-    `**Open/Close Percent**: ${trade.traded_projected_percent_hr}/${trade.closed_profit_loss_percent_hr}`,
+    `**Open/Close Percent**: ${trade.traded_projected_percent_hr}/` +
+      `${trade.closed_profit_loss_percent_hr}`,
   );
 
   parts.push(
@@ -191,43 +194,68 @@ entity._formatTradesClosed = (lc) => {
   return message;
 };
 
-//
-// A Trade Record
-//
-// id: '8ed52026-2654-48fd-b2a0-c4dc4a9cd133',
-// pair: 'BTCUSD',
-// opportunity_feed_price: 45163.8,
-// opportunity_oracle_price: 45090.9,
-// opportunity_block_number: 1091018,
-// network: 'optimistic_kovan',
-// traded: true,
-// traded_feed_price: 45163.8,
-// traded_oracle_price: 45090.9,
-// traded_projected_percent: 0.00161688,
-// traded_projected_percent_hr: '0.16%',
-// traded_block_number: 1091018,
-// traded_tx: '0x',
-// traded_source_tokens: 10000,
-// traded_source_token_symbol: 'sUSD',
-// traded_dst_tokens: 1000,
-// traded_dst_token_symbol: 'BTCUSD',
-// traded_gas_spent: '0',
-// closed_trade: true,
-// closed_at: 2021-08-17T20:12:25.632Z,
-// closed_tx: '0x',
-// closed_price_diff: -0.01,
-// closed_profit_loss: -0.00221774,
-// closed_profit_loss_percent: -2.21774e-7,
-// closed_profit_loss_percent_hr: '-0.00%',
-// closed_feed_price: 45156.2,
-// closed_oracle_price: 45090.9,
-// closed_block_number: 1091019,
-// testing: true,
-// closed_cut_losses: false,
-// closed_source_tokens: 1000,
-// closed_source_token_symbol: 'BTCUSD',
-// closed_dst_tokens: 10000,
-// closed_dst_token_symbol: 'sUSD',
-// closed_gas_spent: '0',
-// created_at: 2021-08-17T20:11:54.767Z,
-// updated_at: 2021-08-17T20:12:25.632Z
+/**
+ * Format the roam trade event.
+ *
+ * @param {Object} lc Logality log context object.
+ * @return {string} Formatted close trade message.
+ * @private
+ */
+entity._formatRoamTrade = (lc) => {
+  const { raw: trade } = lc.context.closedTrade;
+
+  const initCap = Number(config.app.initial_capital);
+
+  const capDivergence = divergenceHr(
+    getDivergence(initCap, trade.closed_target_usd_value),
+  );
+
+  const createDt = new Date(trade.created_at);
+  const tradeDt = new Date(trade.traded_at);
+  const closeDt = new Date(trade.closed_at);
+  const elapsedTimeTrade = (tradeDt - createDt) / 1000;
+  const elapsedTimeClose = (closeDt - tradeDt) / 1000;
+
+  const parts = ['--==Closed Roam Trade==--'];
+
+  parts.push(`**Network**: ${trade.network} **Testing**: ${trade.testing}`);
+  parts.push(
+    `**Traded**: ${trade.traded_source_tokens}${trade.opportunity_source_symbol}` +
+      ` -> ${trade.traded_target_tokens}${trade.opportunity_target_symbol}`,
+  );
+  parts.push(
+    `**Opportunity % (source - target = diff)**: ${trade.opportunity_source_usd_diff_percent_hr} -` +
+      ` ${trade.opportunity_target_usd_diff_percent_hr} =` +
+      ` ${trade.opportunity_source_target_diff_percent_hr}`,
+  );
+  parts.push(
+    `**Close % Profit/Loss**: ${trade.closed_source_target_diff_percent_hr}`,
+  );
+  parts.push(
+    `**Opportunity Feed Prices**: ${trade.opportunity_source_feed_price} - ${trade.opportunity_target_feed_price}`,
+  );
+  parts.push(
+    `**Opportunity Oracle Prices**: ${trade.opportunity_source_oracle_price} - ${trade.opportunity_target_oracle_price}`,
+  );
+  parts.push(
+    `**Close Oracle Prices**: ${trade.closed_source_oracle_price} - ${trade.closed_target_oracle_price}`,
+  );
+  parts.push(
+    `**Close USD Value (source - target)**: $${trade.closed_source_usd_value} - $${trade.closed_target_usd_value}`,
+  );
+  parts.push(`**Close Profit/Loss**: $${trade.closed_profit_loss_usd}`);
+
+  parts.push(`**Principal and %**: ${initCap} (${capDivergence})`);
+
+  parts.push(
+    `**Opportunity to Trade Elapsed Time (seconds)**: ${elapsedTimeTrade}"`,
+  );
+  parts.push(`**Trade to Close Elapsed Time (seconds)**: ${elapsedTimeClose}"`);
+
+  parts.push(
+    `**Trade - Close Block**: ${trade.traded_block_number} - ${trade.closed_block_number}`,
+  );
+
+  const message = parts.join('\n');
+  return message;
+};

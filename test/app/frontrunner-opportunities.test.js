@@ -8,7 +8,7 @@ const { allOpportunities } = require('../fixtures/opportunities.fix');
 
 const {
   _sortOpportunities,
-} = require('../../app/entities/frontrunner/logic/decision-making/opportunities.ent');
+} = require('../../app/entities/frontrunner/strategies/open-close/open-trade.ent');
 
 describe('Frontrunner - Opportunities', () => {
   testLib.init();

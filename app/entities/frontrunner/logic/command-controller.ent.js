@@ -5,8 +5,14 @@
 const config = require('config');
 const { tokenAuto } = require('@thanpolas/crypto-utils');
 
+const { PAIRS_AR } = require('../../price-feeds');
 const { isStarted, init, dispose } = require('./heartbeat.ent');
-const { getBalances, SYNTH_DECIMALS } = require('../../synthetix');
+const {
+  getBalances,
+  getCurrentTokenSymbol,
+  SYNTH_DECIMALS,
+} = require('../../synthetix');
+const { getDivergence, divergenceHr } = require('../../../utils/helpers');
 const { localState } = require('./events-plexer.ent');
 
 const entity = (module.exports = {});
@@ -113,4 +119,51 @@ entity.startOracleTrack = async (message) => {
 entity.stopOracleTrack = async (message) => {
   localState._tempEnableBlockMonitor = false;
   await message.reply('Oracle tracking stopped for BTCUSD.');
+};
+
+/**
+ * Get current status of bot.
+ *
+ * @param {DiscordMessage} message The discord message.
+ * @return {Promise<void>} A Promise.
+ */
+entity.status = async (message) => {
+  function flatObj(obj) {
+    return Object.keys(obj)
+      .sort()
+      .map((symbol) => `${symbol}:${Number.parseFloat(obj[symbol]).toFixed(3)}`)
+      .join(' | ');
+  }
+
+  // Note: Oracle prices and synth prices are 100% the same, so only the
+  //    oracle to feed divergence is calculated.
+  const divergencies = [];
+  PAIRS_AR.sort().forEach((pair) => {
+    const divergence = divergenceHr(
+      getDivergence(localState.oraclePrices[pair], localState.feedPrices[pair]),
+    );
+    divergencies.push(`${pair}:${divergence}`);
+  });
+
+  const msg = [];
+  msg.push(`* **Testing**: ${config.app.testing}`);
+  msg.push(`* **Network**: ${config.app.network}`);
+  msg.push(`* **Feed heartbeat seconds**: ${config.app.heartbeat}`);
+  msg.push(`* **Principal**: $${config.app.initial_capital}`);
+  msg.push(`* **Trading Strategy**: ${config.app.trade_strategy}`);
+  msg.push(
+    `* **Divergence Threshold**: ${divergenceHr(
+      config.app.divergence_threshold,
+    )}`,
+  );
+  msg.push(`* **Heartbeat No**: ${localState.heartbeat}`);
+  msg.push(`* **Block Number**: ${localState.blockNumber}`);
+  msg.push(`* **Current Token**: ${getCurrentTokenSymbol()}`);
+  msg.push(`* **Feed Prices**: ${flatObj(localState.feedPrices)}`);
+  msg.push(`* **Oracle Prices**: ${flatObj(localState.oraclePrices)}`);
+  msg.push(`* **Divergencies**: ${divergencies.join(' | ')}`);
+
+  const megRendered = msg.join('\n');
+
+  await message.reply(megRendered);
 };

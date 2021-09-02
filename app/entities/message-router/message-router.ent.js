@@ -26,6 +26,7 @@ messageRouter.PUBLIC_COMMANDS = [
   'balance',
   'oraclestart',
   'oraclestop',
+  'status',
 ];
 
 /**

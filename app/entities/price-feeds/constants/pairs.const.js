@@ -22,5 +22,14 @@ consts.PairsToSynths = {
   AAVEUSD: 'sAAVE',
 };
 
+/** @enum {string} Synths symbols to Matching pairs */
+consts.SynthsToPairs = {
+  sBTC: 'BTCUSD',
+  sETH: 'ETHUSD',
+  sLINK: 'LINKUSD',
+  sUNI: 'UNIUSD',
+  sAAVE: 'AAVEUSD',
+};
+
 /** @const {Array<string>} PAIRS_AR Normalized pairs as an array */
 consts.PAIRS_AR = Object.keys(consts.Pairs).map((pair) => consts.Pairs[pair]);

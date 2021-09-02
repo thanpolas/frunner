@@ -14,7 +14,8 @@ messages.help = () =>
 * \`threshold [threshold]\` :: Define a new threshold, i.e. \`threshold 0.65%\`
 * \`balance\` :: Get the current balances the bot has.
 * \`oraclestart\` :: Start oracle tracking.
-* \`oraclestop\` :: Stop oracle tracking.`;
+* \`oraclestop\` :: Stop oracle tracking.
+* \`status\` :: Get current status of bot.`;
 
 messages.error = () =>
   'Unknown command, type `!help` for a list of available commands.';

@@ -7,8 +7,10 @@ const { assignIn } = require('lodash');
 
 const { events, eventTypes } = require('../../events');
 const { PAIRS_AR } = require('../../price-feeds');
+const { getCurrentTokenSymbol } = require('../../synthetix');
 
-const { determineAction } = require('./decision-maker.ent');
+const { determineActionOpenClose } = require('../strategies/open-close');
+const { determineActionRoam } = require('../strategies/roam');
 const { getDivergence, perf } = require('../../../utils/helpers');
 const log = require('../../../services/log.service').get();
 
@@ -69,7 +71,8 @@ entity._onNewBlock = async (data) => {
   const { synthPrices, oraclePrices, blockNumber } = data;
 
   if (entity.localState._tempEnableBlockMonitor) {
-    await entity._checkNewPrice(data);
+    // Do not await on purpose
+    entity._checkOracleLog(data);
   }
 
   entity.localState.blockNumber = blockNumber;
@@ -94,6 +97,7 @@ entity._processAndDecide = async () => {
   const divergencies = {
     state: assignIn(state), // deep copy state
     oracleToFeed: {},
+    currentTokenSymbol: getCurrentTokenSymbol(),
   };
 
   // Note: Oracle prices and synth prices are 100% the same, so only the
@@ -114,7 +118,10 @@ entity._processAndDecide = async () => {
     );
   }
 
-  return determineAction(divergencies);
+  if (config.app.trade_strategy === 'roam') {
+    return determineActionRoam(divergencies);
+  }
+  return determineActionOpenClose(divergencies);
 };
 
 /**
@@ -143,7 +150,7 @@ entity._shouldLogUpdate = (divergencies) => {
  * @return {Promise<void>}
  * @private
  */
-entity._checkNewPrice = async (data) => {
+entity._checkOracleLog = async (data) => {
   const { oraclePrices, blockNumber } = data;
   const { BTCUSD: oldBTCUSD } = entity.localState.oraclePrices;
   const { BTCUSD: newBTCUSD } = oraclePrices.oracleByPair;
@@ -158,7 +165,7 @@ entity._checkNewPrice = async (data) => {
 
   if (!firstTime) {
     await log.info(
-      `BTC Oracle Price change. Block Diff: ${blocksDiff}, TimeDiff: ${timeDiff}` +
+      `BTC Oracle Price change. Block: ${blockNumber} Block Diff: ${blocksDiff}, TimeDiff: ${timeDiff}` +
         ` Old Price: ${entity.localState.oraclePrices.BTCUSD}` +
         ` New Price: ${oraclePrices.oracleByPair.BTCUSD}`,
       { relay: true },

@@ -11,6 +11,7 @@ const {
   init: initBalances,
   balances,
   getBalances,
+  getCurrentTokenSymbol,
 } = require('./logic/snx-balances.ent');
 const { SynthsSymbols, SYNTH_DECIMALS } = require('./constants/synths.const');
 
@@ -20,6 +21,7 @@ entity.snxPrices = snxPrices;
 entity.snxTrade = snxTrade;
 entity.balances = balances;
 entity.getBalances = getBalances;
+entity.getCurrentTokenSymbol = getCurrentTokenSymbol;
 
 entity.SYNTH_DECIMALS = SYNTH_DECIMALS;
 entity.SynthsSymbols = SynthsSymbols;
