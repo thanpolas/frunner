@@ -10,6 +10,7 @@ const { PAIRS_AR } = require('../../price-feeds');
 const { getCurrentTokenSymbol } = require('../../synthetix');
 
 const { determineActionOpenClose } = require('../strategies/open-close');
+const { determineActionRoam } = require('../strategies/roam');
 const { getDivergence, perf } = require('../../../utils/helpers');
 const log = require('../../../services/log.service').get();
 
@@ -116,6 +117,9 @@ entity._processAndDecide = async () => {
     );
   }
 
+  if (config.app.trade_strategy === 'roam') {
+    return determineActionRoam(divergencies);
+  }
   return determineActionOpenClose(divergencies);
 };
 
