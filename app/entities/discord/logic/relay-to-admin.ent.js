@@ -179,7 +179,8 @@ entity._formatTradesClosed = (lc) => {
   parts.push(`**Synth**: ${trade.traded_dst_token_symbol}`);
   parts.push(`**Profit/loss**: ${trade.closed_profit_loss.toFixed(4)}`);
   parts.push(
-    `**Open/Close Percent**: ${trade.traded_projected_percent_hr}/${trade.closed_profit_loss_percent_hr}`,
+    `**Open/Close Percent**: ${trade.traded_projected_percent_hr}/` +
+      `${trade.closed_profit_loss_percent_hr}`,
   );
 
   parts.push(
@@ -208,25 +209,41 @@ entity._formatRoamTrade = (lc) => {
 
   const capDivergence = divergenceHr(getDivergence(initCap, currentCap));
 
-  const parts = ['Closed Trade'];
+  const createDt = new Date(trade.created_at);
+  const tradeDt = new Date(trade.traded_at);
+  const closeDt = new Date(trade.closed_at);
+  const elapsedTimeTrade = (tradeDt - createDt) / 1000;
+  const elapsedTimeClose = (closeDt - tradeDt) / 1000;
+
+  const parts = ['Closed Roam Trade'];
 
   parts.push(`**Network**: ${trade.network}`);
   parts.push(`**Testing**: ${trade.testing}`);
-  parts.push(`**Cut Loss**: ${trade.closed_cut_losses}`);
-  parts.push(`**Current sUSD Cap**: ${trade.closed_dst_tokens}`);
-  parts.push(`**Original sUSD Cap & %**: ${initCap} (${capDivergence})`);
-  parts.push(`**Synth**: ${trade.traded_dst_token_symbol}`);
-  parts.push(`**Profit/loss**: ${trade.closed_profit_loss.toFixed(4)}`);
   parts.push(
-    `**Open/Close Percent**: ${trade.traded_projected_percent_hr}/${trade.closed_profit_loss_percent_hr}`,
+    `**Traded**: ${trade.traded_source_tokens}${trade.opportunity_source_symbol}` +
+      ` -> ${trade.traded_target_tokens}${trade.opportunity_target_symbol}`,
   );
+  parts.push(
+    `**op %**: ${trade.opportunity_source_usd_diff_percent_hr} -` +
+      ` ${trade.opportunity_target_usd_diff_percent_hr} =` +
+      ` ${trade.opportunity_source_target_diff_percent_hr}`,
+  );
+  parts.push(`**cl %**: ${trade.closed_source_target_diff_percent_hr}`);
+  parts.push(
+    `**op feed**: ${trade.opportunity_source_feed_price} - ${trade.opportunity_target_feed_price}`,
+  );
+  parts.push(
+    `**cl orcl**: ${trade.closed_source_oracle_price} - ${trade.closed_target_oracle_price}`,
+  );
+  parts.push(
+    `**cl vals**: $${trade.closed_source_usd_value} - $${trade.closed_target_usd_value}`,
+  );
+  parts.push(`**cl pr/ls**: $${trade.closed_profit_loss_usd}`);
 
-  parts.push(
-    `**Open/Close Feed Price**: ${trade.traded_feed_price}/${trade.closed_feed_price}`,
-  );
-  parts.push(
-    `**Open/Close Oracle Price**: ${trade.traded_oracle_price}/${trade.closed_oracle_price}`,
-  );
+  parts.push(`**principal**: ${initCap} (${capDivergence})`);
+
+  parts.push(`**op-tr et**: ${elapsedTimeTrade}"`);
+  parts.push(`**tr-cl et**: ${elapsedTimeClose}"`);
 
   const message = parts.join(' - ');
   return message;
