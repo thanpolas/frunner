@@ -54,7 +54,7 @@ describe('Frontrunner - Trade Roaming', () => {
       expect(result.openedTrade).toBeUndefined();
       expect(result.closedTrade).toBeUndefined();
     });
-    test.only('Will create a new trade with a 3% profit', async () => {
+    test('Will create a new trade with a 3% profit', async () => {
       const divergences = divergenceOneRoamOpportunity();
       const result = await determineActionRoam(divergences);
 
@@ -63,9 +63,22 @@ describe('Frontrunner - Trade Roaming', () => {
 
       const { openedTrade } = result;
 
-      console.log(openedTrade);
       tradeRoamAssert(openedTrade, divergences);
     });
+    test('Will not create new opportunity after one is active', async () => {
+      const divergences = divergenceOneRoamOpportunity();
+      const result = await determineActionRoam(divergences);
+
+      expect(result.openedTrade).toBeObject();
+      expect(result.closedTrade).toBeUndefined();
+
+      const { openedTrade } = result;
+
+      const result2 = await determineActionRoam(divergences);
+      expect(result2.openedTrade).toBeUndefined();
+      expect(result2.closedTrade).toBeUndefined();
+    });
+
     test('Will create a new trade from a very negative opportunity', async () => {
       const divergences = divergenceNegativeRoamOpportunity();
       const result = await determineActionRoam(divergences);
@@ -97,23 +110,19 @@ describe('Frontrunner - Trade Roaming', () => {
       const divergencesClose = divergenceOneRoamOpportunity();
 
       divergencesClose.state.heartbeat = 7;
-      divergencesClose.state.blockNumber = 1054367;
-      divergencesClose.state.oraclePrices.BTCUSD = 47356.1;
-      divergencesClose.state.synthPrices.BTCUSD = 47356.1;
-      divergencesClose.oracleToFeed.BTCUSD = 0;
+      divergencesClose.state.blockNumber = 1054368;
+      divergencesClose.state.oraclePrices.LINKUSD = 25.34;
+      divergencesClose.state.synthPrices.LINKUSD = 25.34;
+      divergencesClose.oracleToFeed.LINKUSD = 0;
 
       const resultClose = await determineActionRoam(divergencesClose);
+      console.log('resultClose:', resultClose);
 
       expect(resultClose.openedTrade).toBeUndefined();
       expect(resultClose.closedTrade).toBeObject();
 
       const { closedTrade } = resultClose;
 
-      expect(closedTrade.closed_profit_loss_percent_hr).toEqual('3.00%');
-      expect(closedTrade.closed_price_diff).toEqual(1379.3);
-      expect(Number(closedTrade.closed_profit_loss).toFixed(2)).toEqual(
-        '300.00',
-      );
       tradeRoamAssert(closedTrade, divergencesOpen, divergencesClose);
     });
   });
