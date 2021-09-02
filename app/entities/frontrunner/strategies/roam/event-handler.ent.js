@@ -92,14 +92,13 @@ entity.determineActionRoam = async (divergencies) => {
  * @private
  */
 entity.logResults = async (divergencies, result) => {
-  const { openedTrade, closedTrade } = result;
+  const { closedTrade } = result;
 
-  if (!openedTrade && !closedTrade) {
+  if (!closedTrade) {
     return;
   }
 
   await log.info('Event Handled for roaming trade', {
-    openedTrade,
     closedTrade,
     divergencies,
     relay: ROAM_TRADE_EVENT_HANDLED,
