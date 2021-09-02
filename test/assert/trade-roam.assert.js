@@ -105,11 +105,11 @@ assert.assertTypes = (testObj, optFixtureClose) => {
     expect(testObj.closed_source_usd_value).toBeNumber();
     expect(testObj.closed_target_usd_value).toBeNumber();
     expect(testObj.closed_source_target_diff_percent).toBeNumber();
-    expect(testObj.closed_source_target_diff_percent_hr).toBeNumber();
+    expect(testObj.closed_source_target_diff_percent_hr).toBeString();
     expect(testObj.closed_profit_loss_usd).toBeNumber();
     expect(testObj.closed_source_oracle_price).toBeNumber();
     expect(testObj.closed_target_oracle_price).toBeNumber();
-    expect(testObj.closed_at).toBeNumber();
+    expect(testObj.closed_at).toBeDate();
   } else {
     expect(testObj.closed_source_usd_value).toBeNull();
     expect(testObj.closed_target_usd_value).toBeNull();
