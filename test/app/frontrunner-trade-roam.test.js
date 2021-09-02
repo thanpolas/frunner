@@ -36,7 +36,7 @@ describe('Frontrunner - Trade Roaming', () => {
     afterEach(tearDown);
 
     test('local activeOpportunity state should be empty', () => {
-      expect(roamEventHandler.activeOpportunity).toBeUndefined();
+      expect(roamEventHandler.activeOpportunity).toBeNull();
     });
     test('Will complete a decision without any new opportunities', async () => {
       const result = await determineActionRoam(divergenceRoamStandard());
@@ -114,8 +114,6 @@ describe('Frontrunner - Trade Roaming', () => {
       divergencesClose.oracleToFeed.LINKUSD = 0;
 
       const resultClose = await determineActionRoam(divergencesClose);
-      console.log('resultClose:', resultClose);
-
       expect(resultClose.openedTrade).toBeUndefined();
       expect(resultClose.closedTrade).toBeObject();
 
