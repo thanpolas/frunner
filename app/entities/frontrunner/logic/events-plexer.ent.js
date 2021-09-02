@@ -71,7 +71,8 @@ entity._onNewBlock = async (data) => {
   const { synthPrices, oraclePrices, blockNumber } = data;
 
   if (entity.localState._tempEnableBlockMonitor) {
-    await entity._checkNewPrice(data);
+    // Do not await on purpose
+    entity._checkOracleLog(data);
   }
 
   entity.localState.blockNumber = blockNumber;
@@ -149,7 +150,7 @@ entity._shouldLogUpdate = (divergencies) => {
  * @return {Promise<void>}
  * @private
  */
-entity._checkNewPrice = async (data) => {
+entity._checkOracleLog = async (data) => {
   const { oraclePrices, blockNumber } = data;
   const { BTCUSD: oldBTCUSD } = entity.localState.oraclePrices;
   const { BTCUSD: newBTCUSD } = oraclePrices.oracleByPair;
@@ -164,7 +165,7 @@ entity._checkNewPrice = async (data) => {
 
   if (!firstTime) {
     await log.info(
-      `BTC Oracle Price change. Block Diff: ${blocksDiff}, TimeDiff: ${timeDiff}` +
+      `BTC Oracle Price change. Block: ${blockNumber} Block Diff: ${blocksDiff}, TimeDiff: ${timeDiff}` +
         ` Old Price: ${entity.localState.oraclePrices.BTCUSD}` +
         ` New Price: ${oraclePrices.oracleByPair.BTCUSD}`,
       { relay: true },
