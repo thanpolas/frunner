@@ -8,5 +8,8 @@
             "directory": "./migrations/migrations/"
         },
         "seed_directory": "./migrations/seeds"
+    },
+    "app": {
+        "divergence_threshold": 0.003
     }
 }
