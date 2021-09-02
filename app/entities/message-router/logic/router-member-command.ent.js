@@ -11,6 +11,7 @@ const {
   getBalance,
   startOracleTrack,
   stopOracleTrack,
+  status,
 } = require('../../frontrunner');
 
 const log = require('../../../services/log.service').get();
@@ -63,7 +64,9 @@ router.handleChannelMessage = async (message) => {
         false,
       );
       break;
-
+    case 'status':
+      await router._invokeCommand(status, message, 'status', true);
+      break;
     default:
       await log.warn('handleChannelMessage() :: Bogus command invoked', {
         custom: {

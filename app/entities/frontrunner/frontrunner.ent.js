@@ -29,6 +29,7 @@ const {
   getBalance,
   startOracleTrack,
   stopOracleTrack,
+  status,
 } = require('./logic/command-controller.ent');
 
 const log = require('../../services/log.service').get();
@@ -47,6 +48,7 @@ entity.setThreshold = setThreshold;
 entity.getBalance = getBalance;
 entity.startOracleTrack = startOracleTrack;
 entity.stopOracleTrack = stopOracleTrack;
+entity.status = status;
 
 /**
  * Initialize frontrunner core functionality.
