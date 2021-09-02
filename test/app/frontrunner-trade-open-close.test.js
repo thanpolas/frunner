@@ -17,7 +17,7 @@ const {
   activeTrades,
 } = require('../../app/entities/frontrunner/strategies/open-close');
 
-describe('Frontrunner - Decision Making', () => {
+describe('Frontrunner - trade open-close strat', () => {
   testLib.init();
 
   describe(`Happy Path`, () => {
