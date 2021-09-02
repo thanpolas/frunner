@@ -72,8 +72,6 @@ describe('Frontrunner - Trade Roaming', () => {
       expect(result.openedTrade).toBeObject();
       expect(result.closedTrade).toBeUndefined();
 
-      const { openedTrade } = result;
-
       const result2 = await determineActionRoam(divergences);
       expect(result2.openedTrade).toBeUndefined();
       expect(result2.closedTrade).toBeUndefined();
