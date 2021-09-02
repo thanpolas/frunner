@@ -205,9 +205,10 @@ entity._formatRoamTrade = (lc) => {
   const { raw: trade } = lc.context.closedTrade;
 
   const initCap = Number(config.app.initial_capital);
-  const currentCap = Number(trade.closed_dst_tokens);
 
-  const capDivergence = divergenceHr(getDivergence(initCap, currentCap));
+  const capDivergence = divergenceHr(
+    getDivergence(initCap, trade.closed_target_usd_value),
+  );
 
   const createDt = new Date(trade.created_at);
   const tradeDt = new Date(trade.traded_at);
@@ -245,6 +246,6 @@ entity._formatRoamTrade = (lc) => {
   parts.push(`**op-tr et**: ${elapsedTimeTrade}"`);
   parts.push(`**tr-cl et**: ${elapsedTimeClose}"`);
 
-  const message = parts.join(' - ');
+  const message = parts.join(' | ');
   return message;
 };
