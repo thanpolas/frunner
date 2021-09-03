@@ -59,10 +59,10 @@ entity.status = status;
  */
 entity.init = async (bootOpts) => {
   await log.info('Initializing Frontrunner...');
-  await initHeartbeat(bootOpts);
   await initOpenClose();
   await initRoam();
   initFrontrunnerCore(bootOpts);
+  await initHeartbeat(bootOpts);
 };
 
 /**
