@@ -3,8 +3,6 @@
  */
 
 const config = require('config');
-const { poolTokensToAuto } = require('@thanpolas/crypto-utils');
-
 const { db } = require('../../../../services/postgres.service');
 
 const {
@@ -18,7 +16,7 @@ const {
   update: tradeUpdate,
   getById: tradeGetById,
 } = require('../../sql/trades-roam.sql');
-const { snxTrade, SYNTH_DECIMALS } = require('../../../synthetix');
+const { snxTrade } = require('../../../synthetix');
 
 const { wait, divergenceHr } = require('../../../../utils/helpers');
 
