@@ -34,9 +34,14 @@ entity._channels = {};
 /**
  * Initialize the websocket client.
  *
+ * @param {Object} bootOpts Application boot options.
+ * @param {boolean} bootOpts.testing When true go into testing mode.
  * @return {Promise<void>}
  */
-entity.init = () => {
+entity.init = (bootOpts) => {
+  if (bootOpts.testing) {
+    return;
+  }
   return new Promise((resolve) => {
     entity.ws = new WebSocket(entity.BITFINEX_WS_ENDPOINT);
 

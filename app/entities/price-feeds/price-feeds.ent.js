@@ -51,12 +51,14 @@ entity.SynthsToPairs = SynthsToPairs;
 /**
  * Initialize the entity and service.
  *
+ * @param {Object} bootOpts Application boot options.
+ * @param {boolean} bootOpts.testing When true go into testing mode.
  * @return {Promise<void>}
  */
-entity.init = async () => {
+entity.init = async (bootOpts) => {
   await log.info('Initializing price-feeds entity...');
 
-  await initBitfinexWs();
+  await initBitfinexWs(bootOpts);
 };
 
 /**
