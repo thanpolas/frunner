@@ -50,4 +50,9 @@ entity.SynthsToPairs = SynthsToPairs;
  */
 entity.init = async () => {
   await log.info('Initializing price-feeds entity...');
+/**
+ * Dispose all open handlers.
+ */
+entity.dispose = () => {
+  disposeBitfinexWs();
 };
