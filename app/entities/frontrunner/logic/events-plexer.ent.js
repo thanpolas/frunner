@@ -115,7 +115,7 @@ entity._processAndDecide = async () => {
   }
   const { localState: state } = entity;
 
-  if (state.heartbeat === 0 || state.blockNumber === 0) {
+  if (state.blockNumber === 0) {
     return;
   }
 
