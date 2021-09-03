@@ -33,7 +33,7 @@
         "fetch_price_timeout": 1000,
         "heartbeat": 2000,
         "network": "optimistic_kovan",
-        "testing": false,
+        "testing": true,
         "divergence_threshold": 0.0045,
         "heartbeat_log_update": 900,
         "initial_capital": 2033.78,
