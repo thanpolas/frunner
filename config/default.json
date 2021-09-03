@@ -34,7 +34,7 @@
         "heartbeat": 2000,
         "network": "optimistic_kovan",
         "testing": true,
-        "divergence_threshold": 0.001,
+        "divergence_threshold": 0.0045,
         "heartbeat_log_update": 900,
         "initial_capital": 2033.78,
         "trade_strategy": "roam"

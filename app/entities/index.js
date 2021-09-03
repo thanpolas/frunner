@@ -8,7 +8,10 @@ require('./events');
 const discordEnt = require('./discord');
 const messageRouter = require('./message-router');
 const { init: initEther } = require('./ether');
-const { init: initPriceFeeds } = require('./price-feeds');
+const {
+  init: initPriceFeeds,
+  dispose: disposePriceFeeds,
+} = require('./price-feeds');
 const { init: initSnx } = require('./synthetix');
 const {
   init: initFrontrunner,
@@ -48,4 +51,5 @@ bootstrap.init = async (bootOpts) => {
  */
 bootstrap.dispose = () => {
   disposeFrontrunner();
+  disposePriceFeeds();
 };

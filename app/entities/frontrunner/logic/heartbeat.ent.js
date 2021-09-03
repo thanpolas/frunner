@@ -32,7 +32,7 @@ entity.init = async (bootOpts = {}) => {
     return;
   }
 
-  await entity._createFeedHeartbeat();
+  // await entity._createFeedHeartbeat();
   entity._createNewBlockWatch();
 };
 

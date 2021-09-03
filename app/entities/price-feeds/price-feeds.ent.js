@@ -2,9 +2,14 @@
  * @fileoverview Price feeds fetcher and aggregator.
  */
 
-const { getAllPricesCoinbase } = require('./logic/coinbase-price.ent');
-const { getAllPriceBitfinex } = require('./logic/bitfinex-price.ent');
-const { getAllPricesKraken } = require('./logic/kraken-price.ent');
+const {
+  init: initBitfinexWs,
+  dispose: disposeBitfinexWs,
+} = require('./websocket-api/bitfinex-ws.ent');
+
+const { getAllPricesCoinbase } = require('./rest-api/coinbase-price.ent');
+const { getAllPriceBitfinex } = require('./rest-api/bitfinex-price.ent');
+const { getAllPricesKraken } = require('./rest-api/kraken-price.ent');
 const {
   Pairs,
   PAIRS_AR,
@@ -46,8 +51,19 @@ entity.SynthsToPairs = SynthsToPairs;
 /**
  * Initialize the entity and service.
  *
+ * @param {Object} bootOpts Application boot options.
+ * @param {boolean} bootOpts.testing When true go into testing mode.
  * @return {Promise<void>}
  */
-entity.init = async () => {
+entity.init = async (bootOpts) => {
   await log.info('Initializing price-feeds entity...');
+
+  await initBitfinexWs(bootOpts);
+};
+
+/**
+ * Dispose all open handlers.
+ */
+entity.dispose = () => {
+  disposeBitfinexWs();
 };
