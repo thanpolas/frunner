@@ -97,7 +97,8 @@ entity._findOpportunities = async (divergencies) => {
   // Reverse sign to get the distance between the source token divergence
   // and the candidate token divergence.
   const sourceDivergence = oracleToFeed[sourcePair];
-  const sourceDivergenceRev = sourceDivergence * -1;
+  // const sourceDivergenceRev = sourceDivergence * -1;
+  const sourceDivergenceRev = 0;
 
   const opportunities = [];
   PAIRS_AR.forEach((pair) => {
