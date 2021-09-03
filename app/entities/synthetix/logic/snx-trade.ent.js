@@ -48,12 +48,13 @@ entity.init = async () => {
  * @return {Promise<Object>} A Promise with the completed transaction object.
  */
 entity.snxTrade = async (sourceSymbol, destinationSymbol, optSum) => {
-  await log.info(
-    `SNX Trade requested from ${sourceSymbol} to ${destinationSymbol} for ${optSum}`,
-  );
   const sourceToken = SynthAddresses[sourceSymbol];
   const destinationToken = SynthAddresses[destinationSymbol];
   const sourceAmount = optSum || balances[sourceSymbol];
+
+  log.info(
+    `SNX Trade requested from ${sourceSymbol} to ${destinationSymbol} for ${sourceAmount}`,
+  );
 
   const tx = await entity._snxContract.exchange(
     sourceToken,

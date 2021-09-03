@@ -21,6 +21,9 @@ const entity = (module.exports = {});
 /** @type {number} Store on which heartbeat an update log was made. */
 entity._lastHeartbeatUpdate = 0;
 
+/** @type {boolean} Trading activity toggle */
+entity._active = true;
+
 /**
  * Stores necessary local state.
  *
@@ -46,6 +49,24 @@ entity.init = () => {
   events.on(PRICE_FEED_PROCESSED, entity._onPriceFeedProcessed);
   events.on(NEW_BLOCK, entity._onNewBlock);
   events.on(BITFINEX_TRADE, entity._onBitfinexTrade);
+};
+
+/**
+ * Determines if service has started or is paused.
+ *
+ * @return {boolean} If the trading service is live.
+ */
+entity.isStarted = () => {
+  return entity._active;
+};
+
+/**
+ * Set whether trading should proceed or not.
+ *
+ * @param {boolean} status The status to set.
+ */
+entity.setActive = (status) => {
+  entity._active = status;
 };
 
 /**
@@ -89,9 +110,12 @@ entity._onNewBlock = async (data) => {
  * @private
  */
 entity._processAndDecide = async () => {
+  if (!entity._active) {
+    return;
+  }
   const { localState: state } = entity;
 
-  if (state.heartbeat === 0 || state.blockNumber === 0) {
+  if (state.blockNumber === 0) {
     return;
   }
 
@@ -138,16 +162,17 @@ entity._processAndDecide = async () => {
  * @return {boolean} True if it's time to do an update.
  * @private
  */
-entity._shouldLogUpdate = (divergencies) => {
-  if (entity._lastHeartbeatUpdate === 0) {
-    entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
-    return true;
-  }
+entity._shouldLogUpdate = () => {
+  return false;
+  // if (entity._lastHeartbeatUpdate === 0) {
+  //   entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
+  //   return true;
+  // }
 
-  if (divergencies.state.heartbeat % config.app.heartbeat_log_update === 0) {
-    entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
-    return true;
-  }
+  // if (divergencies.state.heartbeat % config.app.heartbeat_log_update === 0) {
+  //   entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
+  //   return true;
+  // }
 };
 
 /**
@@ -193,6 +218,5 @@ entity._checkOracleLog = async (data) => {
  */
 entity._onBitfinexTrade = async (pair, price) => {
   entity.localState.feedPrices[pair] = price;
-
   await entity._processAndDecide();
 };

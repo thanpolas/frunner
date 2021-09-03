@@ -3,8 +3,6 @@
  */
 
 const config = require('config');
-const { poolTokensToAuto } = require('@thanpolas/crypto-utils');
-
 const { db } = require('../../../../services/postgres.service');
 
 const {
@@ -18,7 +16,7 @@ const {
   update: tradeUpdate,
   getById: tradeGetById,
 } = require('../../sql/trades-roam.sql');
-const { snxTrade, SYNTH_DECIMALS } = require('../../../synthetix');
+const { snxTrade } = require('../../../synthetix');
 
 const { wait, divergenceHr } = require('../../../../utils/helpers');
 
@@ -225,7 +223,6 @@ entity._updateTradeRecord = async (tradeRecord, tx) => {
   let traded_source_tokens = 10000;
   let traded_target_tokens = 10000;
   let traded_gas_spent = 0;
-  let traded_actual_ratio_between_tokens = 1;
   let traded_source_usd_value = 10000;
 
   if (tx) {
@@ -236,13 +233,6 @@ entity._updateTradeRecord = async (tradeRecord, tx) => {
       traded_source_tokens * tradeRecord.opportunity_source_oracle_price;
     traded_target_tokens = tx.dstTokenQuantityReadable;
     traded_gas_spent = tx.gasUsed.toString();
-
-    const tokenFraction = [traded_source_tokens, traded_target_tokens];
-    const decimalFraction = [SYNTH_DECIMALS, SYNTH_DECIMALS];
-    traded_actual_ratio_between_tokens = poolTokensToAuto(
-      tokenFraction,
-      decimalFraction,
-    );
   }
 
   const tradeUpdateData = {
@@ -252,7 +242,6 @@ entity._updateTradeRecord = async (tradeRecord, tx) => {
     traded_source_usd_value,
     traded_target_tokens,
     traded_gas_spent,
-    traded_actual_ratio_between_tokens,
     traded_at: db().fn.now(),
   };
 

@@ -33,14 +33,11 @@ bootstrap.init = async (bootOpts) => {
 
   await initEther(bootOpts);
   await initSnx(bootOpts);
-  await initFrontrunner(bootOpts);
-  if (bootOpts.testing) {
-    return;
-  }
 
   messageRouter.init(bootOpts);
   await discordEnt.init(bootOpts);
   await initPriceFeeds(bootOpts);
+  await initFrontrunner(bootOpts);
 
   await log.notice('Entities boot finished');
 };

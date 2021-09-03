@@ -32,9 +32,13 @@ entity.loggerToAdmin = loggerToAdmin;
 
 /**
  * Execute any available one off discord tasks...
- *
+ * @param {Object} bootOpts Application boot options.
+ * @param {boolean} bootOpts.testing When true go into testing mode.
  * @return {Promise<void>} A Promise.
  */
-entity.init = async () => {
+entity.init = async (bootOpts) => {
+  if (bootOpts.testing) {
+    return;
+  }
   await initRelay();
 };

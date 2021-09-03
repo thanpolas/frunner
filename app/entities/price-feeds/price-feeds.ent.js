@@ -56,6 +56,9 @@ entity.SynthsToPairs = SynthsToPairs;
  * @return {Promise<void>}
  */
 entity.init = async (bootOpts) => {
+  if (bootOpts.testing) {
+    return;
+  }
   await log.info('Initializing price-feeds entity...');
 
   await initBitfinexWs(bootOpts);

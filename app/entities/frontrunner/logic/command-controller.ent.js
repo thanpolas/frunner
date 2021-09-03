@@ -5,15 +5,15 @@
 const config = require('config');
 const { tokenToAuto } = require('@thanpolas/crypto-utils');
 
-const { PAIRS_AR } = require('../../price-feeds');
-const { isStarted, init, dispose } = require('./heartbeat.ent');
+const { PAIRS_AR, SynthsToPairs } = require('../../price-feeds');
 const {
   getBalances,
   getCurrentTokenSymbol,
   SYNTH_DECIMALS,
+  balances,
 } = require('../../synthetix');
 const { getDivergence, divergenceHr } = require('../../../utils/helpers');
-const { localState } = require('./events-plexer.ent');
+const { localState, isStarted, setActive } = require('./events-plexer.ent');
 
 const entity = (module.exports = {});
 
@@ -29,7 +29,8 @@ entity.startTrade = async (message) => {
     return;
   }
 
-  await init();
+  setActive(true);
+
   await message.reply('Trading service started.');
 };
 
@@ -45,7 +46,8 @@ entity.stopTrade = async (message) => {
     return;
   }
 
-  dispose();
+  setActive(false);
+
   await message.reply('Trading service stopped.');
 };
 
@@ -88,10 +90,10 @@ entity.setThreshold = async (message) => {
  * @return {Promise<void>} A Promise.
  */
 entity.getBalance = async (message) => {
-  const balances = await getBalances();
-  const symbols = Object.keys(balances);
+  const balancesFetched = await getBalances();
+  const symbols = Object.keys(balancesFetched);
   const balancesReadable = symbols.map((symbol) => {
-    const val = tokenToAuto(balances[symbol], SYNTH_DECIMALS);
+    const val = tokenToAuto(balancesFetched[symbol], SYNTH_DECIMALS);
     return `${symbol}: ${val}`;
   });
 
@@ -145,20 +147,35 @@ entity.status = async (message) => {
     divergencies.push(`${pair}:${divergence}`);
   });
 
+  const currentToken = getCurrentTokenSymbol();
+  const currentPair = SynthsToPairs[currentToken];
+  const currentTokenQuantity = tokenToAuto(
+    balances[currentToken],
+    SYNTH_DECIMALS,
+  );
+  const usdValue = currentTokenQuantity * localState.oraclePrices[currentPair];
+
+  const div = getDivergence(config.app.initial_capital, usdValue);
+  const percentProfitLoss = divergenceHr(div);
+
   const msg = [];
+
   msg.push(`* **Testing**: ${config.app.testing}`);
   msg.push(`* **Network**: ${config.app.network}`);
-  msg.push(`* **Feed heartbeat seconds**: ${config.app.heartbeat}`);
+  msg.push(`* **Trade Active**: ${isStarted()}`);
   msg.push(`* **Principal**: $${config.app.initial_capital}`);
+  msg.push(`* **Current Token**: ${currentTokenQuantity} ${currentToken}`);
+  msg.push(
+    `* **Current Value USD**: $${usdValue.toFixed(2)} (${percentProfitLoss})`,
+  );
+
   msg.push(`* **Trading Strategy**: ${config.app.trade_strategy}`);
   msg.push(
     `* **Divergence Threshold**: ${divergenceHr(
       config.app.divergence_threshold,
     )}`,
   );
-  msg.push(`* **Heartbeat No**: ${localState.heartbeat}`);
   msg.push(`* **Block Number**: ${localState.blockNumber}`);
-  msg.push(`* **Current Token**: ${getCurrentTokenSymbol()}`);
   msg.push(`* **Feed Prices**: ${flatObj(localState.feedPrices)}`);
   msg.push(`* **Oracle Prices**: ${flatObj(localState.oraclePrices)}`);
   msg.push(`* **Divergencies**: ${divergencies.join(' | ')}`);

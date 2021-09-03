@@ -32,17 +32,10 @@ entity.init = async (bootOpts = {}) => {
     return;
   }
 
+  // Run one heartbeat to initially populate all prices
+  await entity._onHeartbeat();
   // await entity._createFeedHeartbeat();
   entity._createNewBlockWatch();
-};
-
-/**
- * Determines if service has started or is paused.
- *
- * @return {boolean} If the trading service is live.
- */
-entity.isStarted = () => {
-  return !!entity._heartbeatInterval;
 };
 
 /**

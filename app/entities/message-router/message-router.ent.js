@@ -32,8 +32,13 @@ messageRouter.PUBLIC_COMMANDS = [
 /**
  * Initialize Discord event listeners for performing message router.
  *
+ * @param {Object} bootOpts Application boot options.
+ * @param {boolean} bootOpts.testing When true go into testing mode.
  */
-messageRouter.init = () => {
+messageRouter.init = (bootOpts) => {
+  if (bootOpts.testing) {
+    return;
+  }
   log.info('Initializing message router entity...');
   const client = getClient();
 
