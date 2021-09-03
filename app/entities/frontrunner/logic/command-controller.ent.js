@@ -6,14 +6,13 @@ const config = require('config');
 const { tokenToAuto } = require('@thanpolas/crypto-utils');
 
 const { PAIRS_AR } = require('../../price-feeds');
-const { isStarted, init, dispose } = require('./heartbeat.ent');
 const {
   getBalances,
   getCurrentTokenSymbol,
   SYNTH_DECIMALS,
 } = require('../../synthetix');
 const { getDivergence, divergenceHr } = require('../../../utils/helpers');
-const { localState } = require('./events-plexer.ent');
+const { localState, isStarted, setActive } = require('./events-plexer.ent');
 
 const entity = (module.exports = {});
 
@@ -29,7 +28,8 @@ entity.startTrade = async (message) => {
     return;
   }
 
-  await init();
+  setActive(true);
+
   await message.reply('Trading service started.');
 };
 
@@ -45,7 +45,8 @@ entity.stopTrade = async (message) => {
     return;
   }
 
-  dispose();
+  setActive(false);
+
   await message.reply('Trading service stopped.');
 };
 
