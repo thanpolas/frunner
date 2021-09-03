@@ -10,17 +10,26 @@ const log = require('../../../services/log.service').get();
 const entity = (module.exports = {});
 
 entity.BITFINEX_WS_ENDPOINT = 'wss://api-pub.bitfinex.com/ws/2';
-entity.BITFINEX_PAIRS = ['tAAVE', 'tBTCUSD', 'tETHUSD', 'tLINK', 'tUNIUSD'];
+entity.BITFINEX_PAIRS = [
+  'tAAVE:USD',
+  'tBTCUSD',
+  'tETHUSD',
+  'tLINK:USD',
+  'tUNIUSD',
+];
 entity.BITFINEX_TO_PAIRS = {
-  tAAVE: 'AAVEUSD',
+  'tAAVE:USD': 'AAVEUSD',
   tBTCUSD: 'BTCUSD',
   tETHUSD: 'ETHUSD',
-  tLINK: 'LINKUSD',
+  'tLINK:USD': 'LINKUSD',
   tUNIUSD: 'UNIUSD',
 };
 
 /** @type {Object?} websocket client */
 entity.ws = null;
+
+/** @type {Object} Stores the subscribed channels */
+entity._channels = {};
 
 /**
  * Initialize the websocket client.
@@ -142,24 +151,35 @@ entity._subscribe = () => {
  */
 entity._handleSubscription = async (message) => {
   // {"event":"subscribed","channel":"trades","chanId":91,"symbol":"tBTCUSD","pair":"BTCUSD"}
-
-  if (!message?.event === 'subscribed') {
+  // suppress info messages
+  if (message?.event === 'info') {
+    return;
+  }
+  if (message?.event !== 'subscribed') {
     await log.info('Bitfinex WS received unknown message.', {
       custom: { message },
     });
     return;
   }
 
-  if (!message.channel === 'trades') {
+  if (message.channel !== 'trades') {
     await log.warn('bitfinex WS received bogus subscription', {
       custom: { message },
     });
     return;
   }
 
-  const synth = entity.BITFINEX_TO_PAIRS[message.symbol];
-  entity._channels[message.chanId] = synth;
-  await log.info(`Bitfinex WS subscribed to trade feed of: ${synth}`);
+  const pair = entity.BITFINEX_TO_PAIRS[message.symbol];
+  if (!pair) {
+    await log.warn('bitfinex WS bogus pair resolution on subscription', {
+      custom: {
+        message,
+      },
+    });
+    return;
+  }
+  entity._channels[message.chanId] = pair;
+  await log.info(`Bitfinex WS subscribed to trade feed of: ${pair}`);
 };
 
 /**
@@ -170,26 +190,25 @@ entity._handleSubscription = async (message) => {
  * @private
  */
 entity._handleTrade = async (message) => {
-  // We only care for the last message if there are multiple
-  const lastTrade = message.pop();
+  // clear out events of no interest
+  if (message.length !== 3) {
+    return;
+  }
 
   // [91,"te",[814055103,1630651866101,0.0202,49457]]
   //
   // heartbeat, ignore
   // [70151,"hb"]
 
-  // discard heartbeat messages
-  if (lastTrade[1] === 'hb') {
-    return;
-  }
-
-  const [channel, action, data] = lastTrade;
+  const [channel, action, data] = message;
   const [tradeId, timestamp, amount, price] = data;
 
-  const pair = entity.BITFINEX_TO_PAIRS[channel];
+  const pair = entity._channels[channel];
   if (!pair) {
     await log.warn('Bitfinex WS bogus incoming trade', {
-      custom: lastTrade,
+      custom: {
+        message,
+      },
     });
     return;
   }
