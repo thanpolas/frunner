@@ -32,6 +32,8 @@ entity.init = async (bootOpts = {}) => {
     return;
   }
 
+  // Run one heartbeat to initially populate all prices
+  await entity._onHeartbeat();
   // await entity._createFeedHeartbeat();
   entity._createNewBlockWatch();
 };
