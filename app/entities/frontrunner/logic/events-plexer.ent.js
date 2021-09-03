@@ -14,7 +14,7 @@ const { determineActionRoam } = require('../strategies/roam');
 const { getDivergence, perf } = require('../../../utils/helpers');
 const log = require('../../../services/log.service').get();
 
-const { PRICE_FEED_PROCESSED, NEW_BLOCK } = eventTypes;
+const { PRICE_FEED_PROCESSED, NEW_BLOCK, BITFINEX_TRADE } = eventTypes;
 
 const entity = (module.exports = {});
 
@@ -45,6 +45,7 @@ entity.localState = {
 entity.init = () => {
   events.on(PRICE_FEED_PROCESSED, entity._onPriceFeedProcessed);
   events.on(NEW_BLOCK, entity._onNewBlock);
+  events.on(BITFINEX_TRADE, entity._onBitfinexTrade);
 };
 
 /**
@@ -91,6 +92,12 @@ entity._processAndDecide = async () => {
   const { localState: state } = entity;
 
   if (state.heartbeat === 0 || state.blockNumber === 0) {
+    return;
+  }
+
+  // Check feed prices for all pairs have been collected before proceeding.
+  const allFeedPairs = Object.keys(state.feedPrices);
+  if (allFeedPairs.length !== 5) {
     return;
   }
 
@@ -174,4 +181,18 @@ entity._checkOracleLog = async (data) => {
 
   entity.localState._tempLastBtcBlockNumber = blockNumber;
   entity.localState._tempLastBtcStamp = perf();
+};
+
+/**
+ * Handles a price update event from bitfinex.
+ *
+ * @param {string} pair The pair that has updated.
+ * @param {number} price The price of the pair.
+ * @return {Promise<void>}
+ * @private
+ */
+entity._onBitfinexTrade = async (pair, price) => {
+  entity.localState.feedPrices[pair] = price;
+
+  await entity._processAndDecide();
 };
