@@ -11,12 +11,12 @@ const entity = (module.exports = {});
 
 entity.BITFINEX_WS_ENDPOINT = 'wss://api-pub.bitfinex.com/ws/2';
 entity.BITFINEX_PAIRS = ['tAAVE', 'tBTCUSD', 'tETHUSD', 'tLINK', 'tUNIUSD'];
-entity.BITFINEX_TO_SYNTHS = {
-  tAAVE: 'sAAVE',
-  tBTCUSD: 'sBTC',
-  tETHUSD: 'sETH',
-  tLINK: 'sLINK',
-  tUNIUSD: 'sUNI',
+entity.BITFINEX_TO_PAIRS = {
+  tAAVE: 'AAVEUSD',
+  tBTCUSD: 'BTCUSD',
+  tETHUSD: 'ETHUSD',
+  tLINK: 'LINKUSD',
+  tUNIUSD: 'UNIUSD',
 };
 
 /** @type {Object?} websocket client */
@@ -157,7 +157,7 @@ entity._handleSubscription = async (message) => {
     return;
   }
 
-  const synth = entity.BITFINEX_TO_SYNTHS[message.symbol];
+  const synth = entity.BITFINEX_TO_PAIRS[message.symbol];
   entity._channels[message.chanId] = synth;
   await log.info(`Bitfinex WS subscribed to trade feed of: ${synth}`);
 };
@@ -186,8 +186,8 @@ entity._handleTrade = async (message) => {
   const [channel, action, data] = lastTrade;
   const [tradeId, timestamp, amount, price] = data;
 
-  const symbol = entity.BITFINEX_TO_SYNTHS[channel];
-  if (!symbol) {
+  const pair = entity.BITFINEX_TO_PAIRS[channel];
+  if (!pair) {
     await log.warn('Bitfinex WS bogus incoming trade', {
       custom: lastTrade,
     });
@@ -196,7 +196,7 @@ entity._handleTrade = async (message) => {
 
   events.emit(
     eventTypes.BITFINEX_TRADE,
-    symbol,
+    pair,
     price,
     tradeId,
     timestamp,
