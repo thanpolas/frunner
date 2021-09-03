@@ -15,4 +15,7 @@ consts.eventTypes = {
 
   // A new block was mined.
   NEW_BLOCK: 'newBlock',
+
+  // A bitfinex trade event occured.
+  BITFINEX_TRADE: 'bitfinexTrade',
 };
