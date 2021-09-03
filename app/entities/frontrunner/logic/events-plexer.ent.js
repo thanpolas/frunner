@@ -162,16 +162,17 @@ entity._processAndDecide = async () => {
  * @return {boolean} True if it's time to do an update.
  * @private
  */
-entity._shouldLogUpdate = (divergencies) => {
-  if (entity._lastHeartbeatUpdate === 0) {
-    entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
-    return true;
-  }
+entity._shouldLogUpdate = () => {
+  return false;
+  // if (entity._lastHeartbeatUpdate === 0) {
+  //   entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
+  //   return true;
+  // }
 
-  if (divergencies.state.heartbeat % config.app.heartbeat_log_update === 0) {
-    entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
-    return true;
-  }
+  // if (divergencies.state.heartbeat % config.app.heartbeat_log_update === 0) {
+  //   entity._lastHeartbeatUpdate = divergencies.state.heartbeat;
+  //   return true;
+  // }
 };
 
 /**
@@ -217,6 +218,5 @@ entity._checkOracleLog = async (data) => {
  */
 entity._onBitfinexTrade = async (pair, price) => {
   entity.localState.feedPrices[pair] = price;
-
   await entity._processAndDecide();
 };
