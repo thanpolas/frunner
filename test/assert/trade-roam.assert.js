@@ -100,7 +100,6 @@ assert.assertTypes = (testObj, optFixtureClose) => {
   expect(testObj.traded_source_tokens).toBeNumber();
   expect(testObj.traded_source_usd_value).toBeNumber();
   expect(testObj.traded_target_tokens).toBeNumber();
-  expect(testObj.traded_actual_ratio_between_tokens).toBeNumber();
   expect(testObj.traded_gas_spent).toBeString();
   expect(testObj.traded_at).toBeDate();
 
