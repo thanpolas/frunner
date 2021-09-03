@@ -3,7 +3,7 @@
  */
 
 const { ethers } = require('ethers');
-const { tokenAuto } = require('@thanpolas/crypto-utils');
+const { tokenToAuto } = require('@thanpolas/crypto-utils');
 
 const { OP_KOVAN_PROXY } = require('../constants/proxy.const');
 const snxAbi = require('../abi/synthetix.abi.json');
@@ -68,11 +68,11 @@ entity.snxTrade = async (sourceSymbol, destinationSymbol, optSum) => {
   // Augment tx object with quantities traded
   tx2.sourceTokenSymbol = sourceSymbol;
   tx2.sourceTokenQuantity = sourceAmount;
-  tx2.sourceTokenQuantityReadable = tokenAuto(sourceAmount, SYNTH_DECIMALS);
+  tx2.sourceTokenQuantityReadable = tokenToAuto(sourceAmount, SYNTH_DECIMALS);
 
   tx2.dstTokenSymbol = destinationSymbol;
   tx2.dstTokenQuantity = balances[destinationSymbol];
-  tx2.dstTokenQuantityReadable = tokenAuto(
+  tx2.dstTokenQuantityReadable = tokenToAuto(
     balances[destinationSymbol],
     SYNTH_DECIMALS,
   );

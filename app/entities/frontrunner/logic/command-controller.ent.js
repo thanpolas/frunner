@@ -3,7 +3,7 @@
  */
 
 const config = require('config');
-const { tokenAuto } = require('@thanpolas/crypto-utils');
+const { tokenToAuto } = require('@thanpolas/crypto-utils');
 
 const { PAIRS_AR } = require('../../price-feeds');
 const { isStarted, init, dispose } = require('./heartbeat.ent');
@@ -91,7 +91,7 @@ entity.getBalance = async (message) => {
   const balances = await getBalances();
   const symbols = Object.keys(balances);
   const balancesReadable = symbols.map((symbol) => {
-    const val = tokenAuto(balances[symbol], SYNTH_DECIMALS);
+    const val = tokenToAuto(balances[symbol], SYNTH_DECIMALS);
     return `${symbol}: ${val}`;
   });
 

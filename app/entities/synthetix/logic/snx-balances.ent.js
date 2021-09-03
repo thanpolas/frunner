@@ -3,7 +3,7 @@
  */
 
 const { ethers } = require('ethers');
-const { tokenAuto } = require('@thanpolas/crypto-utils');
+const { tokenToAuto } = require('@thanpolas/crypto-utils');
 
 const { getSigner, network, erc20GenericAbi } = require('../../ether');
 const {
@@ -32,7 +32,7 @@ entity.init = async () => {
   const balances = await entity.getBalances();
   const tokens = Object.keys(balances);
   const balancesReadable = tokens.map((token) => {
-    const val = tokenAuto(balances[token], SYNTH_DECIMALS);
+    const val = tokenToAuto(balances[token], SYNTH_DECIMALS);
     return `${token}: ${val}`;
   });
 
