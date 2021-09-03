@@ -52,7 +52,7 @@ entity.snxTrade = async (sourceSymbol, destinationSymbol, optSum) => {
   const destinationToken = SynthAddresses[destinationSymbol];
   const sourceAmount = optSum || balances[sourceSymbol];
 
-  await log.info(
+  log.info(
     `SNX Trade requested from ${sourceSymbol} to ${destinationSymbol} for ${sourceAmount}`,
   );
 
